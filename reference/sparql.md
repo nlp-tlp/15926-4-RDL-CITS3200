@@ -3,8 +3,7 @@
 Some common sparql queries used for the CITS3200 ISO RDL visualisation project.
 
 ## Things of note
-
--   Currently, the sparql [endpoint](https://data.15926.org/sparql) only returns the first 10,000 lines of output, and the limit cannot be set to be higher. Some of the data might be excluded because of this limit.
+N/A
 
 ## Queries
 
