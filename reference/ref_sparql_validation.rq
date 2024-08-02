@@ -1,0 +1,265 @@
+
+
+select 'missing subclassof relationship';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    optional  {?id rdfs:subClassOf ?super} . filter (!bound(?super)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+limit 1000;
+
+select 'subclassof relationship to missing object';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    ?id rdfs:subClassOf ?super .
+    optional {graph ?x{?super rdfs:label ?l2. filter not exists { ?super <http://data.15926.org/meta/valDeprecationDate> ?h .} }} . filter (!bound(?l2)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+limit 1000;
+
+select 'rdf:type relationship FROM missing object';
+
+sparql
+select ?id ?label ?type
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    ?id rdf:type ?type .
+    optional {graph ?x{?type rdfs:label ?l2. filter not exists { ?type <http://data.15926.org/meta/valDeprecationDate> ?h .}}} . filter (!bound(?l2)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+limit 1000;
+
+select 'missing entity relationship in RDL';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    optional {?id rdf:type ?entity. filter not exists { ?entity <http://data.15926.org/meta/valDeprecationDate> ?h .}} . filter (!bound(?entity)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+limit 1000;
+
+select 'missing entity relationship over all namespaces';
+
+sparql
+select ?id ?label
+{
+    ?id rdfs:label ?label .
+    optional {?id rdf:type ?entity. filter not exists { ?entity <http://data.15926.org/meta/valDeprecationDate> ?h .}} . filter (!bound(?entity)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+    filter contains(str(?id),'15926.org')
+}
+limit 1000;
+
+select 'more than 1 entity type (excluded Scale)';
+
+sparql
+select ?id ?label min(?entity) max(?entity) count(*) 
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    ?id rdf:type ?entity .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+    filter not exists { ?id rdf:type <http://data.15926.org/dm/Scale> . }  
+}}
+group by ?label ?id
+having (count(*)>1)
+limit 1000;
+
+select 'missing label';
+
+sparql
+select ?id
+{graph <http://data.15926.org/rdl>{
+?id ?p ?o .
+    optional {?id rdfs:label ?label} . filter (!bound(?label)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+limit 1000;
+
+select 'missing definition (excluded Scale)';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    optional {?id skos:definition ?def} . filter (!bound(?def)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+    filter not exists { ?id rdf:type <http://data.15926.org/dm/Scale> . }  
+}}
+limit 1000;
+
+select 'there is a definition triple, but it is an empty string';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    ?id skos:definition ?def .
+    filter (str(?def)='')  
+}}
+limit 1000;
+
+
+select 'same label different classes';
+
+sparql
+select ?label count(*) (min(?id) as ?minID) (max(?id) as ?maxID)
+{graph <http://data.15926.org/rdl>{
+?id rdfs:label ?label .
+filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+group by ?label
+having (count(*)>1)
+;
+
+select 'double definition';
+
+sparql
+select ?id count(*) (min(?def) as ?minDef) (max(?def) as ?maxDef)
+{graph <http://data.15926.org/rdl>{
+?id skos:definition ?def .
+filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+group by ?id
+having (count(*)>1)
+limit 1000
+;
+
+select 'more than 1 meta:valEffectiveDate date';
+
+sparql
+select ?id ?label count(*) 
+{graph ?g{
+    ?id rdfs:label ?label .
+    ?id <http://data.15926.org/meta/valEffectiveDate> ?f .  
+}}
+group by ?g ?label ?id
+having (count(*)>1)
+limit 1000
+;
+
+select 'more than 1 meta:valDeprecationDate date';
+sparql
+select ?g ?label ?id count(*) 
+{graph ?g{
+    ?id rdfs:label ?label .
+    ?id <http://data.15926.org/meta/valDeprecationDate> ?f .  
+}}
+group by ?g ?label ?id
+having (count(*)>1)
+limit 1000
+;
+
+select 'missing idISO';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+    filter not exists {graph <http://data.15926.org/prov> {?id <http://data.15926.org/prov/idISO> ?idiso . }}  
+}}
+order by ?label
+limit 1000;
+
+select 'more than 1 idISO';
+
+sparql
+select ?label count(*) (min(?isoid) as ?minISOID) (max(?isoid) as ?maxISOID)
+{graph <http://data.15926.org/rdl>{
+?id rdfs:label ?label .
+filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . } 
+{graph ?x1{?id <http://data.15926.org/prov/idISO> ?_isoid.}}
+bind (xsd:integer(?_isoid) as ?isoid)
+}}
+group by ?id ?label
+having (count(*)>1)
+;
+
+select 'last (highest) idISO';
+sparql
+select max(?idiso)
+{
+    ?id <http://data.15926.org/prov/idISO> ?idiso . 
+}
+limit 1000;
+
+select 'missing idPCA';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+    filter not exists {graph <http://data.15926.org/prov> {?id <http://data.15926.org/prov/idPCA> ?idpca . }}  
+}}
+order by ?label
+limit 1000;
+
+select 'missing subject area';
+
+sparql
+select ?id ?label
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    optional  {graph <http://data.15926.org/coco>{?id rdf:type ?cocoid}} . filter (!bound(?cocoid)) .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+}}
+limit 1000;
+
+select 'more than 1 source';
+
+sparql
+select ?id ?label min(?source) max(?source) count(*) 
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . }  
+    {graph <http://data.15926.org/prov>{?id <http://purl.org/dc/elements/1.1/Source> ?source}}
+}}
+group by ?label ?id
+having (count(*)>1)
+limit 1000;
+
+select 'class exists as a synonym of another class';
+
+sparql
+select ?id ?label ?label2 ?id2
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . } 
+    {graph <http://data.15926.org/prov>{?id2 <http://www.w3.org/2004/02/skos/core#altLabel> ?label}}
+    ?id2 rdfs:label ?label2.
+}}
+limit 1000;
+
+select 'Unique Name not mentioned in the definition';
+
+sparql
+select ?id ?label ?def
+{graph <http://data.15926.org/rdl>{
+    ?id rdfs:label ?label .
+    ?id skos:definition ?def.
+    filter not exists { ?id <http://data.15926.org/meta/valDeprecationDate> ?f . } 
+    filter (!contains(?def,?label))
+}}
+limit 1000;
+
+select 'named graph has an /RDS number';
+
+sparql
+select ?g
+{graph ?g{
+?s ?p ?o.
+filter (contains(str(?s),'15926.org'))
+filter (contains(str(?g),'/RDS'))
+}}
+limit 1000;
+
+
