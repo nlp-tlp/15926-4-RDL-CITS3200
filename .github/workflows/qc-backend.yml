@@ -1,6 +1,6 @@
-name: Lint Code Base
+name: Backend Code Checks
 
-on: 
+on:
   push:
     branches:
       - main
@@ -9,33 +9,12 @@ on:
     branches:
       - main
       - '**'
+    types: ["opened", "synchronize", "reopened", "edited"]
+  workflow_dispatch:
 
 jobs:
-  lint-client:
-    name: Lint Client (Vue.js)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: |
-          cd src/client
-          npm install
-
-      - name: Run ESLint
-        run: |
-          cd src/client
-          npm run lint
-
-  lint-server:
-    name: Lint Server (Python)
+  lint:
+    name: Run Black (Python Linting)
     runs-on: ubuntu-latest
 
     steps:
