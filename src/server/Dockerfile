@@ -14,5 +14,5 @@ COPY . .
 # Expose port
 EXPOSE 5000
 
-# Run the app
-CMD ["flask", "run"]
+# Run the app and bind to all interfaces
+CMD ["flask", "run", "--host=0.0.0.0"]
