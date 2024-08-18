@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd src/client && npm run lint:fix && npm run format && npm run type-check && cd ../server && black .
+cd src/client && npm run lint:fix && npm run format && npm run type-check &&   cd ../../src/server && . venv/bin/activate && black . && deactivate

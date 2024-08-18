@@ -45,15 +45,35 @@ npx husky-init
 # Add pre-commit hook
 echo -e "\n\nAdding pre-commit hook to Husky..."
 sed -i '/npm test/d' .husky/pre-commit
-npx husky add .husky/pre-commit "cd src/client && npm run lint:fix && npm run format && npm run type-check && cd ../server && black ."
+npx husky add .husky/pre-commit \
+  "cd src/client && npm run lint:fix && npm run format && npm run type-check && \
+  cd ../../src/server && . venv/bin/activate && black . && deactivate"
 
-# Install Python dependencies
-echo -e "\n\nInstalling Python dependencies..."
-pip install black
+# Create Python virtual environment and install dependencies from requirements.txt
+echo -e "\n\nSetting up Python virtual environment and installing dependencies..."
+python3 -m venv src/server/venv
+source src/server/venv/bin/activate
+pip install -r src/server/requirements.txt
 
-# Navigate to the client directory and install Node.js dependencies
+# Install Node.js dependencies in src/client
 echo -e "\n\nInstalling Node.js dependencies in src/client..."
-cd src/client || exit
-npm install
+npm install --prefix src/client
+
+# Create a .env file for Docker Compose in /src
+echo -e "\n\nCreating .env file for Docker Compose in /src..."
+cat <<EOF > src/.env
+# Environment variables for Docker Compose
+COMPOSE_PROJECT_NAME=iso-visualiser
+
+# For client service
+CLIENT_PORT=5173
+
+# For server service
+SERVER_PORT=5000
+FLASK_ENV=development
+FLASK_APP=server.py
+
+# Add other environment variables as needed
+EOF
 
 echo -e "\n\nSetup complete."

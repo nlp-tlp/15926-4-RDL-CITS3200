@@ -7,4 +7,4 @@ from app.blueprints import main
 @main.route("/home")
 @main.route("/")
 def home():
-    return ()
+    return "<h1>Welcome to the Home Page!</h1><p>Your Flask application is running successfully.</p>"
