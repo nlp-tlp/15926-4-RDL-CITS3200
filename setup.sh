@@ -1,6 +1,10 @@
 #!/bin/bash
 
-echo -e "\nSetting up the project..."
+# Check if the script is being run with sudo
+if [ ! -z "$SUDO_USER" ]; then
+    echo -e "\nThis script should not be run with sudo. Please run it as a regular user."
+    exit 1
+fi
 
 # Check if nvm is installed
 if ! command -v nvm &> /dev/null
