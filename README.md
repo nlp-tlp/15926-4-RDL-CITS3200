@@ -16,7 +16,7 @@ This project uses a mix of pre-commit checks and github actions in the workflow,
   `git clone https://github.com/nlp-tlp/15926-4-RDL-CITS3200.git`
 
 ### Install dependencies
-  `./setup.sh` (If the script fails, please use `sudo`)
+  `./setup.sh` (Do not run with `sudo`)
 
 ### Build and run Docker containers
 `cd src`

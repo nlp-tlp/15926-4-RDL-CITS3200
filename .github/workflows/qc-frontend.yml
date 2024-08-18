@@ -15,6 +15,7 @@ jobs:
   format:
     name: Run Prettier
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.event.head_commit.message != github.event.pull_request.head.commit.message
     defaults:
       run:
         working-directory: src/client
@@ -34,6 +35,7 @@ jobs:
   lint:
     name: Run ESLint
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.event.head_commit.message != github.event.pull_request.head.commit.message
     defaults:
       run:
         working-directory: src/client
@@ -53,6 +55,7 @@ jobs:
   typecheck:
     name: Check types
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.event.head_commit.message != github.event.pull_request.head.commit.message
     defaults:
       run:
         working-directory: src/client

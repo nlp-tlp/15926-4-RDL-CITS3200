@@ -15,6 +15,7 @@ jobs:
   lint:
     name: Run Black (Python Linting)
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.event.head_commit.message != github.event.pull_request.head.commit.message
 
     steps:
       - name: Checkout code
