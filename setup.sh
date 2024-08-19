@@ -53,6 +53,13 @@ npx husky add .husky/pre-commit \
   "cd src/client && npm run lint:fix && npm run format && npm run type-check && \
   cd ../../src/server && . venv/bin/activate && black . && deactivate"
 
+# Check if python3-venv is installed
+if ! dpkg -s python3-venv &> /dev/null
+then
+    echo -e "\n\npython3-venv is not installed. Please install it with 'sudo apt install python3-venv' and rerun this script."
+    exit 1
+fi
+
 # Create Python virtual environment and install dependencies from requirements.txt
 echo -e "\n\nSetting up Python virtual environment and installing dependencies..."
 python3 -m venv src/server/venv
