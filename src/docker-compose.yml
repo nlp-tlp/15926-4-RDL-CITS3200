@@ -19,3 +19,10 @@ services:
     environment:
       - FLASK_ENV=${FLASK_ENV:-development}
       - FLASK_APP=${FLASK_APP:-server.py}
+
+  # mkdocs:
+  #   build: ../docs
+  #   ports:
+  #     - "${MKDOCS_PORT:-8001}:8000"
+  #   volumes:
+  #     - ../docs:/docs

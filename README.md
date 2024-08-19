@@ -18,9 +18,9 @@ This project uses a mix of pre-commit checks and github actions in the workflow,
 ### Install dependencies
 `sudo apt-get update`
 
-`sudo apt-get upgrade`
+`sudo apt-get upgrade` (OPTIONAL)
 
-`sudo apt install python3.10-venv`
+`sudo apt install python3-venv`
 
 `./setup.sh` (Do not run with `sudo`)
 

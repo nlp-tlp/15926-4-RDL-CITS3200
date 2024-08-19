@@ -70,21 +70,8 @@ pip install -r src/server/requirements.txt
 echo -e "\n\nInstalling Node.js dependencies in src/client..."
 npm install --prefix src/client
 
-# Create a .env file for Docker Compose in /src
-echo -e "\n\nCreating .env file for Docker Compose in /src..."
-cat <<EOF > src/.env
-# Environment variables for Docker Compose
-COMPOSE_PROJECT_NAME=iso-visualiser
-
-# For client service
-CLIENT_PORT=5173
-
-# For server service
-SERVER_PORT=5000
-FLASK_ENV=development
-FLASK_APP=server.py
-
-# Add other environment variables as needed
-EOF
+# Copy .env.example to .env in /src
+echo -e "\n\nCopying .env.example to .env in /src..."
+cp src/.env.example src/.env
 
 echo -e "\n\nSetup complete."
