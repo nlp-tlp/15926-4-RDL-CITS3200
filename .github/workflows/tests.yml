@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: Run Server Tests (Flask)
 
 on:
   push:

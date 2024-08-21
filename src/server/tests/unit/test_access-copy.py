@@ -11,3 +11,4 @@ def test_health_check_COPY(test_client):
     assert response.status_code == 200
     assert json_data["status"] == "success"
     assert json_data["message"] == "Pong!"
+    assert False
