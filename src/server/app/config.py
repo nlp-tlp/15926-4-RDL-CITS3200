@@ -16,10 +16,12 @@ class Config:
 
 
 class DeploymentConfig(Config):
-    # SQLALCHEMY_DATABASE_URI =  os.getenv('DATABASE_URL') or 'sqlite:///../instance/database.db'
+    SQLALCHEMY_DATABASE_URI = (
+        os.getenv("DATABASE_URL") or "sqlite:///../instance/database.db"
+    )
     DEBUG = False
 
 
 class TestConfig(Config):
-    # SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     DEBUG = True

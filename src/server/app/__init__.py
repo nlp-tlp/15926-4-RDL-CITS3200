@@ -1,7 +1,8 @@
 # Imports
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-# db = SQLAlchemy()
+db = SQLAlchemy()
 
 
 def create_app(config):
@@ -10,6 +11,9 @@ def create_app(config):
 
     # Configure flask app
     flaskApp.config.from_object(config)
+
+    # Initialise using flask app
+    db.init_app(flaskApp)
 
     from app.blueprints import main
 
