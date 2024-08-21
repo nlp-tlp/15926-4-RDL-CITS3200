@@ -3,7 +3,6 @@ from flask import Flask
 
 # db = SQLAlchemy()
 
-
 def create_app(config):
     # Main application name
     flaskApp = Flask(__name__)
