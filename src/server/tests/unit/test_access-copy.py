@@ -5,9 +5,9 @@ def test_health_check_COPY(test_client):
     THEN check that the response is valid
     """
     # Get the response
-    response = test_client.get('/ping')
+    response = test_client.get("/ping")
     json_data = response.get_json()
 
     assert response.status_code == 200
-    assert json_data['status'] == 'success'
-    assert json_data['message'] == 'Pong!'
+    assert json_data["status"] == "success"
+    assert json_data["message"] == "Pong!"
