@@ -1,3 +1,6 @@
+# NOTE: THIS TEST IS MERELY TO ALLOW THE `unit` FOLDER TO BE SYNCED CORRECTLY. Its merely a placeholder for future tests.
+
+
 def test_health_check_COPY(test_client):
     """
     GIVEN a Flask application configured for testing
