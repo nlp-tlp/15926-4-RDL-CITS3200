@@ -1,8 +1,6 @@
 # Imports
 from flask import Flask
 
-# db = SQLAlchemy()
-
 
 def create_app(config):
     # Main application name
@@ -13,6 +11,7 @@ def create_app(config):
 
     from app.blueprints import main
 
+    # Register main blueprint
     flaskApp.register_blueprint(main)
 
     return flaskApp
