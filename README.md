@@ -38,6 +38,6 @@ This project uses a mix of pre-commit checks and github actions in the workflow,
 #### Server
 `cd src/server`
 
-`source ./venv/bin/acitvate`
+`source ./venv/bin/activate`
 
 `pytest`
