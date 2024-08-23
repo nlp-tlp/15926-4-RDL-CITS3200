@@ -18,12 +18,15 @@ const props = defineProps<NavBarItemProps>()
 
 <style scoped>
 .navbar-item {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 1.25rem;
+  text-align: center;
   padding: 0 1rem;
   border-left: 2px solid var(--color-border);
   color: var(--color-nav-text);
 }
-
 .navbar-item:first-of-type {
   border: 0;
 }
