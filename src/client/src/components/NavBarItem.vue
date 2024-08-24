@@ -21,7 +21,7 @@ const props = defineProps<NavBarItemProps>()
   display: flex;
   align-items: center;
   text-decoration: none;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   text-align: center;
   padding: 0 1rem;
   border-left: 2px solid var(--color-border);

@@ -46,9 +46,10 @@ import NavBarItem from './NavBarItem.vue'
 }
 
 .navbar-items {
-  /* Centres items in navbar horizontally */
+  /* Centres items in navbar vertically i.e. row instead of column */
   display: flex;
-  margin-right: auto;
+  /* Centres items in navbar horizontally - currently right aligned*/
+  /* margin-right: auto; */
 }
 
 .navbar-icon {
