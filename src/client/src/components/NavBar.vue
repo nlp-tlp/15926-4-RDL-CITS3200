@@ -8,13 +8,13 @@ import NavBarItem from './NavBarItem.vue'
  * NavBar component represents the navigation bar for the application.
  *
  * This component includes the title of the application and a set of navigation items.
- * Each navigation item is represented by the NavBarItem component. 
+ * Each navigation item is represented by the NavBarItem component.
  *
  * @example
  * <NavBar />
  */
 export default {
-  name: 'NavBar',
+  name: 'NavBar'
 }
 </script>
 
