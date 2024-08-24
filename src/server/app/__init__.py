@@ -1,8 +1,5 @@
 # Imports
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
 
 
 def create_app(config):
@@ -17,6 +14,7 @@ def create_app(config):
 
     from app.blueprints import main
 
+    # Register main blueprint
     flaskApp.register_blueprint(main)
 
     return flaskApp

@@ -29,4 +29,15 @@ This project uses a mix of pre-commit checks and github actions in the workflow,
 
 `docker compose up --build`
 
-- Note: Any changes to main files (dependencies, settings, etc.) require the containers to be rebuilt.
+- Any changes to main files (dependencies, settings, etc.) require the containers to be rebuilt.
+
+**NOTE: IF USING WSL, THE DOCKER DESKTOP APP MUST BE INSTALLED AND CONFIGURED (https://docs.docker.com/desktop/wsl/)**
+
+### Run Tests
+
+#### Server
+`cd src/server`
+
+`source ./venv/bin/activate`
+
+`pytest`
