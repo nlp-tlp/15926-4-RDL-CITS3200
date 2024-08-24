@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "databases": [
+        {
+            "filename": "../instance/25-08-2024.db",
+            "created_at": "25-08-2024 00:24:11"
+        },
+        {
+            "filename": "../instance/25-08-2024-2.db",
+            "created_at": "25-08-2024 00:24:47"
+        },
+        {
+            "filename": "../instance/25-08-2024-3.db",
+            "created_at": "25-08-2024 00:25:30"
+        },
+        {
+            "filename": "../instance/25-08-2024-4.db",
+            "created_at": "25-08-2024 00:26:24"
+        }
+    ],
+    "current_db": ""
+}
