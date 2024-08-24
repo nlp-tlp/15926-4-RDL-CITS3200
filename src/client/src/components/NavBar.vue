@@ -39,6 +39,7 @@ import NavBarItem from './NavBarItem.vue'
   font-size: 1.5rem;
   font-weight: bold;
   margin-right: auto;
+  color: var(--color-nav-title);
 }
 
 #navbar-title:hover {
