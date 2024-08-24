@@ -2,13 +2,6 @@
 import { RouterLink } from 'vue-router'
 </script>
 
-<template>
-  <RouterLink :to="to" class="navbar-item">
-    <slot name="icon"></slot>
-    {{ label }}
-  </RouterLink>
-</template>
-
 <script lang="ts">
 /**
  * NavBarItem component represents a navigation item in a navbar.
@@ -37,6 +30,13 @@ export default {
   }
 }
 </script>
+
+<template>
+  <RouterLink :to="to" class="navbar-item">
+    <slot name="icon"></slot>
+    {{ label }}
+  </RouterLink>
+</template>
 
 <style scoped>
 .navbar-item {
