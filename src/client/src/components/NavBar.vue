@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import IconDocumentation from './icons/IconDocumentation.vue'
+import IconGraph from './icons/IconGraph.vue'
 import NavBarItem from './NavBarItem.vue'
 </script>
 
@@ -22,9 +23,13 @@ export default {
   <nav class="navbar">
     <p id="navbar-title" @click="$router.push('/')">iso15926vis</p>
     <div class="navbar-items">
-      <NavBarItem to="/" label="Home" />
-      <NavBarItem to="/graph" label="Graph" />
-      <NavBarItem to="/documentation" label="Documentation">
+      <NavBarItem to="/" label="Home" id="home-link" />
+      <NavBarItem to="/graph" label="Graph" id="graph-link">
+        <template #icon>
+          <IconGraph class="navbar-icon" />
+        </template>
+      </NavBarItem>
+      <NavBarItem to="/documentation" label="Documentation" id="documentation-link">
         <template #icon>
           <IconDocumentation class="navbar-icon" />
         </template>
@@ -36,7 +41,7 @@ export default {
 <style scoped>
 .navbar {
   width: 100%;
-  font-size: 16px;
+  font-size: 1.1rem;
   /* Ensures NavBar items are on NavBar */
   display: flex;
   justify-content: center;
@@ -55,6 +60,22 @@ export default {
   font-weight: bold;
   margin-right: auto;
   color: var(--color-nav-title);
+}
+
+@media screen and (max-width: 1024px) {
+  .navbar {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  #navbar-title {
+    font-size: 1.2rem;
+  }
+  #home-link {
+    display: none;
+  }
+  #graph-link {
+    border: 0;
+  }
 }
 
 #navbar-title:hover {
