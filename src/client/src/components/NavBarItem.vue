@@ -54,7 +54,7 @@ export default {
 }
 
 .navbar-item.router-link-exact-active {
-  color: var(--color-text);
+  color: var(--color-nav-text-active);
 }
 
 .navbar-item.router-link-exact-active:hover {
