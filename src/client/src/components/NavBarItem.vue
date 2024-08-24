@@ -9,6 +9,8 @@ import { RouterLink } from 'vue-router'
  * @param {string} to - The route path for the navigation item.
  * @param {string} label - The label text displayed for the navigation item.
  *
+ * @slot icon - (OPTIONAL) The icon to display for the navigation item.
+ *
  * @example
  * <NavBarItem to="/home" label="Home">
  *   <template #icon> (OPTIONAL ICON)
