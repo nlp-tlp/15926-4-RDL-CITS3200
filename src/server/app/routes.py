@@ -1,7 +1,6 @@
 # Imports
 from flask import jsonify
 from app.blueprints import main
-from app.controllers import update_db
 
 
 @main.route("/index")

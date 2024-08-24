@@ -9,9 +9,6 @@ def create_app(config):
     # Configure flask app
     flaskApp.config.from_object(config)
 
-    # Initialise using flask app
-    db.init_app(flaskApp)
-
     from app.blueprints import main
 
     # Register main blueprint
