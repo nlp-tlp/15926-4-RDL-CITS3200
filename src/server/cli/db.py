@@ -5,6 +5,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 from history import history_file_add_db
 
+
 def update_db():
     # SPARQL endpoint URL
     sparql_endpoint = "http://190.92.134.58:8890/sparql"
@@ -76,12 +77,13 @@ def update_db():
     # Check if results are correctly parsed as a dictionary
     if not isinstance(results, dict):
         raise ValueError("The response could not be converted to JSON")
-    
+
     # Make db and get connection and cursor into the file
     conn, cursor = make_db()
 
     # Create table (modify schema according to your needs)
-    cursor.execute('''
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS ApiData (
             id TEXT PRIMARY KEY,
             label TEXT,
@@ -90,7 +92,8 @@ def update_db():
             parentId TEXT,
             deprecationDate TEXT
         )
-    ''')
+    """
+    )
 
     # Insert data into the database using SQLAlchemy
     for result in results["results"]["bindings"]:
@@ -104,13 +107,15 @@ def update_db():
         # spreadsheetLabel = result.get("spreadsheetLabel", {}).get("value", None)
         deprecationDate = result.get("deprecationDate", {}).get("value", None)
 
-        
         # Insert the record into the SQLite database
-        cursor.execute('''
+        cursor.execute(
+            """
             INSERT OR IGNORE INTO ApiData (
                 id, label, type, definition, parentId, deprecationDate
             ) VALUES (?, ?, ?, ?, ?, ?)
-        ''', (id_value, label, type_value, definition, parentId, deprecationDate))
+        """,
+            (id_value, label, type_value, definition, parentId, deprecationDate),
+        )
 
     # Commit the transaction
     conn.commit()
@@ -122,18 +127,18 @@ def update_db():
 def get_db_name(base_dir="../instance/"):
     # Get the current date
     date_str = datetime.now().strftime("%d-%m-%Y")
-    
+
     # Start with the basic filename
     db_filename = os.path.join(base_dir, f"{date_str}.db")
-    
+
     # Initialize a counter to append to the filename if needed
     counter = 1
-    
+
     # Check if the file already exists, and if so, increment the counter
     while os.path.exists(db_filename):
         db_filename = os.path.join(base_dir, f"{date_str}-{counter}.db")
         counter += 1
-    
+
     return db_filename
 
 
@@ -147,7 +152,7 @@ def make_db():
     except sqlite3.Error as e:
         print(f"An error occurred while connecting to the database: {e}")
         return  # Exit the function if the database connection fails
-    
+
     cursor = conn.cursor()
 
     # Add new db to history file

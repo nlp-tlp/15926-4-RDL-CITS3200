@@ -12,10 +12,7 @@ VERSION_HISTORY_FILE = 1
 HISTORY_FILE = "history.json"
 
 
-def main(
-    db_update: bool = False,
-    fix: bool = False
-    ):
+def main(db_update: bool = False, fix: bool = False):
     """
     CLI tool to interact with the database.
 
@@ -30,7 +27,6 @@ def main(
 
     print("UPDATING DB!")
     update_db()
-
 
 
 def motd():
