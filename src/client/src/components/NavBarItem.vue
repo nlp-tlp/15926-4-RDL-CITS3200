@@ -1,18 +1,40 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+</script>
 
-interface NavBarItemProps {
-  to: string
-  label: string
+<script lang="ts">
+/**
+ * NavBarItem component represents a navigation item in a navbar.
+ *
+ * @param {string} to - The route path for the navigation item.
+ * @param {string} label - The label text displayed for the navigation item.
+ *
+ * @example
+ * <NavBarItem to="/home" label="Home">
+ *   <template #icon> (OPTIONAL ICON)
+ *     <HomeIcon />
+ *   </template>
+ * </NavBarItem>
+ */
+export default {
+  name: 'NavBarItem',
+  props: {
+    to: {
+      type: String,
+      required: true
+    },
+    label: {
+      type: String,
+      required: true
+    }
+  }
 }
-
-const props = defineProps<NavBarItemProps>()
 </script>
 
 <template>
-  <RouterLink :to="props.to" class="navbar-item">
+  <RouterLink :to="to" class="navbar-item">
     <slot name="icon"></slot>
-    {{ props.label }}
+    {{ label }}
   </RouterLink>
 </template>
 
