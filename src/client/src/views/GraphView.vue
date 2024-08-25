@@ -1,46 +1,54 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue'
 
-const isLeftExpanded = ref(false);
-const isRightExpanded = ref(false);
-const activeSection = ref('');
+const isLeftExpanded = ref(false)
+const isRightExpanded = ref(false)
+const activeSection = ref('')
 
 function toggleLeftNav() {
-  isLeftExpanded.value = !isLeftExpanded.value;
+  isLeftExpanded.value = !isLeftExpanded.value
 }
 
 function toggleRightNav() {
-  isRightExpanded.value = !isRightExpanded.value;
+  isRightExpanded.value = !isRightExpanded.value
 }
 
 function handleClickOutside(event: MouseEvent) {
-  const leftSidepanel = document.querySelector('.left-sidepanel');
-  const rightSidepanel = document.querySelector('.right-sidepanel');
-  const leftOpenbtn = document.querySelector('.left-openbtn');
-  const rightOpenbtn = document.querySelector('.right-openbtn');
-  
-  if (leftSidepanel && !leftSidepanel.contains(event.target as Node) && !leftOpenbtn?.contains(event.target as Node)) {
-    isLeftExpanded.value = false;
+  const leftSidepanel = document.querySelector('.left-sidepanel')
+  const rightSidepanel = document.querySelector('.right-sidepanel')
+  const leftOpenbtn = document.querySelector('.left-openbtn')
+  const rightOpenbtn = document.querySelector('.right-openbtn')
+
+  if (
+    leftSidepanel &&
+    !leftSidepanel.contains(event.target as Node) &&
+    !leftOpenbtn?.contains(event.target as Node)
+  ) {
+    isLeftExpanded.value = false
   }
-  
-  if (rightSidepanel && !rightSidepanel.contains(event.target as Node) && !rightOpenbtn?.contains(event.target as Node)) {
-    isRightExpanded.value = false;
+
+  if (
+    rightSidepanel &&
+    !rightSidepanel.contains(event.target as Node) &&
+    !rightOpenbtn?.contains(event.target as Node)
+  ) {
+    isRightExpanded.value = false
   }
 }
 
 function showSection(section: string) {
-  activeSection.value = section;
-  isLeftExpanded.value = false;
-  isRightExpanded.value = false;
+  activeSection.value = section
+  isLeftExpanded.value = false
+  isRightExpanded.value = false
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
+  document.addEventListener('click', handleClickOutside)
+})
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
@@ -70,7 +78,9 @@ onUnmounted(() => {
     <span class="button-symbol">&#9776;</span>
   </button>
 
-  <h2>{{ activeSection ? activeSection.charAt(0).toUpperCase() + activeSection.slice(1) : 'Graph' }}</h2>
+  <h2>
+    {{ activeSection ? activeSection.charAt(0).toUpperCase() + activeSection.slice(1) : 'Graph' }}
+  </h2>
 
   <div v-if="activeSection === 'Text1'">
     <p>Text1 Content... About the project...</p>
@@ -97,7 +107,7 @@ onUnmounted(() => {
   <div v-if="activeSection === 'Text8'">
     <p>Text8 Content...</p>
   </div>
-  
+
   <p v-if="!activeSection">Content...</p>
 </template>
 
@@ -126,7 +136,7 @@ onUnmounted(() => {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 20px;
-  color: var(--color-nav-title); 
+  color: var(--color-nav-title);
   display: block;
   transition: color 0.3s;
 }
@@ -140,35 +150,42 @@ onUnmounted(() => {
 .left-openbtn {
   width: 50px; /* Initial width */
   height: 60px;
-  font-size: 22px; 
-  font-weight: bold; 
+  font-size: 22px;
+  font-weight: bold;
   cursor: pointer;
   background-color: white; /* Background color before expansion */
   color: var(--color-nav-background); /* Icon color before expansion */
   padding: 10px 0;
   border: none;
-  position: absolute; 
-  top: 74px; 
+  position: absolute;
+  top: 74px;
   left: 0;
   text-align: center; /* Center the symbol */
   display: flex;
   align-items: center;
   transform: translateX(30px); /* Move button right by 30px */
-  transition: transform 0.5s ease, background-color 0.5s ease, color 0.5s ease; /* Smooth transition for transform */
+  transition:
+    transform 0.5s ease,
+    background-color 0.5s ease,
+    color 0.5s ease; /* Smooth transition for transform */
   z-index: 2; /* Ensure button is above sidepanel */
 }
 
 /* The button symbol */
 .button-symbol {
   display: inline-block;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
 }
 
 /* The button text */
 .sidepane-text {
   display: inline-block;
   margin-left: 10px; /* Space between button and text */
-  transition: opacity 0.8s ease, transform 0.5s ease;
+  transition:
+    opacity 0.8s ease,
+    transform 0.5s ease;
   transform: translateX(0); /* Always in view */
   opacity: 0;
   visibility: hidden; /* Hide initially */
@@ -186,7 +203,7 @@ onUnmounted(() => {
 
 /* Ensure the background color transition aligns properly */
 .sidepanel-expanded + .left-openbtn::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -232,11 +249,11 @@ onUnmounted(() => {
   padding: 8px 32px 8px 40px; /* Adjust padding for right side */
   text-decoration: none;
   font-size: 20px;
-  color: var(--color-nav-title); 
+  color: var(--color-nav-title);
   display: block;
   position: relative; /* Ensure pseudo-element is positioned correctly */
   overflow: hidden; /* Hide overflow for hover effect */
-  padding-left: 150px; 
+  padding-left: 150px;
 }
 
 /* Add a pseudo-element for hover effect */
@@ -249,7 +266,9 @@ onUnmounted(() => {
   height: 100%;
   z-index: 1; /* Ensure it is above text */
   transform: translateX(-100%); /* Initially hidden to the left */
-  transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease; /* Smooth transition */
 }
 
 /* On hover, move the pseudo-element to cover the text */
@@ -267,40 +286,46 @@ onUnmounted(() => {
   padding-left: 150px; /* Adjust this to align with the text */
 }
 
-
 /* Style the button that is used to open the right sidepanel */
 .right-openbtn {
   width: 50px; /* Initial width */
   height: 60px;
-  font-size: 22px; 
-  font-weight: bold; 
+  font-size: 22px;
+  font-weight: bold;
   cursor: pointer;
   background-color: white; /* Background color before expansion */
   color: var(--color-nav-background); /* Icon color before expansion */
   padding: 10px 0;
   border: none;
-  position: absolute; 
-  top: 74px; 
+  position: absolute;
+  top: 74px;
   right: 0;
   text-align: center; /* Center the symbol */
   display: flex;
   align-items: center;
   transform: translateX(-100px); /* Move button left by 30px */
-  transition: transform 0.5s ease, background-color 0.5s ease, color 0.5s ease; /* Smooth transition for transform */
+  transition:
+    transform 0.5s ease,
+    background-color 0.5s ease,
+    color 0.5s ease; /* Smooth transition for transform */
   z-index: 2; /* Ensure button is above sidepanel */
 }
 
 /* The button symbol */
 .button-symbol {
   display: inline-block;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
 }
 
 /* The button text */
 .right-sidepane-text {
   display: inline-block;
   margin-right: 10px; /* Space between text and button */
-  transition: opacity 0.8s ease, transform 0.5s ease;
+  transition:
+    opacity 0.8s ease,
+    transform 0.5s ease;
   opacity: 0;
   visibility: hidden; /* Hide initially */
 }
@@ -317,7 +342,7 @@ onUnmounted(() => {
 
 /* Ensure the background color transition aligns properly */
 .right-sidepanel-expanded + .right-openbtn::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0; /* Align with the right edge */
@@ -327,7 +352,6 @@ onUnmounted(() => {
   z-index: -1; /* Ensure it is behind the button content */
   transform: translateX(-70px); /* Compensate for the button's move */
 }
-
 
 /* When expanded, the button text should slide in */
 .right-sidepanel-expanded + .right-openbtn .right-sidepane-text {
