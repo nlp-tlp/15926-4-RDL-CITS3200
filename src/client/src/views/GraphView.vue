@@ -297,7 +297,7 @@ onUnmounted(() => {
   color: var(--color-nav-background); /* Icon color before expansion */
   padding: 10px 0;
   border: none;
-  position: absolute;
+  position: fixed;
   top: 74px;
   right: 0;
   text-align: center; /* Center the symbol */
