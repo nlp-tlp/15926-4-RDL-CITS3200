@@ -1,3 +1,37 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+/**
+ * GraphSearchSidepane component represents the left side panel in the graph view.
+ *
+ * This component is used to display an expandable side panel on the left side of the graph view.
+ * The panel can be toggled open or closed by clicking the associated button.
+ *
+ * @function toggleLeftNav
+ * Toggles the left side panel between expanded and collapsed states.
+ *
+ * This function inverts the value of `isLeftExpanded`. When the button associated
+ * with the side panel is clicked, `toggleLeftNav` is called, changing the panel's
+ * state from open to closed or from closed to open.
+ *
+ * @prop {boolean} isLeftExpanded - Indicates whether the left side panel is expanded.
+ * This prop controls the expansion state of the side panel.
+ *
+ * @example
+ * // Example usage within the template
+ * <button @click="toggleLeftNav">Toggle Left Panel</button>
+ *
+ * <div :class="{ 'sidepanel-expanded': isLeftExpanded }">
+ *   <!-- Content of the side panel -->
+ * </div>
+ */
+const isLeftExpanded = ref(false)
+
+function toggleLeftNav() {
+  isLeftExpanded.value = !isLeftExpanded.value
+}
+</script>
+
 <template>
   <div :class="['left-sidepanel', { 'sidepanel-expanded': isLeftExpanded }]"></div>
 
@@ -6,16 +40,6 @@
     <span class="sidepane-label">Left Sidepanel</span>
   </button>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const isLeftExpanded = ref(false)
-
-function toggleLeftNav() {
-  isLeftExpanded.value = !isLeftExpanded.value
-}
-</script>
 
 <style scoped>
 .left-sidepanel {

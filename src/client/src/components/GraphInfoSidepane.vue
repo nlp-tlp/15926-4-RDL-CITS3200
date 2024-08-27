@@ -1,3 +1,38 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+/**
+ * GraphInfoSidepane component represents the right side panel in the graph view.
+ *
+ * This component is used to display an expandable side panel on the right side of the graph view.
+ * The panel can be toggled open or closed by clicking the associated button.
+ *
+ *
+ * @function toggleRightNav
+ * Toggles the right side panel between expanded and collapsed states.
+ *
+ * This function inverts the value of `isRightExpanded`. When the button associated
+ * with the side panel is clicked, `toggleRightNav` is called, changing the panel's
+ * state from open to closed or from closed to open.
+ *
+ * @prop {boolean} isRightExpanded - Indicates whether the right side panel is expanded.
+ * This prop controls the expansion state of the side panel.
+ *
+ * @example
+ * // Example usage within the template
+ * <button @click="toggleRightNav">Toggle Right Panel</button>
+ *
+ * <div :class="{ 'right-sidepanel-expanded': isRightExpanded }">
+ *   <!-- Content of the side panel -->
+ * </div>
+ */
+const isRightExpanded = ref(false)
+
+function toggleRightNav() {
+  isRightExpanded.value = !isRightExpanded.value
+}
+</script>
+
 <template>
   <div :class="['right-sidepanel', { 'right-sidepanel-expanded': isRightExpanded }]"></div>
 
@@ -6,16 +41,6 @@
     <span class="button-symbol">&#9776;</span>
   </button>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const isRightExpanded = ref(false)
-
-function toggleRightNav() {
-  isRightExpanded.value = !isRightExpanded.value
-}
-</script>
 
 <style scoped>
 .right-sidepanel {
