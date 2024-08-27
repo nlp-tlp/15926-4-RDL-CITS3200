@@ -40,11 +40,12 @@ git clone https://github.com/nlp-tlp/15926-4-RDL-CITS3200.git
 
 A script is available to automatically run all the steps listed below for client and server dependencies.
 
-⚠️ The script was built primarily for Linux systems and your system may not be compatible. If it fails (doesn't output "Setup complete") or your OS is incompatible with these instructions, you can install dependencies manually following the sections below. ⚠️
+⚠️ The script was built for Linux systems and your system may not be compatible. If you cannot follow these instructions on your OS, you can install dependencies manually following the sections below. ⚠️
 
-The script requires Python Venv to run. If not already installed, run:
+The script requires Python Venv to run. If not already installed, run (on Linux):
 
 ```
+sudo apt update
 sudo apt install python3-venv
 ```
 
@@ -111,7 +112,7 @@ npm run dev
 
 #### Server
 
-To run the Flask server, run from the root directory:
+To run the Flask server, activate your virtual environment and run from the root directory:
 
 ```
 cd src/server
