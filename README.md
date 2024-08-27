@@ -16,17 +16,17 @@
 
 ISO15926vis is an interactive graph visualisation for the equipment Reference Data Library (RDL) described in the [ISO 15926-4 Standard](https://15926.org/).
 
-This project assists in navigating the hierarchical relationships of classes defined by the RDL, supplementing data on the [current RDL browser](https://data.15926.org/rdl/) on which the hierarchy can be difficult to interpret.
+This project assists in navigating the hierarchical relationships of classes defined by the RDL, accessible through the [current RDL browser](https://data.15926.org/rdl/) on which the hierarchy can be difficult to interpret.
 
 🚧 This project is currently in the early stages of development and many things are subject to change. 🚧
 
 ## Getting started
 
-These instructions will install dependencies get a copy of the project up and running on your local machine. This is also needed for testing and deployment. For self-hosting see the [deployment section](#deployment).
+These instructions will [install dependencies](#installing-dependencies) get a copy of the project [up and running](#running-the-project) on your local machine. This is also needed for testing and deployment.
 
 ### Installing dependencies
 
-Dependencies must first be installed before running the client / server / CLI.
+This project consists of a Vue client, Flask server, and command-line interface. Dependencies must first be installed before running any of these.
 
 #### Git clone
 
@@ -54,9 +54,7 @@ In the root directory, run:
 ./setup.sh
 ```
 
-If you encounter the error `-bash: ./setup.sh: /bin/bash^M: bad interpreter: No such file or directory` and you are using WSL:
-
-Run `sed -i 's/\r$//' setup.sh`, then run the script again.
+If you encounter the error `-bash: ./setup.sh: /bin/bash^M: bad interpreter: No such file or directory` and you are using WSL, run `sed -i 's/\r$//' setup.sh` then rerun the script.
 
 #### Client dependency installation
 
@@ -100,7 +98,7 @@ pip install -r src/server/requirements.txt
 
 ### Running the project
 
-This project consists of a Vue client, Flask server, and command-line interface. The following instructions will run them locally.
+The following instructions can be used to run the Vue client, Flask server, and command-line interface locally.
 
 #### Client
 
@@ -134,21 +132,20 @@ Testing frameworks have been set up for project functionality.
 
 #### Server tests
 
-Tests for the Flask server are written with Pytest. If you are already using a different virtual environment system, skip `source ./venv/bin/activate` below:
+Tests for the Flask server are written with Pytest. It is recommended that you activate your virtual environment first (e.g. venv), then run in the root directory:
 
 ```
 cd src/server
-source ./venv/bin/activate
 pytest
 ```
 
 #### Client tests
 
-🚧 Client test framework setup is currently under development. 🚧
+🚧 Client testing setup is currently under development. 🚧
 
 #### CLI tests
 
-🚧 CLI test framework setup is currently under development. 🚧
+🚧 CLI testing setup is currently under development. 🚧
 
 ### Adding dependencies
 
@@ -170,7 +167,7 @@ For any dependencies needed for development but not prod (e.g. type checking wit
 npm i <package_name> --save-dev
 ```
 
-#### Adding to server
+#### Adding to server / CLI
 
 Packages should be added through `pip` in your virtual environment:
 
@@ -178,8 +175,6 @@ Packages should be added through `pip` in your virtual environment:
 pip install <package_name>
 pip freeze > requirements.txt
 ```
-
-###
 
 ## Deployment
 
