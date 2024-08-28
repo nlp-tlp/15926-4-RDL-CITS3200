@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const isRightExpanded = ref(false)
+
+function toggleRightNav() {
+  isRightExpanded.value = !isRightExpanded.value
+}
+</script>
+
+<script lang="ts">
 /**
  * GraphInfoSidepane component represents the right side panel in the graph view.
  *
@@ -26,104 +34,97 @@ import { ref } from 'vue'
  *   <!-- Content of the side panel -->
  * </div>
  */
-const isRightExpanded = ref(false)
-
-function toggleRightNav() {
-  isRightExpanded.value = !isRightExpanded.value
+export default {
+  name: 'GraphInfoSidepane',
+  props: {
+    isRightExpanded: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['update:isRightExpanded'],
+  methods: {
+    toggleRightNav() {
+      this.$emit('update:isRightExpanded', !this.isRightExpanded)
+    }
+  }
 }
 </script>
 
 <template>
-  <div :class="['right-sidepanel', { 'right-sidepanel-expanded': isRightExpanded }]"></div>
-
-  <button class="right-openbtn" @click="toggleRightNav">
-    <span class="sidepane-label">Right Sidepanel</span>
-    <span class="button-symbol">&#9776;</span>
-  </button>
+  <div :class="['right-sidepanel', { 'sidepanel-expanded': isRightExpanded }]">
+    <button class="openbtn">
+      <span class="sidepane-label">Right Sidepanel</span>
+      <span class="button-symbol" @click="toggleRightNav">&#9776;</span>
+    </button>
+  </div>
 </template>
 
 <style scoped>
 .right-sidepanel {
   height: 100%;
-  width: 0;
+  width: 50px; /* Initial width when collapsed */
   position: fixed;
-  z-index: 1;
-  top: 130px;
+  top: 70px;
   right: 0;
-  background-color: var(--color-nav-background);
-  overflow: hidden;
-  padding-top: 60px;
+  background-color: white;
+  overflow-x: hidden;
   transition:
     width 0.5s ease,
-    transform 0.5s ease;
-  transform: translateX(100%);
+    background-color 0.5s ease;
+  z-index: 1;
 }
 
-.right-sidepanel-expanded {
-  width: 250px;
-  transform: translateX(0);
+.sidepanel-expanded {
+  width: 250px; /* Expanded width when panel is open */
+  background-color: var(--color-nav-background); /* Expanded background color */
 }
 
-.right-openbtn {
-  width: 50px;
+.openbtn {
+  width: 100%; /* Full width of the panel */
   height: 60px;
   font-size: 22px;
   font-weight: bold;
-  cursor: pointer;
   background-color: white;
   color: var(--color-nav-background);
-  padding: 10px 0;
+  padding: 10px;
   border: none;
-  position: fixed;
-  top: 74px;
-  right: 0;
   display: flex;
   align-items: center;
-  padding-right: 250px;
-  transform: translateX(0);
+  justify-content: flex-end; /* Align items to the end */
   transition:
-    width 0.5s ease,
-    transform 0.5s ease,
     background-color 0.5s ease,
     color 0.5s ease;
   z-index: 2;
 }
 
+.sidepanel-expanded .openbtn {
+  background-color: var(--color-nav-background);
+  color: white;
+}
+
 .button-symbol {
-  display: inline-block;
+  margin-left: 10px; /* Margin between symbol and label */
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
-  margin-left: 20px;
+  cursor: pointer; /* Add cursor pointer for symbol */
 }
 
 .sidepane-label {
   display: inline-block;
+  margin-left: 10px; /* Margin between symbol and label */
   transition:
-    opacity 2s ease,
+    opacity 0.5s ease,
     transform 0.5s ease;
-  margin-left: 35px;
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
 }
 
-.right-sidepanel-expanded + .right-openbtn {
-  width: 250px;
-  background-color: var(--color-nav-background);
-  color: white;
-  text-align: right;
-  padding-right: 0;
-  transform: translateX(0);
-}
-
-.right-sidepanel-expanded + .right-openbtn .sidepane-label {
+.sidepanel-expanded .sidepane-label {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
-}
-
-.right-openbtn:hover {
-  cursor: pointer;
 }
 </style>
