@@ -33,7 +33,6 @@ function toggleLeftNav() {
  *   <!-- Content of the side panel -->
  * </div>
  */
-
 export default {
   name: 'GraphSearchSidepane',
   props: {
@@ -67,7 +66,7 @@ export default {
 <style scoped>
 .left-sidepanel {
   height: 100%;
-  width: 50px; /* Initial width with button visible */
+  width: 50px;
   position: fixed;
   z-index: 1;
   top: 70px;
@@ -80,19 +79,18 @@ export default {
 }
 
 .sidepanel-expanded {
-  width: 250px; /* Expanded width when panel is open */
+  width: 250px;
   background-color: var(--color-nav-background);
 }
 
 .left-openbtn {
-  width: 100%; /* Button takes the full width of the panel */
+  width: 100%;
   height: 60px;
   font-size: 22px;
   font-weight: bold;
-  cursor: pointer;
   background-color: white;
   color: var(--color-nav-background);
-  padding: 10px 0;
+  padding: 10px;
   border: none;
   padding-left: 10px;
   display: flex;
@@ -114,6 +112,7 @@ export default {
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
+  cursor: pointer;
 }
 
 .sidepane-label {
@@ -125,15 +124,12 @@ export default {
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
+  font-size: 16px;
 }
 
 .sidepanel-expanded .sidepane-label {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
-}
-
-.left-openbtn:hover {
-  cursor: pointer;
 }
 </style>

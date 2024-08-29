@@ -53,7 +53,7 @@ export default {
 
 <template>
   <div :class="['right-sidepanel', { 'sidepanel-expanded': isRightExpanded }]">
-    <button class="openbtn">
+    <button class="right-openbtn">
       <span class="sidepane-label">Right Sidepanel</span>
       <span class="button-symbol" @click="toggleRightNav">&#9776;</span>
     </button>
@@ -63,8 +63,9 @@ export default {
 <style scoped>
 .right-sidepanel {
   height: 100%;
-  width: 50px; /* Initial width when collapsed */
+  width: 50px;
   position: fixed;
+  z-index: 1;
   top: 70px;
   right: 0;
   background-color: white;
@@ -72,16 +73,15 @@ export default {
   transition:
     width 0.5s ease,
     background-color 0.5s ease;
-  z-index: 1;
 }
 
 .sidepanel-expanded {
-  width: 250px; /* Expanded width when panel is open */
-  background-color: var(--color-nav-background); /* Expanded background color */
+  width: 250px;
+  background-color: var(--color-nav-background);
 }
 
-.openbtn {
-  width: 100%; /* Full width of the panel */
+.right-openbtn {
+  width: 100%;
   height: 60px;
   font-size: 22px;
   font-weight: bold;
@@ -91,35 +91,36 @@ export default {
   border: none;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align items to the end */
+  justify-content: flex-end;
   transition:
     background-color 0.5s ease,
     color 0.5s ease;
   z-index: 2;
 }
 
-.sidepanel-expanded .openbtn {
+.sidepanel-expanded .right-openbtn {
   background-color: var(--color-nav-background);
   color: white;
 }
 
 .button-symbol {
-  margin-left: 10px; /* Margin between symbol and label */
+  margin-left: 10px;
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
-  cursor: pointer; /* Add cursor pointer for symbol */
+  cursor: pointer;
 }
 
 .sidepane-label {
   display: inline-block;
-  margin-left: 10px; /* Margin between symbol and label */
+  margin-left: 10px;
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
+  font-size: 16px;
 }
 
 .sidepanel-expanded .sidepane-label {
