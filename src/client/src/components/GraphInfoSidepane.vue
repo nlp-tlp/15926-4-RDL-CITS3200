@@ -12,14 +12,13 @@ function toggleRightNav() {
 /**
  * GraphInfoSidepane component represents the right side panel in the graph view.
  *
- * This component is used to display an expandable side panel on the right side of the graph view.
+ * This component provides an expandable side panel on the right side of the graph view.
  * The panel can be toggled open or closed by clicking the associated button.
- *
  *
  * @function toggleRightNav
  * Toggles the right side panel between expanded and collapsed states.
  *
- * This function inverts the value of `isRightExpanded`. When the button associated
+ * This method inverts the value of `isRightExpanded`. When the button associated
  * with the side panel is clicked, `toggleRightNav` is called, changing the panel's
  * state from open to closed or from closed to open.
  *
@@ -53,10 +52,10 @@ export default {
 
 <template>
   <div :class="['right-sidepanel', { 'sidepanel-expanded': isRightExpanded }]">
-    <button class="right-openbtn">
-      <span class="sidepane-label">Right Sidepanel</span>
-      <span class="button-symbol" @click="toggleRightNav">&#9776;</span>
-    </button>
+    <div class="right-header">
+      <p class="right-text">Right Sidepanel</p>
+      <button class="right-btn" @click="toggleRightNav">&#9776;</button>
+    </div>
   </div>
 </template>
 
@@ -80,39 +79,45 @@ export default {
   background-color: var(--color-nav-background);
 }
 
-.right-openbtn {
+.right-header {
   width: 100%;
   height: 60px;
-  font-size: 22px;
-  font-weight: bold;
   background-color: white;
   color: var(--color-nav-background);
   padding: 10px;
-  border: none;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  transition:
-    background-color 0.5s ease,
-    color 0.5s ease;
   z-index: 2;
+  transition:
+    width 0.5s ease,
+    background-color 0.5s ease;
 }
 
-.sidepanel-expanded .right-openbtn {
+.sidepanel-expanded .right-header {
   background-color: var(--color-nav-background);
   color: white;
 }
 
-.button-symbol {
-  margin-left: 10px;
+.right-btn {
+  margin-right: 10px;
+  background-color: white;
+  color: var(--color-nav-background);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
+    background-color 0.5s ease,
+    color 0.5s ease;
   cursor: pointer;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-.sidepane-label {
-  display: inline-block;
+.sidepanel-expanded .right-btn {
+  background-color: var(--color-nav-background);
+  color: white;
+}
+
+.right-text {
   margin-left: 10px;
   transition:
     opacity 0.5s ease,
@@ -121,9 +126,10 @@ export default {
   visibility: hidden;
   white-space: nowrap;
   font-size: 16px;
+  cursor: default;
 }
 
-.sidepanel-expanded .sidepane-label {
+.sidepanel-expanded .right-text {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);

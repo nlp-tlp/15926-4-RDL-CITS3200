@@ -56,10 +56,10 @@ export default {
 
 <template>
   <div :class="['left-sidepanel', { 'sidepanel-expanded': isLeftExpanded }]">
-    <button class="left-openbtn">
-      <span class="button-symbol" @click="toggleLeftNav">&#9776;</span>
-      <span class="sidepane-label">Left Sidepanel</span>
-    </button>
+    <div class="left-header">
+      <button class="left-btn" @click="toggleLeftNav">&#9776;</button>
+      <p class="left-text">Left Sidepanel</p>
+    </div>
   </div>
 </template>
 
@@ -83,41 +83,46 @@ export default {
   background-color: var(--color-nav-background);
 }
 
-.left-openbtn {
+.left-header {
   width: 100%;
   height: 60px;
-  font-size: 22px;
-  font-weight: bold;
   background-color: white;
   color: var(--color-nav-background);
   padding: 10px;
-  border: none;
-  padding-left: 10px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  transition:
-    background-color 0.5s ease,
-    color 0.5s ease;
   z-index: 2;
+  transition:
+    width 0.5s ease,
+    background-color 0.5s ease;
 }
 
-.sidepanel-expanded .left-openbtn {
+.sidepanel-expanded .left-header {
   background-color: var(--color-nav-background);
   color: white;
 }
 
-.button-symbol {
+.left-btn {
   margin-left: 10px;
+  background-color: white;
+  color: var(--color-nav-background);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
+    background-color 0.5s ease,
+    color 0.5s ease;
   cursor: pointer;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-.sidepane-label {
-  display: inline-block;
-  margin-left: 10px;
+.sidepanel-expanded .left-btn {
+  background-color: var(--color-nav-background);
+  color: white;
+}
+
+.left-text {
+  margin-right: 10px;
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
@@ -125,9 +130,10 @@ export default {
   visibility: hidden;
   white-space: nowrap;
   font-size: 16px;
+  cursor: default;
 }
 
-.sidepanel-expanded .sidepane-label {
+.sidepanel-expanded .left-text {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
