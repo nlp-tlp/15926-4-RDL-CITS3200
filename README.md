@@ -142,7 +142,14 @@ pytest
 
 #### Client tests
 
-🚧 Client testing setup is currently under development. 🚧
+Tests for the Vue client are written with Vitest, which has been added as an `npm` script. Run in the root directory:
+
+```
+cd src/client
+npm run test
+```
+
+Vitest also offers the capability to continuously test and provide immediate feedback as changes are polled through Vite. If you would like this behaviour, change the script in `src/client/package.json` from `"test": "vitest run"` to `"test": "vitest"`. Note that these commands cannot be run as terminal commands.
 
 #### CLI tests
 

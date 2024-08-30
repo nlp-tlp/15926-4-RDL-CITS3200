@@ -6,6 +6,7 @@
 		},
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
-		"module": "NodeNext"
+		"module": "NodeNext",
+		"noEmit": true
 	}
 }

@@ -1,7 +1,7 @@
-import { mount } from '@vue/test-utils'
+// import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 
-import NavBar from '@/components/NavBar.vue'
+// import NavBar from '@/components/NavBar.vue'
 
 describe('NavBar.vue', () => {
   it('can run a test placeholder', () => {
