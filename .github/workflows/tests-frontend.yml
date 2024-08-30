@@ -30,9 +30,14 @@ jobs:
               run: |
                   cd src/client
                   npm ci
+                  npx playwright install --with-deps
 
-            - name: Run tests
+            - name: Run unit tests
               run: |
                   cd src/client
                   npm run test:unit
+
+            - name: Run e2e tests
+              run: |
+                  cd src/client
                   npm run test:e2e
