@@ -15,13 +15,15 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "prepare": "husky",
-    "test": "vitest run"
+    "test:unit": "vitest run --root tests/unit",
+    "test:e2e": "npx playwright test --config playwright.config.ts"
   },
   "dependencies": {
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.46.1",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.14.5",

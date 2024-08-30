@@ -34,4 +34,5 @@ jobs:
             - name: Run tests
               run: |
                   cd src/client
-                  npm run test
+                  npm run test:unit
+                  npm run test:e2e

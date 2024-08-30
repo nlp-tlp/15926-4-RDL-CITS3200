@@ -53,7 +53,7 @@ export default {
 <template>
   <div :class="['right-sidepanel', { 'sidepanel-expanded': isRightExpanded }]">
     <div class="right-header">
-      <p class="right-text">Right Sidepanel</p>
+      <p v-if="isRightExpanded" class="right-text">Right Sidepanel</p>
       <button class="right-btn" @click="toggleRightNav">&#9776;</button>
     </div>
   </div>
