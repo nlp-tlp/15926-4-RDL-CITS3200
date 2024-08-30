@@ -299,10 +299,10 @@ opt/
 test_sandbox.tsx
 signin-test.tsx
 
-.idea/ 
+.idea/
 pyproject.toml
-.vscode/*
-.vscode/settings.json
+# .vscode/*
+# .vscode/settings.json
 
 # Folder for avatar images, don't push
 media/
