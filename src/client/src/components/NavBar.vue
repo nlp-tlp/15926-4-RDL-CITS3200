@@ -41,6 +41,7 @@ export default {
 <style scoped>
 .navbar {
   width: 100%;
+  height: 4.5rem;
   font-size: 1.1rem;
   /* Ensures NavBar items are on NavBar */
   display: flex;

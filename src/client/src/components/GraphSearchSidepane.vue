@@ -69,7 +69,7 @@ export default {
   width: 50px;
   position: fixed;
   z-index: 1;
-  top: 70px;
+  top: 4.5rem;
   left: 0;
   background-color: white;
   overflow-x: hidden;
