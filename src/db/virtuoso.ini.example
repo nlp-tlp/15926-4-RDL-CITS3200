@@ -46,12 +46,12 @@ ServerPort               = 1111
 LiteMode                 = 0
 DisableUnixSocket        = 1
 DisableTcpSocket         = 0
-;SSLServerPort			= 2111
-;SSLCertificate			= cert.pem
-;SSLPrivateKey			= pk.pem
-;X509ClientVerify		= 0
-;X509ClientVerifyDepth		= 0
-;X509ClientVerifyCAFile		= ca.pem
+;SSLServerPort                  = 2111
+;SSLCertificate                 = cert.pem
+;SSLPrivateKey                  = pk.pem
+;X509ClientVerify               = 0
+;X509ClientVerifyDepth          = 0
+;X509ClientVerifyCAFile         = ca.pem
 MaxClientConnections     = 10
 CheckpointInterval       = 60
 O_DIRECT                 = 0
@@ -73,9 +73,9 @@ IndexTreeMaps            = 64
 MaxMemPoolSize           = 200000000
 PrefixResultNames        = 0
 MacSpotlight             = 0
-MaxQueryMem              = 2G	; memory allocated to query processor
-VectorSize               = 1000	; initial parallel query vector (array of query operations) size
-MaxVectorSize            = 1000000	; query vector size threshold.
+MaxQueryMem              = 2G   ; memory allocated to query processor
+VectorSize               = 1000 ; initial parallel query vector (array of query operations) size
+MaxVectorSize            = 1000000      ; query vector size threshold.
 AdjustVectorSize         = 0
 ThreadsPerQuery          = 4
 AsyncQueueMaxThreads     = 10
@@ -128,7 +128,7 @@ ProxyConnectionCacheTimeout = 15
 HTTPThreadSize              = 280000
 HttpPrintWarningsInOutput   = 0
 Charset                     = UTF-8
-;HTTPLogFile		        = logs/http.log
+;HTTPLogFile                    = logs/http.log
 MaintenancePage             = atomic.html
 EnabledGzipContent          = 1
 
@@ -140,11 +140,11 @@ SQL_PREFETCH_ROWS  = 100
 SQL_PREFETCH_BYTES = 16000
 SQL_QUERY_TIMEOUT  = 0
 SQL_TXN_TIMEOUT    = 0
-;SQL_NO_CHAR_C_ESCAPE		= 1
-;SQL_UTF8_EXECS			= 0
-;SQL_NO_SYSTEM_TABLES		= 0
-;SQL_BINARY_TIMESTAMP		= 1
-;SQL_ENCRYPTION_ON_PASSWORD	= -1
+;SQL_NO_CHAR_C_ESCAPE           = 1
+;SQL_UTF8_EXECS                 = 0
+;SQL_NO_SYSTEM_TABLES           = 0
+;SQL_BINARY_TIMESTAMP           = 1
+;SQL_ENCRYPTION_ON_PASSWORD     = -1
 
 [VDB]
 ArrayOptimization           = 0
@@ -191,46 +191,46 @@ Segment1 = 100M, db-seg1-1.db, db-seg1-2.db
 Segment2 = 100M, db-seg2-1.db
 ;...
 ;[TempStriping]
-;Segment1			= 100M, db-seg1-1.db, db-seg1-2.db
-;Segment2			= 100M, db-seg2-1.db
+;Segment1                       = 100M, db-seg1-1.db, db-seg1-2.db
+;Segment2                       = 100M, db-seg2-1.db
 ;...
 ;[Ucms]
-;UcmPath			= <path>
-;Ucm1				= <file>
-;Ucm2				= <file>
+;UcmPath                        = <path>
+;Ucm1                           = <file>
+;Ucm2                           = <file>
 ;...
 
 [Zero Config]
 ServerName = virtuoso (FOCAL-PORT)
-;ServerDSN			= ZDSN
-;SSLServerName			=
-;SSLServerDSN			=
+;ServerDSN                      = ZDSN
+;SSLServerName                  =
+;SSLServerDSN                   =
 
 [Mono]
-;MONO_TRACE			= Off
-;MONO_PATH			= <path_here>
-;MONO_ROOT			= <path_here>
-;MONO_CFG_DIR			= <path_here>
-;virtclr.dll			=
+;MONO_TRACE                     = Off
+;MONO_PATH                      = <path_here>
+;MONO_ROOT                      = <path_here>
+;MONO_CFG_DIR                   = <path_here>
+;virtclr.dll                    =
 
 [URIQA]
 DynamicLocal = 0
 DefaultHost  = localhost:8890
 
 [SPARQL]
-;ExternalQuerySource		= 1
-;ExternalXsltSource 		= 1
-;DefaultGraph      		= http://localhost:8890/dataspace
-;ImmutableGraphs    		= http://localhost:8890/dataspace
+;ExternalQuerySource            = 1
+;ExternalXsltSource             = 1
+;DefaultGraph                   = http://localhost:8890/dataspace
+;ImmutableGraphs                = http://localhost:8890/dataspace
 ResultSetMaxRows           = 10000
 MaxConstructTriples        = 10000
-MaxQueryCostEstimationTime = 400	; in seconds
-MaxQueryExecutionTime      = 60	; in seconds
+MaxQueryCostEstimationTime = 400        ; in seconds
+MaxQueryExecutionTime      = 60 ; in seconds
 DefaultQuery               = select distinct ?Concept where {[] a ?Concept} LIMIT 100
-DeferInferenceRulesInit    = 0	; controls inference rules loading
-MaxMemInUse                = 0	; limits the amount of memory for construct dict (0=unlimited)
-;LabelInferenceName		= facets	; Only needed when using the Faceted Browser
-;PingService       		= http://rpc.pingthesemanticweb.com/
+DeferInferenceRulesInit    = 0  ; controls inference rules loading
+MaxMemInUse                = 0  ; limits the amount of memory for construct dict (0=unlimited)
+;LabelInferenceName             = facets        ; Only needed when using the Faceted Browser
+;PingService                    = http://rpc.pingthesemanticweb.com/
 
 [Plugins]
 LoadPath = ../hosting

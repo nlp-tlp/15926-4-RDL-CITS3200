@@ -22,7 +22,7 @@ services:
       - FLASK_APP=${FLASK_APP:-server.py}
   
   db:
-    build: ./db
+    image: openlink/virtuoso-opensource-7:7.2 # Use 7.2 for consistent version (no major changes)
     container_name: DB
     ports:
       - "${DB_SQL_PORT:-1111}:1111"

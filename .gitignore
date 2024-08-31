@@ -1,6 +1,14 @@
 # local development data
 data/
 
+# Database
+*.db
+virtuoso.ini
+virtuoso.lck
+virtuoso.log
+virtuoso.pxa
+virtuoso.trx
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
