@@ -1,5 +1,5 @@
 # Imports
-from app import create_app, db
+from app import create_app
 from app.config import TestConfig, DeploymentConfig
 
 # Deployment Configuration
