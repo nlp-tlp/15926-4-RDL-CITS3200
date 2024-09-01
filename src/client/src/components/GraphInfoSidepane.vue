@@ -40,23 +40,23 @@ export default {
 
 <template>
   <div :class="['right-sidepanel', { 'sidepanel-expanded': isRightExpanded }]">
-    <div class="right-header">
-      <p class="right-text">Right Sidepanel</p>
-      <button class="right-btn" @click="toggleRightNav">&#9776;</button>
-    </div>
+    <button class="right-btn" @click="toggleRightNav">&#9776;</button>
+    <p class="right-text">Right Sidepanel</p>
   </div>
 </template>
 
 <style scoped>
 .right-sidepanel {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.25rem;
   height: 100%;
   width: 50px;
   position: fixed;
   z-index: 1;
-  top: 4.5rem;
+  top: var(--navbar-height, 4.5rem);
   right: 0;
-  background-color: white;
-  overflow-x: hidden;
+  background-color: transparent;
   transition:
     width 0.5s ease,
     background-color 0.5s ease;
@@ -67,29 +67,11 @@ export default {
   background-color: var(--color-nav-background);
 }
 
-.right-header {
-  width: 100%;
-  height: 60px;
-  background-color: white;
-  color: var(--color-nav-background);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  z-index: 2;
-  transition:
-    width 0.5s ease,
-    background-color 0.5s ease;
-}
-
-.sidepanel-expanded .right-header {
-  background-color: var(--color-nav-background);
-  color: white;
-}
-
 .right-btn {
-  margin-right: 10px;
-  background-color: white;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: transparent;
   color: var(--color-nav-background);
   transition:
     background-color 0.5s ease,
@@ -106,15 +88,14 @@ export default {
 }
 
 .right-text {
-  margin-left: 10px;
+  margin: 0.75rem 0 0 1rem;
+  color: white;
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
-  font-size: 16px;
-  cursor: default;
 }
 
 .sidepanel-expanded .right-text {

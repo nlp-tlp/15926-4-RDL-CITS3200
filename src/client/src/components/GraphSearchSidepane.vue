@@ -40,23 +40,23 @@ export default {
 
 <template>
   <div :class="['left-sidepanel', { 'sidepanel-expanded': isLeftExpanded }]">
-    <div class="left-header">
-      <button class="left-btn" @click="toggleLeftNav">&#9776;</button>
-      <p class="left-text">Left Sidepanel</p>
-    </div>
+    <button class="left-btn" @click="toggleLeftNav">&#9776;</button>
+    <p class="left-text">Left Sidepanel</p>
   </div>
 </template>
 
 <style scoped>
 .left-sidepanel {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.25rem;
   height: 100%;
   width: 50px;
   position: fixed;
   z-index: 1;
-  top: 4.5rem;
+  top: var(--navbar-height, 4.5rem);
   left: 0;
-  background-color: white;
-  overflow-x: hidden;
+  background-color: transparent;
   transition:
     width 0.5s ease,
     background-color 0.5s ease;
@@ -67,29 +67,11 @@ export default {
   background-color: var(--color-nav-background);
 }
 
-.left-header {
-  width: 100%;
-  height: 60px;
-  background-color: white;
-  color: var(--color-nav-background);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  z-index: 2;
-  transition:
-    width 0.5s ease,
-    background-color 0.5s ease;
-}
-
-.sidepanel-expanded .left-header {
-  background-color: var(--color-nav-background);
-  color: white;
-}
-
 .left-btn {
-  margin-left: 10px;
-  background-color: white;
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background-color: transparent;
   color: var(--color-nav-background);
   transition:
     background-color 0.5s ease,
@@ -106,15 +88,14 @@ export default {
 }
 
 .left-text {
-  margin-right: 10px;
+  margin: 0.75rem 1rem 0 auto;
+  color: white;
   transition:
     opacity 0.5s ease,
     transform 0.5s ease;
   opacity: 0;
   visibility: hidden;
   white-space: nowrap;
-  font-size: 16px;
-  cursor: default;
 }
 
 .sidepanel-expanded .left-text {
