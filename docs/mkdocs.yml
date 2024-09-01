@@ -1,2 +1,3 @@
 site_name: ISO 15926-4 Visualiser
 site_url: https://docs.iso1596vis.org
+docs_dir: docs
