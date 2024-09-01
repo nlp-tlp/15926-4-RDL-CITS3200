@@ -40,7 +40,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: "site/"
+          path: docs/site/
+          name: documentation-pages
+          retention-days: 1 # Short duration for artifact as only need once to deploy
 
   # Deployment job
   deploy:
