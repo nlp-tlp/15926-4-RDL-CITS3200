@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Documentation
+    name: Deploy Documentation Page
     runs-on: ubuntu-latest
 
     steps:
@@ -24,4 +24,4 @@ jobs:
 
     - name: Deploy to GitHub Pages
       run: |
-        mkdocs gh-deploy --config-file ./docs/mkdocs.yml --force --remote-branch gh-pages
+        mkdocs gh-deploy --config-file ./docs/mkdocs.yml --force --remote-branch documentation
