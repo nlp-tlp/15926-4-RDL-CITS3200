@@ -2,26 +2,55 @@ name: Deploy Documentation to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy Documentation Page
+  # Build job
+  build:
     runs-on: ubuntu-latest
+    name: Build Documentation Pages
 
     steps:
-    - uses: actions/checkout@v3
+      # Checkout the repository
+      - uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
+      # Set up Python
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
 
-    - name: Install dependencies
-      run: |
-        pip install mkdocs mkdocs-material mkdocs-gh-deploy
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install mkdocs mkdocs-material
 
-    - name: Deploy to GitHub Pages
-      run: |
-        mkdocs gh-deploy --config-file ./docs/mkdocs.yml --force --remote-branch documentation
+      # Build the MkDocs site
+      - name: Build MkDocs site
+        run: |
+          mkdocs build --config-file ./docs/mkdocs.yml
+
+      # Upload the built site as an artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: "site/"
+
+  # Deployment job
+  deploy:
+    name: Deploy Documentation Pages
+    environment:
+      name: Documentation
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
