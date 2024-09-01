@@ -29,14 +29,15 @@ export default {
           <IconGraph class="navbar-icon" />
         </template>
       </NavBarItem>
-      <NavBarItem to="/documentation" label="Documentation" id="documentation-link">
-        <template #icon>
-          <IconDocumentation class="navbar-icon" />
-        </template>
-      </NavBarItem>
+      <a href="https://docs.iso15926vis.org/" target="_blank" id="documentation-link" class="navbar-item">
+        <IconDocumentation class="navbar-icon" />
+        <span class="navbar-item-label">Documentation</span>
+      </a>
     </div>
   </nav>
 </template>
+
+
 
 <style scoped>
 .navbar {
@@ -93,5 +94,10 @@ export default {
   vertical-align: middle;
   margin-right: 0.4rem;
   margin-top: 0.3rem;
+  color: white; 
+}
+
+.navbar-item-label {
+  color: white;
 }
 </style>
