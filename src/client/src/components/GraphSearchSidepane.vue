@@ -1,56 +1,40 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const isLeftExpanded = ref(false)
+// Define props with default values using withDefaults (type-based declaration)
+const props = withDefaults(
+  defineProps<{
+    /**
+     * Determines if the side panel is initially expanded (default: false).
+     */
+    initialExpanded?: boolean
+  }>(),
+  {
+    initialExpanded: false
+  }
+)
 
-function toggleLeftNav() {
+// Initialise isLeftExpanded with the value of initialExpanded prop
+const isLeftExpanded = ref(props.initialExpanded)
+
+function toggleLeftNav(): void {
   isLeftExpanded.value = !isLeftExpanded.value
 }
 </script>
 
 <script lang="ts">
 /**
- * GraphSearchSidepane component represents the left side panel in the graph view.
+ * GraphSearchSidepane component represents the expandable side panel containing search functionality.
  *
- * This component provides an expandable side panel on the left side of the graph view.
- * The panel can be toggled open or closed by clicking the associated button.
- *
- * @function toggleLeftNav
- * Toggles the left side panel between expanded and collapsed states.
- *
- * This method inverts the value of `isLeftExpanded`. When the button associated
- * with the side panel is clicked, `toggleLeftNav` is called, changing the panel's
- * state from open to closed or from closed to open.
- *
- * @prop {boolean} isLeftExpanded - Indicates whether the left side panel is expanded.
- * This prop controls the expansion state of the side panel.
+ * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
  *
  * @example
- * // Example usage within the template
- * <button @click="toggleLeftNav">Toggle Left Panel</button>
- *
- * <div :class="{ 'left-sidepanel-expanded': isLeftExpanded }">
- *   <!-- Content of the side panel -->
- * </div>
+ * <GraphSearchSidepane :initialExpanded="true" />
+ * <GraphSearchSidepane initialExpanded />
+ * <GraphSearchSidepane />
  */
 export default {
-  name: 'GraphSearchSidepane',
-  props: {
-    isLeftExpanded: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['update:isLeftExpanded'],
-  methods: {
-    /**
-     * Toggles the left side panel between expanded and collapsed states.
-     * Emits an event to update the `isLeftExpanded` prop.
-     */
-    toggleLeftNav() {
-      this.$emit('update:isLeftExpanded', !this.isLeftExpanded)
-    }
-  }
+  name: 'GraphSearchSidepane'
 }
 </script>
 

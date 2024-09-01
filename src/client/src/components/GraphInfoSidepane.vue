@@ -1,52 +1,40 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const isRightExpanded = ref(false)
+// Define props with default values using withDefaults (type-based declaration)
+const props = withDefaults(
+  defineProps<{
+    /**
+     * Determines if the side panel is initially expanded (default: false).
+     */
+    initialExpanded?: boolean
+  }>(),
+  {
+    initialExpanded: false
+  }
+)
 
-function toggleRightNav() {
+// Initialise isRightExpanded with the value of initialExpanded prop
+const isRightExpanded = ref(props.initialExpanded)
+
+function toggleRightNav(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
 </script>
 
 <script lang="ts">
 /**
- * GraphInfoSidepane component represents the right side panel in the graph view.
+ * GraphInfoSidepane component represents the expandable side panel containing information functionality.
  *
- * This component provides an expandable side panel on the right side of the graph view.
- * The panel can be toggled open or closed by clicking the associated button.
- *
- * @function toggleRightNav
- * Toggles the right side panel between expanded and collapsed states.
- *
- * This method inverts the value of `isRightExpanded`. When the button associated
- * with the side panel is clicked, `toggleRightNav` is called, changing the panel's
- * state from open to closed or from closed to open.
- *
- * @prop {boolean} isRightExpanded - Indicates whether the right side panel is expanded.
- * This prop controls the expansion state of the side panel.
+ * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
  *
  * @example
- * // Example usage within the template
- * <button @click="toggleRightNav">Toggle Right Panel</button>
- *
- * <div :class="{ 'right-sidepanel-expanded': isRightExpanded }">
- *   <!-- Content of the side panel -->
- * </div>
+ * <GraphInfoSidepane :initialExpanded="true" />
+ * <GraphInfoSidepane initialExpanded />
+ * <GraphInfoSidepane />
  */
 export default {
-  name: 'GraphInfoSidepane',
-  props: {
-    isRightExpanded: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['update:isRightExpanded'],
-  methods: {
-    toggleRightNav() {
-      this.$emit('update:isRightExpanded', !this.isRightExpanded)
-    }
-  }
+  name: 'GraphInfoSidepane'
 }
 </script>
 
