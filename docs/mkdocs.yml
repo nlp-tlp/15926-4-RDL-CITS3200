@@ -1,6 +1,20 @@
 site_name: ISO 15926-4 Visualiser
-site_url: https://docs.iso1596vis.org
-docs_dir: docs
-extra:
-  include:
-    - CNAME
+
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+
+
+nav:
+  - Overview: index.md
+  - Developer:
+      - Introduction: developer/index.md
+  - Maintainer: 
+      - Introduction: maintainer/index.md
+  - Administrator: 
+      - Introduction: administrator/index.md
+  - Changelog: 
+      - Introduction: changelog/index.md
+
