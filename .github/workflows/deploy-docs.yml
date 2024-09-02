@@ -1,0 +1,62 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches: 
+      - "main"
+  pull_request:
+    branches: 
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    name: Build Documentation Pages
+
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v3
+
+      # Set up Python
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install mkdocs mkdocs-material
+
+      # Build the MkDocs site
+      - name: Build MkDocs site
+        run: |
+          mkdocs build --config-file ./docs/mkdocs.yml
+
+      # Upload the built site as an artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: docs/site/
+          name: documentation-pages
+          retention-days: 1 # Short duration for artifact as only need once to deploy
+
+  # Deployment job
+  deploy:
+    name: Deploy Documentation Pages
+    environment:
+      name: Documentation
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+        with:
+          artifact_name: documentation-pages  # Ensure same artifact is used (MATCH NAMES)

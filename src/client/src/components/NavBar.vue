@@ -29,7 +29,7 @@ export default {
           <IconGraph class="navbar-icon" />
         </template>
       </NavBarItem>
-      <NavBarItem to="/documentation" label="Documentation" id="documentation-link">
+      <NavBarItem to="https://docs.iso15926vis.org/" label="Documentation" id="documentation-link">
         <template #icon>
           <IconDocumentation class="navbar-icon" />
         </template>
