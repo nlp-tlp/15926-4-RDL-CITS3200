@@ -3,10 +3,16 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const props = defineProps({
+  /**
+   * The route path or URL for the navigation item.
+   */
   to: {
     type: String,
     required: true
   },
+  /**
+   * The label text displayed for the navigation item.
+   */
   label: {
     type: String,
     required: true
