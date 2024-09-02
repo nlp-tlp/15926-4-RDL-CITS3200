@@ -33,15 +33,7 @@ const isExternalLink = computed(() => props.to.startsWith('http'))
  * </NavBarItem>
  */
 export default {
-  name: 'NavBarItem',
-  to: {
-    type: String,
-    required: true
-  },
-  label: {
-    type: String,
-    required: true
-  }
+  name: 'NavBarItem'
 }
 </script>
 
