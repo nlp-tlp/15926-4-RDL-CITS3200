@@ -3,6 +3,12 @@ from SPARQLWrapper import SPARQLWrapper, POST, JSON, BASIC
 from dotenv import load_dotenv
 import os
 import requests
+import logging
+
+# Set up logging to a file
+logging.basicConfig(filename='graphdb_insertion_errors.log', 
+                    level=logging.ERROR, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Execute the SPARQL query with a given offset and limit.
 def execute_sparql_query(endpoint_url, offset=0, limit=10000):
@@ -30,62 +36,53 @@ def execute_sparql_query(endpoint_url, offset=0, limit=10000):
     # Execute the query and return the results
     return sparql.query().convert()
 
-# Insert the SPARQL query results directly into the Virtuoso server.
-def insert_results_into_virtuoso(endpoint_url, results, graph_uri, dba_pass):
-    sparql = SPARQLWrapper(endpoint_url)
-    sparql.setMethod(POST)
-    sparql.setCredentials("dba", dba_pass)
-    sparql.setHTTPAuth(BASIC)
-
-    for result in results["results"]["bindings"]:
-        insert_query = f"""
-            INSERT INTO GRAPH <{graph_uri}> {{
-                <{result['id']['value']}> <http://www.w3.org/2000/01/rdf-schema#label> "{result['label']['value']}" .
-                <{result['id']['value']}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <{result['type']['value']}> .
-        """
-        if "definition" in result:
-            insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2004/02/skos/core#definition> "{result["definition"]["value"]}" .\n'
-        if "deprecationDate" in result:
-            insert_query += f'<{result["id"]["value"]}> <http://data.15926.org/meta/valDeprecationDate> "{result["deprecationDate"]["value"]}" .\n'
-        if "parentId" in result:
-            insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <{result["parentId"]["value"]}> .\n'
-
-        insert_query += "}"
-        sparql.setQuery(insert_query)
-        sparql.query()
-
 def insert_results_into_graphdb(endpoint_url, results, graph_uri):
     # Initialize a list to collect multiple INSERT DATA statements
     bulk_insert_query = f"INSERT DATA {{ GRAPH <{graph_uri}> {{\n"
     
     for result in results["results"]["bindings"]:
-        bulk_insert_query += f"""
-            <{result['id']['value']}> <http://www.w3.org/2000/01/rdf-schema#label> "{result['label']['value']}" .
-            <{result['id']['value']}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <{result['type']['value']}> .
-        """
-        if "definition" in result:
-            bulk_insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2004/02/skos/core#definition> "{result["definition"]["value"]}" .\n'
-        if "deprecationDate" in result:
-            bulk_insert_query += f'<{result["id"]["value"]}> <http://data.15926.org/meta/valDeprecationDate> "{result["deprecationDate"]["value"]}" .\n'
-        if "parentId" in result:
-            bulk_insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <{result["parentId"]["value"]}> .\n'
+        try:
+            # Construct the SPARQL update for each triple
+            bulk_insert_query += f"""
+                <{result['id']['value']}> <http://www.w3.org/2000/01/rdf-schema#label> "{result['label']['value']}" .
+                <{result['id']['value']}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <{result['type']['value']}> .
+            """
+            if "definition" in result:
+                bulk_insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2004/02/skos/core#definition> "{result["definition"]["value"]}" .\n'
+            if "deprecationDate" in result:
+                bulk_insert_query += f'<{result["id"]["value"]}> <http://data.15926.org/meta/valDeprecationDate> "{result["deprecationDate"]["value"]}" .\n'
+            if "parentId" in result:
+                bulk_insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <{result["parentId"]["value"]}> .\n'
+
+        except Exception as e:
+            # Log the problematic data and the error message to the file
+            logging.error(f"Error processing result: {result}")
+            logging.error(f"Exception: {e}")
+            continue  # Skip to the next result
 
     # Close the SPARQL Update query
     bulk_insert_query += "}}"
 
-    # Send the entire bulk insert query in one request
-    headers = {"Content-Type": "application/sparql-update"}
-    response = requests.post(endpoint_url, headers=headers, data=bulk_insert_query)
+    try:
+        # Send the entire bulk insert query in one request
+        headers = {"Content-Type": "application/sparql-update"}
+        response = requests.post(endpoint_url, headers=headers, data=bulk_insert_query)
 
-    if response.status_code != 204:
-        raise Exception(f"Failed to insert data. Status Code: {response.status_code}. Response: {response.text}")
+        if response.status_code != 204:
+            raise Exception(f"Failed to insert data. Status Code: {response.status_code}. Response: {response.text}")
+
+    except Exception as e:
+        logging.error("Failed to execute the SPARQL update query.")
+        logging.error(f"SPARQL query: {bulk_insert_query}")
+        logging.error(f"Exception: {e}")
+        raise  # Re-raise the exception after logging
 
 
 def update_db():
     endpoint_url = "http://190.92.134.58:8890/sparql"
-    graphdb_endpoint_url = "http://localhost:7200/repositories/test/statements"  # GraphDB repository
-    graph_uri = "http://iso15926vis.org/graph/"+"31-8-24"
-    dba_password = get_dba_password()
+    graphdb_endpoint_url = "http://localhost:7200/repositories/default/statements"  # GraphDB repository
+    graph_uri = "http://iso15926vis.org/graph/"+"v2"
+    # dba_password = get_dba_password()
     batch_size = 10000
     offset = 0
     total_triples = 0
@@ -151,18 +148,18 @@ def test_graphdb_insert():
         print(f"Error executing SPARQL query: {e}")
 
 
-def get_dba_password():
-    # Load the .env file from the parent directory
-    env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
-    load_dotenv(dotenv_path=env_path)
+# def get_dba_password():
+#     # Load the .env file from the parent directory
+#     env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+#     load_dotenv(dotenv_path=env_path)
     
-    # Get the DBA_PASSWORD from the environment variables
-    dba_password = os.getenv('DBA_PASSWORD')
+#     # Get the DBA_PASSWORD from the environment variables
+#     dba_password = os.getenv('DBA_PASSWORD')
     
-    if not dba_password:
-        raise ValueError("DBA_PASSWORD not found in the .env file.")
+#     if not dba_password:
+#         raise ValueError("DBA_PASSWORD not found in the .env file.")
     
-    return dba_password
+#     return dba_password
 
 
 # def test():
@@ -182,3 +179,27 @@ def get_dba_password():
 #     }
 #     """)
 #     sparql.query()
+
+# Insert the SPARQL query results directly into the Virtuoso server.
+# def insert_results_into_virtuoso(endpoint_url, results, graph_uri, dba_pass):
+#     sparql = SPARQLWrapper(endpoint_url)
+#     sparql.setMethod(POST)
+#     sparql.setCredentials("dba", dba_pass)
+#     sparql.setHTTPAuth(BASIC)
+
+#     for result in results["results"]["bindings"]:
+#         insert_query = f"""
+#             INSERT INTO GRAPH <{graph_uri}> {{
+#                 <{result['id']['value']}> <http://www.w3.org/2000/01/rdf-schema#label> "{result['label']['value']}" .
+#                 <{result['id']['value']}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <{result['type']['value']}> .
+#         """
+#         if "definition" in result:
+#             insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2004/02/skos/core#definition> "{result["definition"]["value"]}" .\n'
+#         if "deprecationDate" in result:
+#             insert_query += f'<{result["id"]["value"]}> <http://data.15926.org/meta/valDeprecationDate> "{result["deprecationDate"]["value"]}" .\n'
+#         if "parentId" in result:
+#             insert_query += f'<{result["id"]["value"]}> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <{result["parentId"]["value"]}> .\n'
+
+#         insert_query += "}"
+#         sparql.setQuery(insert_query)
+#         sparql.query()

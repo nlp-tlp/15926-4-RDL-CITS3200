@@ -3,7 +3,7 @@ import time
 import http.client
 
 from history import history_file_create
-from db3 import update_db
+from db3v2 import update_db
 
 # Global variables
 DB_VERSION = "24/8/24"
@@ -22,8 +22,8 @@ def main(db_update: bool = False, fix: bool = False):
     # Print MOTD
     motd()
 
-    if not check_db():
-        exit(1)
+    # if not check_db():
+    #     exit(1)
 
     # history_file_create()
 
