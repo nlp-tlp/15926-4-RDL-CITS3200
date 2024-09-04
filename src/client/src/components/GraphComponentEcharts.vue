@@ -1,180 +1,122 @@
+<template>
+  <div id="chart-container" ref="chartContainer">
+    <div ref="chart" style="width: 100%; height: 100%"></div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import * as echarts from 'echarts'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
-import mockData from '../assets/mockData.json'
+const chartContainer = ref(null)
+const chart = ref<echarts.EChartsType | null>(null)
 
-// Define types for nodes and edges
-interface Node {
-  id: string
-  name: string
-  x: number
-  y: number
-  visible: boolean
-  collapsed: boolean
-  children: string[]
-}
-
-interface Edge {
-  source: string
-  target: string
-}
-
-// Function to get the level of a node from its ID
-const getNodeLevel = (nodeId: string): number => {
-  const match = nodeId.match(/Node(\d+)-\d+/)
-  return match ? parseInt(match[1], 10) : 0
-}
-
-// Define a color scale for different levels
-const colors = [
-  '#1f77b4',
-  '#ff7f0e',
-  '#2ca02c',
-  '#d62728',
-  '#9467bd',
-  '#8c564b',
-  '#e377c2',
-  '#7f7f7f',
-  '#bcbd22',
-  '#17becf'
+const nodes: { id: string; name: string; level: number; x?: number; y?: number }[] = [
+  { id: '1', name: 'Parent', level: 0 },
+  { id: '2', name: 'Child 1', level: 1 },
+  { id: '3', name: 'Child 2', level: 1 },
+  { id: '4', name: 'Grandchild 1', level: 2 },
+  { id: '5', name: 'Grandchild 2', level: 2 },
+  { id: '6', name: 'Child 3', level: 1 },
+  { id: '7', name: 'Grandchild 3', level: 2 },
+  { id: '8', name: 'Grandchild 4', level: 2 },
+  { id: '9', name: 'Child 4', level: 1 }
 ]
 
-// Function to toggle the visibility of child nodes recursively
-const toggleChildren = (node: Node, nodes: Node[], edges: Edge[]) => {
-  const toggleNodeVisibility = (node: Node, visible: boolean) => {
-    node.children.forEach((childId) => {
-      const childNode = nodes.find((n) => n.id === childId)
-      if (childNode) {
-        childNode.visible = visible
-        if (!visible) {
-          toggleNodeVisibility(childNode, visible)
-        }
-      }
-    })
-  }
+const edges = [
+  { source: '2', target: '1' },
+  { source: '3', target: '1' },
+  { source: '4', target: '2' },
+  { source: '5', target: '2' },
+  { source: '6', target: '1' },
+  { source: '7', target: '3' },
+  { source: '8', target: '3' },
+  { source: '8', target: '2' },
+  { source: '9', target: '1' }
+]
 
-  if (node.collapsed) {
-    // Expand the node
-    node.collapsed = false
-    toggleNodeVisibility(node, true)
-  } else {
-    // Collapse the node
-    node.collapsed = true
-    toggleNodeVisibility(node, false)
-  }
+const layoutHierarchy = () => {
+  const levelWidth = 200
+  const levelHeight = 100
+  const levels: any[] = []
+
+  nodes.forEach((node: { y?: number; id: string; name: string; level: number; x?: number }) => {
+    const level = node.level
+    const siblings = levels[level] || []
+    node.x = level * levelWidth
+
+    // Position the node in the center if it has no siblings
+    node.y = siblings.length
+      ? siblings.reduce((sum: any, sibling: { y: any }) => sum + sibling.y, 0) / siblings.length +
+        levelHeight
+      : 0
+
+    // Adjust the vertical position to avoid overlapping with siblings
+    siblings.push(node)
+    levels[level] = siblings
+  })
+
+  // Apply "gravity" to cluster children vertically closer to their parents
+  edges.forEach(({ source, target }) => {
+    const parentNode = nodes.find((n) => n.id === source)
+    const childNode = nodes.find((n) => n.id === target)
+
+    if (!parentNode || !childNode) {
+      return
+    }
+
+    // Cluster child nodes around their parent's y-position
+    const spread = levelHeight * (Math.random() - 0.5)
+    childNode.y = parentNode.y !== undefined ? parentNode.y + spread : 0
+  })
 }
 
 onMounted(() => {
-  const chartDom = document.getElementById('main')!
-  const myChart = echarts.init(chartDom, null, {
-    renderer: 'svg'
-  })
-  let option: echarts.EChartsOption
+  chart.value = echarts.init(chartContainer.value)
 
-  // Use the imported mock data
-  const { nodes, edges } = mockData as { nodes: Node[]; edges: Edge[] }
+  layoutHierarchy()
 
-  // Initialize nodes with visibility and collapsed state
-  nodes.forEach((node) => {
-    node.visible = true
-    node.collapsed = false
-    node.children = edges.filter((edge) => edge.source === node.id).map((edge) => edge.target)
-  })
-
-  const updateGraph = () => {
-    option = {
-      tooltip: {
-        trigger: 'item',
-        triggerOn: 'mousemove'
-      },
-      series: [
-        {
-          type: 'graph',
-          layout: 'none',
-          data: nodes
-            .filter((node) => node.visible)
-            .map((node) => ({
-              id: node.id,
-              name: node.name,
-              x: node.x,
-              y: node.y,
-              symbolSize: 15,
-              itemStyle: {
-                color: colors[getNodeLevel(node.id) % colors.length] // Color nodes based on their level
-              }
-            })),
-          links: edges
-            .filter((edge) => {
-              const sourceNode = nodes.find((node) => node.id === edge.source)
-              const targetNode = nodes.find((node) => node.id === edge.target)
-              return sourceNode?.visible && targetNode?.visible
-            })
-            .map((edge) => ({
-              source: edge.source,
-              target: edge.target,
-              lineStyle: {
-                type: 'solid',
-                color: '#000',
-                width: 2,
-                curveness: 0.2
-              },
-              emphasis: {
-                focus: 'adjacency'
-              },
-              symbol: ['none', 'arrow'],
-              symbolSize: 10
-            })),
-          roam: true,
-          label: {
-            show: false, // Hide labels by default
-            position: 'right'
-          },
-          emphasis: {
-            label: {
-              show: true // Show labels on hover
-            }
-          }
+  const option = {
+    tooltip: {},
+    series: [
+      {
+        type: 'graph',
+        layout: 'none',
+        data: nodes.map((node) => ({
+          id: node.id,
+          name: node.name,
+          x: node.x,
+          y: node.y
+        })),
+        edges,
+        roam: true, // Enable panning and zooming
+        label: {
+          show: true,
+          position: 'right'
+        },
+        lineStyle: {
+          curveness: 0 // Slightly curved edges
+        },
+        edgeSymbol: ['none', 'arrow'],
+        edgeSymbolSize: [4, 10],
+        emphasis: {
+          focus: 'adjacency'
         }
-      ]
-    }
-
-    myChart.setOption(option)
+      }
+    ]
   }
 
-  myChart.on('click', 'series.graph', (params: any) => {
-    if (params.data) {
-      const node = nodes.find((n) => n.id === params.data.id)
-      if (node) {
-        toggleChildren(node, nodes, edges)
-        updateGraph()
-      }
-    }
-  })
+  chart.value.setOption(option)
 
-  updateGraph()
+  window.addEventListener('resize', () => {
+    chart.value?.resize()
+  })
 })
 </script>
 
-<script lang="ts">
-export default {
-  name: 'GraphComponentEcharts'
-}
-</script>
-
-<template>
-  <div id="main" style="width: 100vw; height: 100vh"></div>
-</template>
-
 <style scoped>
-html,
-body,
-#app,
-#main {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+#chart-container {
+  width: 100lh;
+  height: 100vh; /* Full screen height */
 }
 </style>
