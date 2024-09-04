@@ -79,6 +79,8 @@ onMounted(() => {
     .attr('x', (d: any) => (d.children ? -10 : 10))
     .style('text-anchor', (d: any) => (d.children ? 'end' : 'start'))
     .text((d: any) => d.data.label)
+    .attr('stroke', 'white')
+    .attr('paint-order', 'stroke')
 
   const extraLinks: Array<any> = []
 
