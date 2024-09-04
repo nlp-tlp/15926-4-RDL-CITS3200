@@ -20,7 +20,12 @@ const nodes: { id: string; name: string; level: number; x?: number; y?: number }
   { id: '6', name: 'Child 3', level: 1 },
   { id: '7', name: 'Grandchild 3', level: 2 },
   { id: '8', name: 'Grandchild 4', level: 2 },
-  { id: '9', name: 'Child 4', level: 1 }
+  { id: '9', name: 'Child 4', level: 1 },
+  { id: '10', name: 'Grandchild 5', level: 2 },
+  { id: '11', name: 'Grandchild 6', level: 2 },
+  { id: '12', name: 'Grandchild 7', level: 2 },
+  { id: '13', name: 'Greatgrandchild 1', level: 3 },
+  { id: '14', name: 'Parent 2', level: 0 }
 ]
 
 const edges = [
@@ -32,7 +37,11 @@ const edges = [
   { source: '7', target: '3' },
   { source: '8', target: '3' },
   { source: '8', target: '2' },
-  { source: '9', target: '1' }
+  { source: '9', target: '14' },
+  { source: '10', target: '9' },
+  { source: '11', target: '3' },
+  { source: '12', target: '9' },
+  { source: '13', target: '7' }
 ]
 
 const layoutHierarchy = () => {
