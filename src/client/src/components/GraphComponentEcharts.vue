@@ -1,131 +1,125 @@
 <template>
-  <div id="chart-container" ref="chartContainer">
-    <div ref="chart" style="width: 100%; height: 100%"></div>
+  <div style="overflow: auto">
+    <div ref="chartContainer" style="min-height: 2000px; min-width: 1200px"></div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import * as echarts from 'echarts'
-import { onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 
-const chartContainer = ref(null)
-const chart = ref<echarts.EChartsType | null>(null)
+export default defineComponent({
+  name: 'EChartsTree',
+  setup() {
+    const chartContainer = ref<HTMLElement | null>(null)
 
-const nodes: { id: string; name: string; level: number; x?: number; y?: number }[] = [
-  { id: '1', name: 'Parent', level: 0 },
-  { id: '2', name: 'Child 1', level: 1 },
-  { id: '3', name: 'Child 2', level: 1 },
-  { id: '4', name: 'Grandchild 1', level: 2 },
-  { id: '5', name: 'Grandchild 2', level: 2 },
-  { id: '6', name: 'Child 3', level: 1 },
-  { id: '7', name: 'Grandchild 3', level: 2 },
-  { id: '8', name: 'Grandchild 4', level: 2 },
-  { id: '9', name: 'Child 4', level: 1 },
-  { id: '10', name: 'Grandchild 5', level: 2 },
-  { id: '11', name: 'Grandchild 6', level: 2 },
-  { id: '12', name: 'Grandchild 7', level: 2 },
-  { id: '13', name: 'Greatgrandchild 1', level: 3 },
-  { id: '14', name: 'Parent 2', level: 0 }
-]
+    // Generates a large binary tree dataset with a specified depth.
+    const generateBinaryTree = (depth: number): any => {
+      let idCounter = 1
 
-const edges = [
-  { source: '2', target: '1' },
-  { source: '3', target: '1' },
-  { source: '4', target: '2' },
-  { source: '5', target: '2' },
-  { source: '6', target: '1' },
-  { source: '7', target: '3' },
-  { source: '8', target: '3' },
-  { source: '8', target: '2' },
-  { source: '9', target: '14' },
-  { source: '10', target: '9' },
-  { source: '11', target: '3' },
-  { source: '12', target: '9' },
-  { source: '13', target: '7' }
-]
+      const addChildren = (node: any, level: number) => {
+        if (level >= depth) return
 
-const layoutHierarchy = () => {
-  const levelWidth = 200
-  const levelHeight = 100
-  const levels: any[] = []
+        const children: any[] = []
+        const isLastLevel = level === depth - 1
+        const childCount = isLastLevel ? (Math.random() > 0.5 ? 2 : 1) : 2
 
-  nodes.forEach((node: { y?: number; id: string; name: string; level: number; x?: number }) => {
-    const level = node.level
-    const siblings = levels[level] || []
-    node.x = level * levelWidth
+        for (let i = 0; i < childCount; i++) {
+          const newNode = {
+            id: ++idCounter,
+            name: `Node ${idCounter}`,
+            x: level * 100,
+            y: level * 50 + i * 15, // Ensure minimum 15px spacing between nodes
+            children: []
+          }
+          children.push(newNode)
+        }
 
-    // Position the node in the center if it has no siblings
-    node.y = siblings.length
-      ? siblings.reduce((sum: any, sibling: { y: any }) => sum + sibling.y, 0) / siblings.length +
-        levelHeight
-      : 0
+        node.children = children
+        children.forEach((child) => addChildren(child, level + 1))
+      }
 
-    // Adjust the vertical position to avoid overlapping with siblings
-    siblings.push(node)
-    levels[level] = siblings
-  })
-
-  // Apply "gravity" to cluster children vertically closer to their parents
-  edges.forEach(({ source, target }) => {
-    const parentNode = nodes.find((n) => n.id === source)
-    const childNode = nodes.find((n) => n.id === target)
-
-    if (!parentNode || !childNode) {
-      return
+      const root = { id: 1, name: 'Root', x: 0, y: 0, children: [] }
+      addChildren(root, 1)
+      return root
     }
 
-    // Cluster child nodes around their parent's y-position
-    const spread = levelHeight * (Math.random() - 0.5)
-    childNode.y = parentNode.y !== undefined ? parentNode.y + spread : 0
-  })
-}
+    // Initialize the chart after the component is mounted
+    const initChart = () => {
+      if (chartContainer.value) {
+        const chart = echarts.init(chartContainer.value)
 
-onMounted(() => {
-  chart.value = echarts.init(chartContainer.value)
-
-  layoutHierarchy()
-
-  const option = {
-    tooltip: {},
-    series: [
-      {
-        type: 'graph',
-        layout: 'none',
-        data: nodes.map((node) => ({
-          id: node.id,
-          name: node.name,
-          x: node.x,
-          y: node.y
-        })),
-        edges,
-        roam: true, // Enable panning and zooming
-        label: {
-          show: true,
-          position: 'right'
-        },
-        lineStyle: {
-          curveness: 0 // Slightly curved edges
-        },
-        edgeSymbol: ['none', 'arrow'],
-        edgeSymbolSize: [4, 10],
-        emphasis: {
-          focus: 'adjacency'
+        const option = {
+          tooltip: {},
+          series: [
+            {
+              type: 'tree',
+              data: [generateBinaryTree(15)], // 15 levels deep binary tree
+              layout: 'orthogonal',
+              orient: 'LR', // Left to Right
+              left: '2%',
+              right: '2%',
+              top: '15px',
+              bottom: '15px',
+              symbol: 'circle',
+              symbolSize: 8,
+              label: {
+                position: 'right',
+                verticalAlign: 'middle',
+                align: 'left',
+                fontSize: 10
+              },
+              lineStyle: {
+                curveness: 0.4 // Adjust Bezier curves
+              },
+              expandAndCollapse: false, // Everything is expanded
+              animationDuration: 550,
+              animationDurationUpdate: 750,
+              // animation: false,
+              roam: true, // Enable panning and zooming
+              labelLayout: {
+                hideOverlap: true
+              },
+              edgeShape: 'curve'
+            }
+          ]
         }
+
+        chart.setOption(option)
+
+        // Resize chart on window resize
+        window.addEventListener('resize', () => {
+          chart.resize()
+        })
       }
-    ]
+    }
+
+    // Hook to mount the chart
+    onMounted(() => {
+      initChart()
+    })
+
+    return {
+      chartContainer
+    }
   }
-
-  chart.value.setOption(option)
-
-  window.addEventListener('resize', () => {
-    chart.value?.resize()
-  })
 })
 </script>
 
 <style scoped>
+/* Ensure container takes up full width and height */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  /* width: 100vw;
+  height: 100vh; */
+  overflow: hidden; /* Hide overflow if container grows large */
+}
+
 #chart-container {
-  width: 100lh;
-  height: 100vh; /* Full screen height */
+  /* width: 100vw;
+  height: 100vh; */
+  position: relative;
 }
 </style>
