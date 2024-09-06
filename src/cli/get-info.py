@@ -19,7 +19,7 @@ def fetch_hierarchical_data_from_graphdb(graphdb_endpoint_url, graph_uri, limit=
                 ?id rdf:type ?type.
                 ?id rdfs:label ?label.
                 OPTIONAL {{ ?id rdfs:subClassOf ?parentId . }}
-                FILTER NOT EXISTS {{ ?id rdf:type rdf:Property . }}
+                FILTER NOT EXISTS {{ ?id meta:valDeprecationDate ?deprecationDate }}
             }}
         }}
         LIMIT {limit}
@@ -51,8 +51,8 @@ def build_nodes_and_edges(results_csv, existing_node_ids):
             nodes.append({
                 'id': node_id,
                 'name': label,
-                'x': random.uniform(-1000, 1000),  # Random x coordinate
-                'y': random.uniform(-1000, 1000),  # Random y coordinate
+                # 'x': random.uniform(-1000, 1000),  # Random x coordinate
+                # 'y': random.uniform(-1000, 1000),  # Random y coordinate
             })
 
         # Add the edge if the parent ID exists
@@ -104,12 +104,12 @@ def save_graph_data_to_file(nodes, edges, file_path):
 
 # Example usage
 graphdb_endpoint_url = "http://localhost:7200/repositories/deployment"  # GraphDB repository
-graph_uri = "http://iso15926vis.org/graph/test2"
+graph_uri = "http://iso15926vis.org/graph/proper"
 
 # Fetch hierarchical data
 all_nodes, all_edges = get_hierarchical_data_from_graphdb(graphdb_endpoint_url, graph_uri)
 
 # Save the hierarchical data to a JSON file in the desired format
-save_graph_data_to_file(all_nodes, all_edges, 'hierarchical_data-fixed.json')
+save_graph_data_to_file(all_nodes, all_edges, 'data3-nodep-noxy.json')
 
 print("Data saved to hierarchical_data.json")

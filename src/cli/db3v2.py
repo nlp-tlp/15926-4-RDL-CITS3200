@@ -35,11 +35,13 @@ def execute_sparql_query(endpoint_url, offset=0, limit=10000):
 
         SELECT DISTINCT ?id ?label ?type ?definition ?parentId ?deprecationDate
         WHERE {{
-          ?id rdfs:label ?label.
-          ?id rdf:type ?type.
-          OPTIONAL {{ ?id skos:definition ?definition. }}
-          OPTIONAL {{ ?id meta:valDeprecationDate ?deprecationDate. }}
-          OPTIONAL {{ ?id rdfs:subClassOf ?parentId. }}
+          GRAPH <http://data.15926.org/rdl> {{
+            ?id rdfs:label ?label.
+            ?id rdf:type ?type.
+            OPTIONAL {{ ?id skos:definition ?definition. }}
+            OPTIONAL {{ ?id meta:valDeprecationDate ?deprecationDate. }}
+            OPTIONAL {{ ?id rdfs:subClassOf ?parentId. }}
+          }}
         }}
         LIMIT {limit}
         OFFSET {offset}
@@ -112,7 +114,7 @@ def insert_results_into_graphdb(endpoint_url, results_csv, graph_uri):
 def update_db():
     endpoint_url = "http://190.92.134.58:8890/sparql"
     graphdb_endpoint_url = "http://localhost:7200/repositories/deployment/statements"  # GraphDB repository
-    graph_uri = "http://iso15926vis.org/graph/"+"test2"
+    graph_uri = "http://iso15926vis.org/graph/"+"proper"
     batch_size = 10000
     offset = 0
     total_triples = 0
