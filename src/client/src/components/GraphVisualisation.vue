@@ -25,6 +25,7 @@ const nodeDistance = 10
 const data = props.data
 
 onMounted(() => {
+  const startTime = performance.now()
   const svg = d3
     .select(svgRef.value)
     .attr('width', width)
@@ -44,7 +45,7 @@ onMounted(() => {
 
   const nodeById: { [key: string]: any } = {}
   root.each((d) => {
-    nodeById[d.data.id] = d
+    nodeById[d.data.name] = d
   })
 
   const linkPathGenerator: any = d3
@@ -78,7 +79,7 @@ onMounted(() => {
     .attr('dy', '.35em')
     .attr('x', (d: any) => (d.children ? -10 : 10))
     .style('text-anchor', (d: any) => (d.children ? 'end' : 'start'))
-    .text((d: any) => d.data.label)
+    .text((d: any) => d.data.name)
     .attr('stroke', 'white')
     .attr('paint-order', 'stroke')
 
@@ -86,8 +87,8 @@ onMounted(() => {
 
   root.descendants().forEach((d) => {
     if (d.data.extra_parents) {
-      d.data.extra_parents.forEach((parent: { id: string | number }) => {
-        const parentNode = nodeById[parent.id]
+      d.data.extra_parents.forEach((parent: { name: string | number }) => {
+        const parentNode = nodeById[parent.name]
         if (parentNode) {
           extraLinks.push({ source: parentNode, target: d })
         }
@@ -104,6 +105,9 @@ onMounted(() => {
     .attr('d', (d) => linkPathGenerator({ source: d.source, target: d.target }))
     .attr('stroke', 'black')
     .attr('fill', 'none')
+
+  const endTime = performance.now()
+  console.log(`Rendering took ${endTime - startTime} ms`)
 })
 </script>
 
