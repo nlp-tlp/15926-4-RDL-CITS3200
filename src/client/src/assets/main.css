@@ -1,8 +1,21 @@
 @import './base.css';
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
+  position: relative;
+  top: 2.5rem;
+  left: 1rem;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   padding: 2rem;
   font-weight: normal;
 }
