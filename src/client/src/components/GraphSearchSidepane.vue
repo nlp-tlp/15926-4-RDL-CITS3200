@@ -6,6 +6,12 @@ const isLeftExpanded = ref(false)
 function toggleLeftNav() {
   isLeftExpanded.value = !isLeftExpanded.value
 }
+
+const selectedSearchType = ref('id')
+const showDeprecated = ref(false)
+const viewLabelsInGraph = ref(true)
+const levelsAbove = ref(0)
+const levelsBelow = ref(0)
 </script>
 
 <script lang="ts">
@@ -58,12 +64,65 @@ export default {
   <div :class="['left-sidepanel', { 'sidepanel-expanded': isLeftExpanded }]">
     <div class="left-header">
       <button class="left-btn" @click="toggleLeftNav">&#9776;</button>
-      <p class="left-text">Left Sidepanel</p>
+      <p v-if="isLeftExpanded" class="left-text">Graph Search</p>
     </div>
+
+    <transition name="fade-slide">
+      <div v-if="isLeftExpanded" class="search-bar">
+        <input type="text" placeholder="Search..." />
+      </div>
+    </transition>
+
+    <transition name="fade-slide">
+      <div v-if="isLeftExpanded" class="dropdown">
+        <label for="search-type">Search by:</label>
+        <select id="search-type" v-model="selectedSearchType">
+          <option value="id">ID / URI</option>
+          <option value="label">RDF Label</option>
+        </select>
+      </div>
+    </transition>
+
+    <transition name="fade-slide">
+      <div v-if="isLeftExpanded" class="toggles">
+        <label>
+          <input type="checkbox" v-model="showDeprecated" />
+          Show Deprecated
+        </label>
+        <label>
+          <input type="checkbox" v-model="viewLabelsInGraph" />
+          View Labels in Graph
+        </label>
+      </div>
+    </transition>
+
+    <transition name="fade-slide">
+      <div v-if="isLeftExpanded" class="levels-input">
+        <div class="input-group">
+          <label>Levels Above:</label>
+          <input type="number" v-model="levelsAbove" min="0" max="6" />
+        </div>
+        <div class="input-group">
+          <label>Levels Below:</label>
+          <input type="number" v-model="levelsBelow" min="0" max="6" />
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <style scoped>
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-slide-enter,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(0px);
+}
+
 .left-sidepanel {
   height: 100%;
   width: 50px;
@@ -137,5 +196,68 @@ export default {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
+}
+
+.search-bar {
+  padding: 10px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.dropdown {
+  padding: 10px;
+  margin-bottom: 20px;
+  margin-top: -8px;
+}
+
+.dropdown label {
+  display: block;
+  margin-bottom: 5px;
+  color: white;
+}
+
+.dropdown select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.toggles {
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.toggles label {
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.levels-input {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  width: 48%;
+}
+
+.input-group label {
+  margin-bottom: 5px;
+  color: white;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
 }
 </style>
