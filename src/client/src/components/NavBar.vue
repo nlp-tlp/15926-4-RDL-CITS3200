@@ -20,18 +20,20 @@ export default {
 </script>
 
 <template>
-  <nav id="navbar" class="bg-nav-background">
-    <p id="navbar-title" @click="$router.push('/')">iso15926vis</p>
-    <div class="navbar-items">
-      <NavBarItem to="/" label="Home" id="home-link" />
-      <NavBarItem to="/graph" label="Graph" id="graph-link">
+  <nav id="navbar" class="w-full bg-nav-background py-4 px-8 flex justify-center fixed top-0 left-0 z-50 text-[1.1rem] shadow-md md:py-4 md:px-4 md:text-[1rem]">
+    <p id="navbar-title" @click="$router.push('/')" class="text-[1.5rem] md:text-[1.2rem] font-bold mr-auto text-nav-title hover:cursor-pointer">
+      iso15926vis
+    </p>
+    <div id="navbar-items" class="flex">
+      <NavBarItem to="/" label="Home" id="home-link" class="hidden md:inline" />
+      <NavBarItem to="/graph" label="Graph" id="graph-link" class="border-0">
         <template #icon>
-          <IconGraph class="navbar-icon" />
+          <IconGraph class="navbar-icon mr-2 mt-1 align-middle" />
         </template>
       </NavBarItem>
       <NavBarItem to="https://docs.iso15926vis.org/" label="Documentation" id="documentation-link">
         <template #icon>
-          <IconDocumentation class="navbar-icon" />
+          <IconDocumentation class="navbar-icon mr-2 mt-1 align-middle" />
         </template>
       </NavBarItem>
     </div>
