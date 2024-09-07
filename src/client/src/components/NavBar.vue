@@ -20,8 +20,15 @@ export default {
 </script>
 
 <template>
-  <nav id="navbar" class="w-full bg-nav-background py-4 px-8 flex justify-center fixed top-0 left-0 z-50 text-[1.1rem] shadow-md md:py-4 md:px-4 md:text-[1rem]">
-    <p id="navbar-title" @click="$router.push('/')" class="text-[1.5rem] md:text-[1.2rem] font-bold mr-auto text-nav-title hover:cursor-pointer">
+  <nav
+    id="navbar"
+    class="w-full bg-nav-background py-4 px-8 flex justify-center fixed top-0 left-0 z-50 text-[1.1rem] shadow-md md:py-4 md:px-4 md:text-[1rem]"
+  >
+    <p
+      id="navbar-title"
+      @click="$router.push('/')"
+      class="text-[1.5rem] md:text-[1.2rem] font-bold mr-auto text-nav-title hover:cursor-pointer"
+    >
       iso15926vis
     </p>
     <div id="navbar-items" class="flex">
