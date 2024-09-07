@@ -6,19 +6,19 @@ import NavBar from './components/NavBar.vue'
 
 <template>
   <div id="container">
-    <header>
-      <div class="wrapper">
+    <header class="flex place-items-start max-h-screen leading-7 lg:pr-section-gap-half">
+      <div class="flex place-items-center flex-wrap">
         <NavBar />
       </div>
     </header>
 
-    <main class="main-content">
+    <main id="main-content" class="bg-background pt-8">
       <RouterView />
     </main>
   </div>
 </template>
 
-<style scoped>
+<!-- <style scoped>
 header {
   line-height: 1.75;
   max-height: 100vh;
@@ -41,4 +41,4 @@ header {
     flex-wrap: wrap;
   }
 }
-</style>
+</style> -->

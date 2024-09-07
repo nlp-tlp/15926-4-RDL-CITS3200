@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template>
-  <nav class="navbar">
+  <nav id="navbar" class="bg-nav-background">
     <p id="navbar-title" @click="$router.push('/')">iso15926vis</p>
     <div class="navbar-items">
       <NavBarItem to="/" label="Home" id="home-link" />
@@ -39,7 +39,7 @@ export default {
 </template>
 
 <style scoped>
-.navbar {
+#navbar {
   width: 100%;
   font-size: 1.1rem;
   /* Ensures NavBar items are on NavBar */
@@ -48,7 +48,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--color-nav-background);
+  /* background-color: var(--color-nav-background); */
   /* To ensure navbar is always on top */
   z-index: 1000;
   padding: 1rem 2rem;
