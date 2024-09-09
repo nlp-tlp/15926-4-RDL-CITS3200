@@ -54,24 +54,22 @@ onMounted(() => {
 
     // ********** Nodes section **********
 
-    const node = svg
-    .selectAll('g.node')
-    .data(nodes, (d: any) => d.id || (d.id = d.data.name))
+    const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.name))
 
     // Enter any new nodes at the parent's previous position.
     const nodeEnter: any = node
       .enter()
       .append('g')
       .attr('class', 'node')
-      .attr('transform', (d) => `translate(${source.y0},${source.x0})`)
+      .attr('transform', () => `translate(${source.y0},${source.x0})`)
       .on('click', (event, d) => toggleCollapse(d))
       .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
 
     // Add Circle for the nodes
     nodeEnter
-    .append('circle')
-    .attr('r', 5)
-    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+      .append('circle')
+      .attr('r', 5)
+      .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
 
     // Add labels for the nodes
     nodeEnter
@@ -85,59 +83,55 @@ onMounted(() => {
     const nodeUpdate = nodeEnter.merge(node)
 
     nodeUpdate
-    .transition()
-    .duration(500)
-    .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+      .transition()
+      .duration(500)
+      .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
 
     // Update the node attributes and style
     nodeUpdate
-    .select('circle')
-    .attr('r', 5)
-    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+      .select('circle')
+      .attr('r', 5)
+      .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
 
     // Remove any exiting nodes
-    const nodeExit = node
-    .exit()
-    .transition()
-    .duration(500)
-    .attr('transform', (d) => `translate(${source.y},${source.x})`)
-    .remove()
+    // const nodeExit = node -- NOT USED
+    //   .exit()
+    //   .transition()
+    //   .duration(500)
+    //   .attr('transform', (d) => `translate(${source.y},${source.x})`)
+    //   .remove()
 
     // ********** Links section **********
 
-    const link: any = svg
-    .selectAll('path.link')
-    .data(links, (d: any) => d.target.id)
+    const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
 
     // Enter new links at the parent's previous position.
     const linkEnter = link
-    .enter()
-    .insert('path', 'g')
-    .attr('class', 'link')
-    .attr('d', (d: any) => {
-      const o = { x: source.x0, y: source.y0 }
-      return diagonal({ source: o, target: o })
-    })
-    .attr('stroke', 'black')
-    .attr('fill', 'none')
+      .enter()
+      .insert('path', 'g')
+      .attr('class', 'link')
+      .attr('d', () => {
+        const o = { x: source.x0, y: source.y0 }
+        return diagonal({ source: o, target: o })
+      })
+      .attr('stroke', 'black')
+      .attr('fill', 'none')
 
     // Update links
     const linkUpdate = linkEnter.merge(link)
 
-    linkUpdate
-    .transition()
-    .duration(500)
-    .attr('d', diagonal)
+    linkUpdate.transition().duration(500).attr('d', diagonal)
 
     // Remove exiting links
     link
-    .exit()
-    .transition()
-    .duration(500)
-    .attr('d', (d: any) => {
-      const o = { x: source.x, y: source.y }
-      return diagonal({ source: o, target: o })
-    }).remove()
+      .exit()
+      .transition()
+      .duration(500)
+      .attr('d', () => {
+        const o = { x: source.x, y: source.y }
+        return diagonal({ source: o, target: o })
+      })
+      .remove()
 
     // Store the old positions for transition.
     nodes.forEach((d: any) => {

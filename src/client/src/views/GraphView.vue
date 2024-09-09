@@ -9,12 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import GraphVisualisation from '@/components/GraphVisualisation.vue'
+import GraphVisCollapsible from '@/components/GraphVisCollapsible.vue'
 
+// import GraphVisualisation from '@/components/GraphVisualisation.vue'
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
-import GaphVisCollapsible from '@/components/GraphVisCollapsible.vue';
-import GraphVisCollapsible from '@/components/GraphVisCollapsible.vue';
 
 const data = {
   name: 'biggest-flare',
