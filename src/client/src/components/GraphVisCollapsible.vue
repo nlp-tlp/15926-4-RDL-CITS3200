@@ -94,12 +94,11 @@ onMounted(() => {
       .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
 
     // Remove any exiting nodes
-    const nodeExit = node
-      .exit()
-      .transition()
-      .duration(500)
-      .attr('transform', (d) => `translate(${source.y},${source.x})`)
-      .remove()
+    const nodeExit = node.exit().remove()
+
+    nodeExit.select('circle').attr('r', 0)
+
+    nodeExit.select('text').style('fill-opacity', 0)
 
     // ********** Links section **********
 
