@@ -1,0 +1,190 @@
+<template>
+  <div id="tree-container">
+    <svg ref="svgRef"></svg>
+  </div>
+</template>
+
+<script setup lang="ts">
+import * as d3 from 'd3'
+import { onMounted, ref } from 'vue'
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true
+  }
+})
+
+const svgRef = ref(null)
+
+// width and height to fit the whole parent container
+const width = window.innerWidth
+const height = window.innerHeight
+const nodeDistance = 10
+
+const data = props.data
+
+onMounted(() => {
+  const startTime = performance.now()
+  const svg = d3
+    .select(svgRef.value)
+    .attr('width', width)
+    .attr('height', height)
+    .call(d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed) as any)
+    .append('g')
+    .attr('transform', 'translate(40,0)')
+
+  function zoomed(event: any) {
+    svg.attr('transform', event.transform)
+  }
+
+  const root = d3.hierarchy(data)
+
+  function update(source: any) {
+    // Assigns the x and y position for the nodes
+    const treeLayout = d3.tree().nodeSize([nodeDistance, 300])
+    const treeData = treeLayout(root as unknown as d3.HierarchyNode<unknown>)
+
+    // Compute the new tree layout.
+    const nodes = treeData.descendants()
+    const links = treeData.links()
+
+    // Normalize for fixed-depth.
+    nodes.forEach((d) => (d.y = d.depth * 180))
+
+    // ********** Nodes section **********
+
+    const node = svg
+    .selectAll('g.node')
+    .data(nodes, (d: any) => d.id || (d.id = d.data.name))
+
+    // Enter any new nodes at the parent's previous position.
+    const nodeEnter: any = node
+      .enter()
+      .append('g')
+      .attr('class', 'node')
+      .attr('transform', (d) => `translate(${source.y0},${source.x0})`)
+      .on('click', (event, d) => toggleCollapse(d))
+      .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
+
+    // Add Circle for the nodes
+    nodeEnter
+    .append('circle')
+    .attr('r', 5)
+    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+
+    // Add labels for the nodes
+    nodeEnter
+      .append('text')
+      .attr('dy', '.35em')
+      .attr('x', (d: any) => (d.children || d._children ? -10 : 10))
+      .style('text-anchor', (d: any) => (d.children || d._children ? 'end' : 'start'))
+      .text((d: any) => d.data.name)
+
+    // Update the node positions
+    const nodeUpdate = nodeEnter.merge(node)
+
+    nodeUpdate
+    .transition()
+    .duration(500)
+    .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+
+    // Update the node attributes and style
+    nodeUpdate
+    .select('circle')
+    .attr('r', 5)
+    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+
+    // Remove any exiting nodes
+    const nodeExit = node
+    .exit()
+    .transition()
+    .duration(500)
+    .attr('transform', (d) => `translate(${source.y},${source.x})`)
+    .remove()
+
+    // ********** Links section **********
+
+    const link: any = svg
+    .selectAll('path.link')
+    .data(links, (d: any) => d.target.id)
+
+    // Enter new links at the parent's previous position.
+    const linkEnter = link
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'link')
+    .attr('d', (d: any) => {
+      const o = { x: source.x0, y: source.y0 }
+      return diagonal({ source: o, target: o })
+    })
+    .attr('stroke', 'black')
+    .attr('fill', 'none')
+
+    // Update links
+    const linkUpdate = linkEnter.merge(link)
+
+    linkUpdate
+    .transition()
+    .duration(500)
+    .attr('d', diagonal)
+
+    // Remove exiting links
+    link
+    .exit()
+    .transition()
+    .duration(500)
+    .attr('d', (d: any) => {
+      const o = { x: source.x, y: source.y }
+      return diagonal({ source: o, target: o })
+    }).remove()
+
+    // Store the old positions for transition.
+    nodes.forEach((d: any) => {
+      d.x0 = d.x
+      d.y0 = d.y
+    })
+  }
+
+  // Toggle children on click.
+  function toggleCollapse(d: any) {
+    if (d.children) {
+      d._children = d.children
+      d.children = null
+    } else {
+      d.children = d._children
+      d._children = null
+    }
+    update(d)
+  }
+
+  const diagonal: any = d3
+    .linkHorizontal()
+    .x((d: any) => d.y)
+    .y((d: any) => d.x)
+
+  // Start the rendering
+  update(root)
+
+  const endTime = performance.now()
+  console.log(`Rendering took ${endTime - startTime} ms`)
+})
+</script>
+
+<style scoped>
+.node circle {
+  fill: #999;
+}
+
+.node text {
+  font-size: 12px;
+  color: #555;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-width: 1.5px;
+  stroke-opacity: 0.4;
+}
+</style>
