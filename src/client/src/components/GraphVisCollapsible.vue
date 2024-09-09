@@ -34,6 +34,22 @@ onMounted(() => {
     .append('g')
     .attr('transform', 'translate(40,0)')
 
+  // Add arrowhead marker
+  svg
+    .append('defs')
+    .append('marker')
+    .attr('id', 'arrow')
+    .attr('viewBox', '0 -5 10 10')
+    .attr('refX', 16)
+    .attr('refY', 0)
+    .attr('markerWidth', 6)
+    .attr('markerHeight', 6)
+    .attr('orient', 'auto-start-reverse')
+    .attr('markerUnits', 'strokeWidth')
+    .append('path')
+    .attr('d', 'M0,-5L10,0L0,5')
+    .attr('fill', 'black')
+
   function zoomed(event: any) {
     svg.attr('transform', event.transform)
   }
@@ -115,6 +131,7 @@ onMounted(() => {
       })
       .attr('stroke', 'black')
       .attr('fill', 'none')
+      .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
 
     // Update links
     const linkUpdate = linkEnter.merge(link)
