@@ -22,12 +22,15 @@ Absent: -
 
 ### Answers and Comments
 
+- 'Thing' and 'Possible Individual' need to be in graph.
+  - Check if 'Thing' is only root in Onno's site.
 - Arrows can be pointing to children.
 - Colours for nodes when expanded/collapsed.
 - Clicking on the label for node info - labels can be toggled on.
 - Use mainstream packages/libraries.
 - [Living lab](https://livinglabproject.com/) - colour scheme/design.
 - [IndEEA](https://indeaa-docs.systemhealthlab.com/developer/) documentation styling.
+- User stories doc for sprint 3 - can incorporate into flyer.
 
 ## Next meeting
 
@@ -41,6 +44,7 @@ TBD
 
 - Get some rdf data on website for sending screenshots/flyer to Onno by mid week.
   - Flyer with screenshots? Static webpage - coming soon? So Melinda can circulate.
+  - Add user stories from sprint 2 doc to flyer.
 - Create a list of all dependencies of project in the maintenance docs - will move to sprint 3 when we do the documentation.
 
 **Meeting closed 1:20pm**
