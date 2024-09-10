@@ -34,9 +34,9 @@ export default {
 </script>
 
 <template>
-  <div class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
+  <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
     &#9776;
-  </div>
+  </button>
 
   <transition name="sidepanel">
     <div v-if="isRightExpanded" class="right-sidepanel">
@@ -48,7 +48,7 @@ export default {
 <style scoped>
 .right-btn {
   position: fixed;
-  top: var(--navbar-height, 5rem);
+  top: 5rem;
   right: 0.5rem;
   background-color: transparent;
   cursor: pointer;
@@ -97,15 +97,4 @@ export default {
   transform: translateX(100%);
   opacity: 0;
 }
-
-/* .right-text {
-  margin: 0.75rem 0 0 1rem;
-  color: white;
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-  opacity: 0;
-  visibility: hidden;
-  white-space: nowrap;
-} */
 </style>

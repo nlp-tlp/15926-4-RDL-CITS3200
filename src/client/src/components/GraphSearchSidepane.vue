@@ -48,7 +48,7 @@ export default {
 <style scoped>
 .left-btn {
   position: fixed;
-  top: var(--navbar-height, 5rem);
+  top: 5rem;
   left: 0.5rem;
   background-color: transparent;
   cursor: pointer;
