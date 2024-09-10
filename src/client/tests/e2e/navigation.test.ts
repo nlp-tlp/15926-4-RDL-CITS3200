@@ -3,19 +3,20 @@ import { expect, test } from '@playwright/test'
 test('Navigates to the correct page when a NavBar item is clicked', async ({ page }) => {
   await page.goto('http://localhost:5173/')
 
-  const docButton = await page.getByText('Documentation')
-  await docButton.click()
-  await expect(page).toHaveURL('http://localhost:5173/documentation')
+  await page.click('text=Graph')
+  await page.waitForURL('http://localhost:5173/graph')
+  expect(page.url()).toBe('http://localhost:5173/graph')
 
-  const homeButton = await page.getByText('Home')
-  await homeButton.click()
-  await expect(page).toHaveURL('http://localhost:5173/')
+  await page.click('text=iso15926vis')
+  await page.waitForURL('http://localhost:5173/')
+  expect(page.url()).toBe('http://localhost:5173/')
 
-  const graphButton = await page.getByText('Graph')
-  await graphButton.click()
-  await expect(page).toHaveURL('http://localhost:5173/graph')
+  await page.goto('https://docs.iso15926vis.org/')
+  console.log('page.url()', page.url())
+  expect(page.url()).toBe('https://docs.iso15926vis.org/')
 
-  const titleButton = await page.getByText('iso15926vis')
-  await titleButton.click()
-  await expect(page).toHaveURL('http://localhost:5173/')
+  // No testing nav back on docs pages - just here so you know there's another home nav for now
+  // await page.click('text=Home')
+  // await page.waitForURL('http://localhost:5173/')
+  // expect(page).toHaveURL('http://localhost:5173/')
 })
