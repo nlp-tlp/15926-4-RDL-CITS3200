@@ -1,15 +1,35 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+
+const props = defineProps({
+  /**
+   * The route path or URL for the navigation item.
+   */
+  to: {
+    type: String,
+    required: true
+  },
+  /**
+   * The label text displayed for the navigation item.
+   */
+  label: {
+    type: String,
+    required: true
+  }
+})
+
+const isExternalLink = computed(() => props.to.startsWith('http'))
 </script>
 
 <script lang="ts">
 /**
  * NavBarItem component represents a navigation item in a navbar.
  *
- * @param {string} to - The route path for the navigation item.
+ * @param {string} to - The route path or URL for the navigation item.
  * @param {string} label - The label text displayed for the navigation item.
  *
- * @slot icon - (OPTIONAL) The icon to display for the navigation item.
+ * @slot `icon` - Optional slot for an icon to display with the navigation item.
  *
  * @example
  * <NavBarItem to="/home" label="Home">
@@ -19,22 +39,19 @@ import { RouterLink } from 'vue-router'
  * </NavBarItem>
  */
 export default {
-  name: 'NavBarItem',
-  props: {
-    to: {
-      type: String,
-      required: true
-    },
-    label: {
-      type: String,
-      required: true
-    }
-  }
+  name: 'NavBarItem'
 }
 </script>
 
 <template>
-  <RouterLink :to="to" class="navbar-item">
+  <!-- If it's an external link -->
+  <a v-if="isExternalLink" :href="to" class="navbar-item" target="_blank" rel="noopener noreferrer">
+    <slot name="icon"></slot>
+    {{ label }}
+  </a>
+
+  <!-- If it's an internal link -->
+  <RouterLink v-else :to="to" class="navbar-item">
     <slot name="icon"></slot>
     {{ label }}
   </RouterLink>

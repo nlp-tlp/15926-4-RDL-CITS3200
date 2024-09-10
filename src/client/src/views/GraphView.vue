@@ -4,9 +4,11 @@ import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 </script>
 
 <template>
-  <h2>Graph</h2>
-  <GraphSearchSidepane />
-  <GraphInfoSidepane />
+  <div class="container">
+    <h1>Graph</h1>
+    <GraphSearchSidepane />
+    <GraphInfoSidepane />
+  </div>
 </template>
 
 <style scoped></style>
