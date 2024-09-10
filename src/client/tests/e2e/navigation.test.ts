@@ -12,7 +12,6 @@ test('Navigates to the correct page when a NavBar item is clicked', async ({ pag
   expect(page.url()).toBe('http://localhost:5173/')
 
   await page.goto('https://docs.iso15926vis.org/')
-  console.log('page.url()', page.url())
   expect(page.url()).toBe('https://docs.iso15926vis.org/')
 
   // No testing nav back on docs pages - just here so you know there's another home nav for now
