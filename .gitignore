@@ -3,11 +3,6 @@ data/
 
 # Database
 *.db
-virtuoso.ini
-virtuoso.lck
-virtuoso.log
-virtuoso.pxa
-virtuoso.trx
 *.ttl
 history.json
 
