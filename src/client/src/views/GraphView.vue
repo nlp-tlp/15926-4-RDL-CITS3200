@@ -23,6 +23,9 @@ const data = {
       children: [
         {
           name: 'flare',
+          extra_parents: [
+            {name: 'biggest-flare'}
+          ],
           children: [
             {
               name: 'analytics',
@@ -297,6 +300,10 @@ const data = {
             },
             {
               name: 'query',
+              extra_parents: [
+            {name: 'biggest-flare'},
+            {name: 'bigger-flare'}
+          ],
               children: [
                 {
                   name: 'AggregateExpression',

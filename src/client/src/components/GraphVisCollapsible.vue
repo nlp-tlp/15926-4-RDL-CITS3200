@@ -144,12 +144,70 @@ onMounted(() => {
       })
       .remove()
 
+    const extraLinks: any = [];
+    nodes.forEach((d: any) => {
+      if (d.data.extra_parents) {
+        d.data.extra_parents.forEach((parent: any) => {
+          const parentNode = nodes.find((node: any) => node.data.name === parent.name);
+          if (parentNode) {
+            extraLinks.push({source: parentNode, target: d});
+          }
+        });
+      }
+    });
+
+    const extraLink = svg.selectAll('path.extra-link').data(extraLinks);
+
+    extraLink
+      .enter()
+      .insert('path', 'g')
+      .attr('class', 'extra-link')
+      .attr('stroke', 'red')
+      .attr('fill', 'none')
+      .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
+      .attr('d', (d: any) => diagonal({source: d.source, target: d.target}));
+
+    extraLink.merge(extraLink).attr('d', (d: any) => diagonal({ source: d.source, target: d.target}));
+
+      //Remove any exiting extra links
+    extraLink.exit().remove();
+
     // Store the old positions for transition.
     nodes.forEach((d: any) => {
       d.x0 = d.x
       d.y0 = d.y
     })
+
+// ************************** Heidi's Extra Links *******************
+
+// const extraLinks: Array<any> = []
+
+// root.descendants().forEach((d) => {
+//   if (d.data.extra_parents) {
+//     d.data.extra_parents.forEach((parent: { name: string | number }) => {
+//       const parentNode = nodeById[parent.name]
+//       if (parentNode) {
+//         extraLinks.push({ source: parentNode, target: d })
+//       }
+//     })
+//   }
+// })
+
+// svg
+//   .selectAll('path.extra-link')
+//   .data(extraLinks)
+//   .enter()
+//   .append('path')
+//   .attr('class', 'link') // Same style as the normal links
+//   .attr('d', () => {
+//     const o = { x: source.x0, y: source.y0 }              // Original code was:
+//     return diagonal({ source: o, target: o })})           
+//   .attr('stroke', 'black')
+//   .attr('fill', 'none')
+
   }
+
+  // ********************End Extra Links*********************************
 
   // Toggle children on click.
   function toggleCollapse(d: any) {
