@@ -47,7 +47,7 @@ def get_next_db_filename():
     return db_filename
 
 
-def history_add_db():
+def history_add_db(filename):
     """Adds a new database entry to the history file and marks it as the current one."""
     history_path = os.path.join(os.path.dirname(__file__), HISTORY_FILE)
 
@@ -59,22 +59,19 @@ def history_add_db():
         with open(history_path, "r") as f:
             history_data = json.load(f)
 
-    new_db_filename = get_next_db_filename()
-
     history_data["databases"].append(
         {
-            "filename": new_db_filename,
+            "filename": filename,
             "created_at": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
         }
     )
 
-    history_data["current_db"] = new_db_filename
-
+    history_data["current_db"] = filename
     with open(history_path, "w") as f:
         json.dump(history_data, f, indent=4)
 
-    print(f"Added new DB to history file: '{new_db_filename}', marked as current DB.")
-    return new_db_filename
+    print(f"Added new DB to history file: '{filename}', marked as current DB.")
+    return filename
 
 
 def get_current_db():
