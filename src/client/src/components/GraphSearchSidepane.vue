@@ -45,7 +45,20 @@ export default {
 
     <div v-if="isLeftExpanded" class="expanded-content">
       <div class="search-container">
-        <input class="search-bar" type="text" placeholder="Search..." />
+        <div class="search-wrapper">
+          <svg
+            class="search-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+          >
+            <path
+              d="M23 21l-5.5-5.5a9.5 9.5 0 1 0-1.4 1.4L21 22.4a1 1 0 0 0 1.4-1.4zM10 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"
+            />
+          </svg>
+          <input class="search-bar" type="text" placeholder="Search..." />
+        </div>
         <select class="dropdown">
           <option value="id">ID/URI</option>
           <option value="rdf">RDF Label</option>
@@ -142,24 +155,84 @@ export default {
   margin-top: 3rem;
 }
 
+.search-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  fill: white;
+  transition: fill 0.3s;
+}
+
+.search-wrapper:hover .search-icon,
+.search-wrapper:focus-within .search-icon {
+  fill: var(--color-nav-background);
+}
+
 .search-bar {
   width: 100%;
-  padding: 0.5rem;
+  padding: 1rem;
+  padding-left: 40px; /* Add padding to leave space for the icon */
   margin-bottom: 0.5rem;
   max-width: 220px;
   border: 1px solid white;
+  background-color: var(--color-nav-background);
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.search-bar::placeholder {
+  color: white;
+}
+
+.search-bar:hover::placeholder,
+.search-bar:focus::placeholder {
+  color: var(--color-nav-background);
+}
+
+.search-bar:hover,
+.search-bar:focus {
   background-color: white;
   color: var(--color-nav-background);
 }
 
 .dropdown {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.75rem;
   max-width: 220px;
   border: 1px solid white;
-  background-color: white;
+  background-color: var(--color-nav-background);
   margin-bottom: 30px;
-  color: var(--color-nav-background);
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
+}
+
+.dropdown:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background-color: var(--color-nav-background-dark);
+}
+
+.dropdown option {
+  background-color: var(--color-nav-background);
+  color: white;
+}
+
+.dropdown::-ms-expand {
+  display: none;
 }
 
 .toggles-and-levels {
@@ -188,20 +261,40 @@ export default {
 .input-group {
   display: flex;
   flex-direction: column;
-  width: 40%;
+  width: 45%;
 }
 
 .level-label {
   color: white;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .small-input {
   width: 100%;
-  padding: 0.25rem;
+  padding: 0.5rem;
   background-color: white;
   color: var(--color-nav-background);
   border: 1px solid white;
-  text-align: center;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+  appearance: textfield; /* Ensure that custom styling is applied */
+}
+
+.small-input::-webkit-inner-spin-button,
+.small-input::-webkit-outer-spin-button {
+  opacity: 1; /* Ensure arrows are always visible */
+}
+
+.small-input:focus {
+  border-color: var(--color-nav-background);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 </style>
