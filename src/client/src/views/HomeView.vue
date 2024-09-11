@@ -6,24 +6,14 @@
       <h1>Interactive Visualization of the ISO 15926-4 Reference Data Library</h1>
       <h2 class="section1">Overview: ISO and RDL</h2>
       <p>
-        The International Organization for Standardization (ISO) is a globally recognized entity
-        that develops and publishes standards across various industries. The ISO 15926-4 standard
-        aims to facilitate digital data exchange across various phases of an industrial process
-        plant’s life cycle by defining data in a standardized dictionary of classes. Specifically,
-        the Reference Data Library (RDL) described in ISO 15926-4 is used to describe equipment,
-        materials, and their attributes in a consistent and interoperable manner across different
-        systems and organizations.
+        The International Organization for Standardization (ISO) develops and publishes standards. ISO 15926-4 standard has the title Industrial automation systems and integration — Integration of life-cycle data for process plants including oil and gas production facilities Part 4: Core reference data. The Reference Data Library (RDL) described in ISO 15926-4 is made available as a set of spreadsheets and through an endpoint. 
       </p>
     </section>
 
     <section class="purpose">
       <h2 class="section2">Purpose of this Visualization</h2>
       <p>
-        Currently, the immediate relationships between classes and their superclasses are shown in
-        the RDL, but there isn't a more holistic way of viewing the data such that the overall
-        hierarchy can be easily seen. Therefore, this visualization was developed for the RDL as a
-        hierarchical tree of classes to allow users to interrogate the data and to intuitively
-        explore the hierarchy.
+        The goal of this webpage is to allow users of the RDL to explore and understand the hierarchy and relationships between classes and their superclasses in the RDL. 
       </p>
     </section>
 
@@ -45,11 +35,11 @@
 
     <section class="logos">
       <a href="https://www.uwa.edu.au/" class="logoURL" target="_blank">
-        <img src="./UWA Logo.png" class="logo1" alt="University of Western Australia Logo" />
+        <img src="/images/UWA Logo.png" class="logo1" alt="University of Western Australia Logo" />
       </a>
       <a href="https://nlp-tlp.org/" class="logoURL" target="_blank">
         <img
-          src="./nlp-tlp-logo.png"
+          src="/images/nlp-tlp-logo.png"
           class="logo2"
           alt="University of Western Australia Natural & Technical Language Processing Group Logo"
         />
@@ -66,8 +56,6 @@
     </section>
   </div>
 </template>
-
-<script setup lang="ts"></script>
 
 <style scoped>
 .page {
@@ -99,6 +87,7 @@ h1 {
   background-color: black;
 }
 .overview p {
+  text-align: block;
   margin-top: 30px;
 }
 .purpose {
@@ -172,9 +161,9 @@ button:hover {
   margin-bottom: 50px;
 }
 .logo1 {
-  max-width: 170px;
-  margin-right: 40px;
-  margin-bottom: 10px;
+  max-width: 188px;
+  margin-right: 52px;
+  margin-bottom: 11.5px;
 }
 .logo2 {
   max-width: 90px;
