@@ -98,10 +98,7 @@ onMounted(() => {
     // Update the node positions
     const nodeUpdate = nodeEnter.merge(node)
 
-    nodeUpdate
-      .transition()
-      .duration(500)
-      .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+    nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
 
     // Update the node attributes and style
     nodeUpdate
@@ -136,13 +133,11 @@ onMounted(() => {
     // Update links
     const linkUpdate = linkEnter.merge(link)
 
-    linkUpdate.transition().duration(500).attr('d', diagonal)
+    linkUpdate.attr('d', diagonal)
 
     // Remove exiting links
     link
       .exit()
-      .transition()
-      .duration(500)
       .attr('d', () => {
         const o = { x: source.x, y: source.y }
         return diagonal({ source: o, target: o })
