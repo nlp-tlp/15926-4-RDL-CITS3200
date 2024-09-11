@@ -8,6 +8,7 @@ virtuoso.lck
 virtuoso.log
 virtuoso.pxa
 virtuoso.trx
+*.ttl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

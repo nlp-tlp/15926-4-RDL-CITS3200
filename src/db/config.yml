@@ -1,0 +1,30 @@
+sparql_endpoint_url: "http://190.92.134.58:8890/sparql"
+batch_size: 10000
+storage_location: "../db/storage/iso15926_ontology3.ttl"
+log_level: "INFO"
+query_source: |
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX meta: <http://data.15926.org/meta/>
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+  SELECT DISTINCT ?id ?label ?type ?definition ?parentId ?deprecationDate
+  WHERE {
+    {
+      GRAPH <http://data.15926.org/rdl> {
+        ?id rdfs:label ?label.
+        ?id rdf:type ?type.
+        OPTIONAL { ?id skos:definition ?definition. }
+        OPTIONAL { ?id rdfs:subClassOf ?parentId. }
+        OPTIONAL { ?id meta:valDeprecationDate ?deprecationDate. }
+      }
+    } UNION {
+      GRAPH <http://data.15926.org/dm> {
+        ?id rdfs:label ?label.
+        ?id rdf:type ?type.
+        OPTIONAL { ?id skos:definition ?definition. }
+        OPTIONAL { ?id rdfs:subClassOf ?parentId. }
+        OPTIONAL { ?id meta:valDeprecationDate ?deprecationDate. }
+      }
+    }
+  }
