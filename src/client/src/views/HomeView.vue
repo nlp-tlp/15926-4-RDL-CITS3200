@@ -6,14 +6,19 @@
       <h1>Interactive Visualization of the ISO 15926-4 Reference Data Library</h1>
       <h2 class="section1">Overview: ISO and RDL</h2>
       <p>
-        The International Organization for Standardization (ISO) develops and publishes standards. ISO 15926-4 standard has the title Industrial automation systems and integration — Integration of life-cycle data for process plants including oil and gas production facilities Part 4: Core reference data. The Reference Data Library (RDL) described in ISO 15926-4 is made available as a set of spreadsheets and through an endpoint. 
+        The International Organization for Standardization (ISO) develops and publishes standards.
+        ISO 15926-4 standard has the title Industrial automation systems and integration —
+        Integration of life-cycle data for process plants including oil and gas production
+        facilities Part 4: Core reference data. The Reference Data Library (RDL) described in ISO
+        15926-4 is made available as a set of spreadsheets and through an endpoint.
       </p>
     </section>
 
     <section class="purpose">
       <h2 class="section2">Purpose of this Visualization</h2>
       <p>
-        The goal of this webpage is to allow users of the RDL to explore and understand the hierarchy and relationships between classes and their superclasses in the RDL. 
+        The goal of this webpage is to allow users of the RDL to explore and understand the
+        hierarchy and relationships between classes and their superclasses in the RDL.
       </p>
     </section>
 
