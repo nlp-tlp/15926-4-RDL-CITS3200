@@ -1,0 +1,15 @@
+{
+	"python.testing.pytestArgs": ["src"],
+	"python.testing.unittestEnabled": false,
+	"python.testing.pytestEnabled": true,
+	"eslint.run": "onSave",
+	"eslint.format.enable": true,
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"eslint.validate": ["typescript"],
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"eslint.workingDirectories": ["./src/client"]
+}
