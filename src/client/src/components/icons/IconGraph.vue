@@ -1,3 +1,15 @@
+<script lang="ts">
+/**
+ * IconGraph component represents an SVG icon for a graph.
+ *
+ * @example
+ * <IconGraph />
+ */
+export default {
+  name: 'IconGraph'
+}
+</script>
+
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

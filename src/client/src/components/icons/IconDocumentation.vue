@@ -1,3 +1,15 @@
+<script lang="ts">
+/**
+ * IconDocumentation component represents an SVG icon for documentation.
+ *
+ * @example
+ * <IconDocumentation />
+ */
+export default {
+  name: 'IconDocumentation'
+}
+</script>
+
 <template>
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" fill="currentColor">
     <path
