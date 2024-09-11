@@ -6,9 +6,12 @@ import requests
 import logging
 
 # Set up logging to a file
-logging.basicConfig(filename='graphdb_insertion_errors.log', 
-                    level=logging.ERROR, 
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    filename="graphdb_insertion_errors.log",
+    level=logging.ERROR,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
 
 # Execute the SPARQL query with a given offset and limit.
 def execute_sparql_query(endpoint_url, offset=0, limit=10000):
@@ -36,10 +39,11 @@ def execute_sparql_query(endpoint_url, offset=0, limit=10000):
     # Execute the query and return the results
     return sparql.query().convert()
 
+
 def insert_results_into_graphdb(endpoint_url, results, graph_uri):
     # Initialize a list to collect multiple INSERT DATA statements
     bulk_insert_query = f"INSERT DATA {{ GRAPH <{graph_uri}> {{\n"
-    
+
     for result in results["results"]["bindings"]:
         try:
             # Construct the SPARQL update for each triple
@@ -69,7 +73,9 @@ def insert_results_into_graphdb(endpoint_url, results, graph_uri):
         response = requests.post(endpoint_url, headers=headers, data=bulk_insert_query)
 
         if response.status_code != 204:
-            raise Exception(f"Failed to insert data. Status Code: {response.status_code}. Response: {response.text}")
+            raise Exception(
+                f"Failed to insert data. Status Code: {response.status_code}. Response: {response.text}"
+            )
 
     except Exception as e:
         logging.error("Failed to execute the SPARQL update query.")
@@ -80,8 +86,10 @@ def insert_results_into_graphdb(endpoint_url, results, graph_uri):
 
 def update_db():
     endpoint_url = "http://190.92.134.58:8890/sparql"
-    graphdb_endpoint_url = "http://localhost:7200/repositories/default/statements"  # GraphDB repository
-    graph_uri = "http://iso15926vis.org/graph/"+"v2"
+    graphdb_endpoint_url = (
+        "http://localhost:7200/repositories/default/statements"  # GraphDB repository
+    )
+    graph_uri = "http://iso15926vis.org/graph/" + "v2"
     # dba_password = get_dba_password()
     batch_size = 10000
     offset = 0
@@ -106,7 +114,9 @@ def update_db():
 
         # Update the total triples count
         total_triples += len(results["results"]["bindings"])
-        print(f"Inserted {len(results['results']['bindings'])} triples. Total so far: {total_triples}.")
+        print(
+            f"Inserted {len(results['results']['bindings'])} triples. Total so far: {total_triples}."
+        )
 
     # End timing
     end_time = time.time()
@@ -137,7 +147,7 @@ def test_graphdb_insert():
     # Send the POST request to the GraphDB endpoint
     try:
         response = requests.post(endpoint_url, headers=headers, data=sparql_update)
-        
+
         # Check if the request was successful
         if response.status_code == 204:
             print("Insert successful.")
@@ -152,13 +162,13 @@ def test_graphdb_insert():
 #     # Load the .env file from the parent directory
 #     env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
 #     load_dotenv(dotenv_path=env_path)
-    
+
 #     # Get the DBA_PASSWORD from the environment variables
 #     dba_password = os.getenv('DBA_PASSWORD')
-    
+
 #     if not dba_password:
 #         raise ValueError("DBA_PASSWORD not found in the .env file.")
-    
+
 #     return dba_password
 
 

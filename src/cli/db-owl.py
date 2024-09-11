@@ -8,9 +8,11 @@ import owlready2
 from owlready2 import get_ontology, Thing, sync_reasoner, types
 
 # Set up logging to a file
-logging.basicConfig(filename='ontology_insertion_errors.log', 
-                    level=logging.INFO, 
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    filename="ontology_insertion_errors.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 # Base URIs for ontology and SPARQL results
 BASE_URI = "http://data.15926.org/iso/"
@@ -21,8 +23,10 @@ onto = get_ontology(ONTOLOGY_IRI)
 
 # Define the basic entity class in the ontology
 with onto:
+
     class Entity(Thing):
         pass
+
 
 # Helper function to ensure IRIs are absolute
 def ensure_absolute_iri(iri, base_uri=BASE_URI):
@@ -30,10 +34,12 @@ def ensure_absolute_iri(iri, base_uri=BASE_URI):
         return base_uri + iri
     return iri
 
+
 # Sanitize the literal by replacing control characters
 def sanitize_literal(value):
     value = value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
     return value
+
 
 # Helper function to get or create a class in the ontology
 def get_or_create_class(iri):
@@ -46,10 +52,14 @@ def get_or_create_class(iri):
             new_class = types.new_class(iri, (Thing,))
             return new_class
 
+
 # Monitor RAM usage and log it periodically
 def monitor_ram_usage():
     memory_info = psutil.virtual_memory()
-    logging.info(f"RAM Usage: {memory_info.percent}% used ({memory_info.used / (1024 * 1024)} MB used out of {memory_info.total / (1024 * 1024)} MB total)")
+    logging.info(
+        f"RAM Usage: {memory_info.percent}% used ({memory_info.used / (1024 * 1024)} MB used out of {memory_info.total / (1024 * 1024)} MB total)"
+    )
+
 
 # Execute the SPARQL query and retrieve results in CSV format
 def execute_sparql_query(endpoint_url, offset=0, limit=10000):
@@ -77,8 +87,9 @@ def execute_sparql_query(endpoint_url, offset=0, limit=10000):
     sparql.setReturnFormat(CSV)
 
     # Execute the query and return the results as CSV
-    result_csv = sparql.query().convert().decode('utf-8')
+    result_csv = sparql.query().convert().decode("utf-8")
     return result_csv
+
 
 # Insert the SPARQL query results into the Owlready2 ontology
 def insert_results_into_ontology(results_csv):
@@ -86,20 +97,32 @@ def insert_results_into_ontology(results_csv):
 
     for result in csv_reader:
         try:
-            subject_iri = ensure_absolute_iri(result['id'])
-            type_iri = ensure_absolute_iri(result['type'])  # Still ensure it's absolute
-            parent_id_iri = ensure_absolute_iri(result['parentId']) if result['parentId'] else None
+            subject_iri = ensure_absolute_iri(result["id"])
+            type_iri = ensure_absolute_iri(result["type"])  # Still ensure it's absolute
+            parent_id_iri = (
+                ensure_absolute_iri(result["parentId"]) if result["parentId"] else None
+            )
 
-            label = sanitize_literal(result['label']) if result.get('label') else None
-            definition = sanitize_literal(result['definition']) if result.get('definition') else None
-            deprecation_date = sanitize_literal(result['deprecationDate']) if result.get('deprecationDate') else None
+            label = sanitize_literal(result["label"]) if result.get("label") else None
+            definition = (
+                sanitize_literal(result["definition"])
+                if result.get("definition")
+                else None
+            )
+            deprecation_date = (
+                sanitize_literal(result["deprecationDate"])
+                if result.get("deprecationDate")
+                else None
+            )
 
             # Create the individual (entity)
             entity = Entity(iri=subject_iri)
 
             # Store the type_iri as a string literal property instead of creating a class
             if type_iri:
-                entity.has_type = [type_iri]  # Create a new property to store the type as a string
+                entity.has_type = [
+                    type_iri
+                ]  # Create a new property to store the type as a string
 
             if label:
                 entity.label = [label]
@@ -110,7 +133,9 @@ def insert_results_into_ontology(results_csv):
 
             # Handle parent ID if provided (this can still be treated as a class, if required)
             if parent_id_iri:
-                parent_entity = Entity(iri=parent_id_iri)  # You can avoid class creation for parents
+                parent_entity = Entity(
+                    iri=parent_id_iri
+                )  # You can avoid class creation for parents
                 entity.is_a.append(parent_entity)
 
         except Exception as e:
@@ -119,11 +144,13 @@ def insert_results_into_ontology(results_csv):
             continue
 
     # After adding entities, sync the reasoner to ensure consistency
-    #sync_reasoner()
+    # sync_reasoner()
+
 
 # Save the ontology to a file
 def save_ontology_to_file(file_path):
     onto.save(file_path, format="rdfxml")
+
 
 # Main update function that fetches SPARQL data and inserts it into the ontology
 def update_db_to_ontology():
@@ -138,7 +165,7 @@ def update_db_to_ontology():
         monitor_ram_usage()  # Monitor RAM at the start of each loop
 
         results_csv = execute_sparql_query(sparql_endpoint_url, offset, batch_size)
-        num_lines = results_csv.count('\n') - 1
+        num_lines = results_csv.count("\n") - 1
 
         if num_lines == 0:
             print("No new data fetched; stopping the process.")
@@ -155,6 +182,7 @@ def update_db_to_ontology():
     elapsed_time = end_time - start_time
     print(f"\nTotal triples inserted: {total_triples}")
     print(f"Time taken: {elapsed_time:.2f} seconds")
+
 
 # Run the update process when the script is executed
 if __name__ == "__main__":

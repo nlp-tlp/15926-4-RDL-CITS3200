@@ -36,10 +36,10 @@ def motd():
     typer.echo(f"Database is at version '{DB_VERSION}'.")
 
 
-def check_db(host='localhost', port=8890, timeout=3):
+def check_db(host="localhost", port=8890, timeout=3):
     conn = http.client.HTTPConnection(host, port)
     start_time = time.time()
-    
+
     while time.time() - start_time < timeout:
         try:
             conn.request("GET", "/sparql")
@@ -50,9 +50,12 @@ def check_db(host='localhost', port=8890, timeout=3):
         except (http.client.HTTPException, ConnectionRefusedError):
             pass
         time.sleep(5)
-    
-    print("Timeout: Database server (Virtuoso) is not running. Please start it before continuing.")
+
+    print(
+        "Timeout: Database server (Virtuoso) is not running. Please start it before continuing."
+    )
     return False
+
 
 if __name__ == "__main__":
     main()
