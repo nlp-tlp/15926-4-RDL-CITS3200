@@ -1,6 +1,5 @@
 sparql_endpoint_url: "http://190.92.134.58:8890/sparql"
 batch_size: 10000
-storage_location: "../db/storage/iso15926_ontology3.ttl"
 log_level: "INFO"
 query_source: |
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

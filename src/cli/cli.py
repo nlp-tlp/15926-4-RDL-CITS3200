@@ -1,61 +1,41 @@
 import typer
-import time
-import http.client
 
-from history import history_file_create
-from db3v2 import update_db
+from history import history_add_db, get_current_db
+from database import update_db
+from config import HISTORY_VERSION
 
-# Global variables
-DB_VERSION = "24/8/24"
-VERSION_HISTORY_FILE = 1
-HISTORY_FILE = "history.json"
+app = typer.Typer()  # Initialize Typer app
 
 
-def main(db_update: bool = False, fix: bool = False):
+@app.command()
+def main(update: bool = False, fix: bool = False):
     """
     CLI tool to interact with the database.
 
     Args:
-    - db_update (bool): To update database straight away.
+    - update (bool): To update database straight away.
     - fix (bool): To scan database and fix any errors.
     """
     # Print MOTD
     motd()
 
-    # if not check_db():
-    #     exit(1)
+    # If db_update is passed, update the database
+    if update:
+        print("UPDATING DB!")
+        update_db()
 
-    # history_file_create()
-
-    print("UPDATING DB!")
-    update_db()
+    else:
+        current_db = get_current_db()
+        if current_db:
+            print(f"Current database in use: {current_db}")
+        else:
+            print("No database found in the history.")
 
 
 def motd():
     typer.echo("Welcome to Iso15926Vis CLI for Backend!")
-    typer.echo(f"Database is at version '{DB_VERSION}'.")
-
-
-def check_db(host="localhost", port=8890, timeout=3):
-    conn = http.client.HTTPConnection(host, port)
-    start_time = time.time()
-
-    while time.time() - start_time < timeout:
-        try:
-            conn.request("GET", "/sparql")
-            response = conn.getresponse()
-            if response.status == 200:
-                print("Database server (Virtuoso) is up and running.")
-                return True
-        except (http.client.HTTPException, ConnectionRefusedError):
-            pass
-        time.sleep(5)
-
-    print(
-        "Timeout: Database server (Virtuoso) is not running. Please start it before continuing."
-    )
-    return False
+    typer.echo(f"Database history version: '{1}'\n")
 
 
 if __name__ == "__main__":
-    main()
+    app()  # Use Typer's app() function to parse CLI arguments

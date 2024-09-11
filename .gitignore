@@ -9,6 +9,7 @@ virtuoso.log
 virtuoso.pxa
 virtuoso.trx
 *.ttl
+history.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
