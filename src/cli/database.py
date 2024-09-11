@@ -1,4 +1,5 @@
 import time
+import os
 import csv
 import logging
 import yaml
@@ -124,11 +125,17 @@ def insert_results_into_rdflib(results_csv):
 
 # Save the RDFLib graph to a file with a dynamic filename
 def save_graph_to_file():
+    # Path to the storage directory
+    storage_dir = "../db/storage"
+
+    # Ensure the storage directory exists, create it if not
+    os.makedirs(storage_dir, exist_ok=True)
+
     # Get the next available filename from history
     db_filename = history_add_db()  # This returns the filename and updates the history
 
     # Save the graph using the generated filename
-    graph.serialize(destination=f"../db/storage/{db_filename}", format="turtle")
+    graph.serialize(destination=os.path.join(storage_dir, db_filename), format="turtle")
     return db_filename
 
 
