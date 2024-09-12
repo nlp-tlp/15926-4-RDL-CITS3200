@@ -40,7 +40,7 @@ def root():
 
 
 @main.route("/graph/children", methods=["GET"])
-def get_children():
+def children():
     # Extract the custom ID from the query parameters
     node_uri = request.args.get("id")
     include_deprecation = controllers.str_to_bool(
