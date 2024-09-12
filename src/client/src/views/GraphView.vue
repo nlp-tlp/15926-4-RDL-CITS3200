@@ -1,9 +1,8 @@
 <template>
-  <div>
-    <h2>Graph</h2>
+  <div class="container">
+    <h1>Graph</h1>
     <GraphSearchSidepane />
     <GraphInfoSidepane />
-    <GraphVisualisation :data />
   </div>
 </template>
 

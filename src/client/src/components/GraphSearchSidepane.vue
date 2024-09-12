@@ -1,141 +1,100 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const isLeftExpanded = ref(false)
+const props = withDefaults(
+  defineProps<{
+    initialExpanded?: boolean
+  }>(),
+  {
+    initialExpanded: false
+  }
+)
 
-function toggleLeftNav() {
+const isLeftExpanded = ref(props.initialExpanded)
+
+function toggleLeftNav(): void {
   isLeftExpanded.value = !isLeftExpanded.value
 }
 </script>
 
 <script lang="ts">
 /**
- * GraphSearchSidepane component represents the left side panel in the graph view.
+ * GraphSearchSidepane component represents the expandable side panel containing search functionality.
  *
- * This component provides an expandable side panel on the left side of the graph view.
- * The panel can be toggled open or closed by clicking the associated button.
- *
- * @function toggleLeftNav
- * Toggles the left side panel between expanded and collapsed states.
- *
- * This method inverts the value of `isLeftExpanded`. When the button associated
- * with the side panel is clicked, `toggleLeftNav` is called, changing the panel's
- * state from open to closed or from closed to open.
- *
- * @prop {boolean} isLeftExpanded - Indicates whether the left side panel is expanded.
- * This prop controls the expansion state of the side panel.
+ * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
  *
  * @example
- * // Example usage within the template
- * <button @click="toggleLeftNav">Toggle Left Panel</button>
- *
- * <div :class="{ 'left-sidepanel-expanded': isLeftExpanded }">
- *   <!-- Content of the side panel -->
- * </div>
+ * <GraphSearchSidepane :initialExpanded="true" />
+ * <GraphSearchSidepane initialExpanded />
+ * <GraphSearchSidepane />
  */
 export default {
-  name: 'GraphSearchSidepane',
-  props: {
-    isLeftExpanded: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['update:isLeftExpanded'],
-  methods: {
-    /**
-     * Toggles the left side panel between expanded and collapsed states.
-     * Emits an event to update the `isLeftExpanded` prop.
-     */
-    toggleLeftNav() {
-      this.$emit('update:isLeftExpanded', !this.isLeftExpanded)
-    }
-  }
+  name: 'GraphSearchSidepane'
 }
 </script>
 
 <template>
-  <div :class="['left-sidepanel', { 'sidepanel-expanded': isLeftExpanded }]">
-    <div class="left-header">
-      <button class="left-btn" @click="toggleLeftNav">&#9776;</button>
+  <button class="left-btn" @click="toggleLeftNav" :class="{ 'expanded-btn': isLeftExpanded }">
+    &#9776;
+  </button>
+
+  <transition name="sidepanel">
+    <div v-if="isLeftExpanded" class="left-sidepanel">
       <p class="left-text">Left Sidepanel</p>
     </div>
-  </div>
+  </transition>
 </template>
 
 <style scoped>
-.left-sidepanel {
-  height: 100%;
-  width: 50px;
-  position: fixed;
-  z-index: 1;
-  top: 70px;
-  left: 0;
-  background-color: white;
-  overflow-x: hidden;
-  transition:
-    width 0.5s ease,
-    background-color 0.5s ease;
-}
-
-.sidepanel-expanded {
-  width: 250px;
-  background-color: var(--color-nav-background);
-}
-
-.left-header {
-  width: 100%;
-  height: 60px;
-  background-color: white;
-  color: var(--color-nav-background);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  z-index: 2;
-  transition:
-    width 0.5s ease,
-    background-color 0.5s ease;
-}
-
-.sidepanel-expanded .left-header {
-  background-color: var(--color-nav-background);
-  color: white;
-}
-
 .left-btn {
-  margin-left: 10px;
-  background-color: white;
-  color: var(--color-nav-background);
-  transition:
-    background-color 0.5s ease,
-    color 0.5s ease;
+  position: fixed;
+  top: 5rem;
+  left: 0.5rem;
+  background-color: transparent;
   cursor: pointer;
   border: none;
   font-size: 22px;
   font-weight: bold;
+  z-index: 2; /* Ensure the button is always on top */
+  color: var(--color-nav-background);
+  transition: color 0.5s ease;
 }
 
-.sidepanel-expanded .left-btn {
-  background-color: var(--color-nav-background);
+.expanded-btn {
   color: white;
 }
 
-.left-text {
-  margin-right: 10px;
+.left-sidepanel {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.25rem;
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: var(--navbar-height, 4.5rem);
+  left: 0;
+  background-color: var(--color-nav-background);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-  opacity: 0;
-  visibility: hidden;
-  white-space: nowrap;
-  font-size: 16px;
-  cursor: default;
+    transform 0.5s ease,
+    background-color 0.5s ease;
+  transform: translateX(0);
 }
 
-.sidepanel-expanded .left-text {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0);
+.left-text {
+  margin: 0.75rem 1rem 0 auto;
+  color: white;
+  white-space: nowrap;
+}
+
+.sidepanel-enter-active,
+.sidepanel-leave-active {
+  transition: all 0.5s ease;
+}
+
+.sidepanel-enter-from,
+.sidepanel-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
 }
 </style>

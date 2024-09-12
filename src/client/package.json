@@ -14,13 +14,17 @@
     "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore --fix",
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:unit": "vitest run --root tests/unit",
+    "test:e2e": "npx playwright test --config playwright.config.ts",
+    "start": "vite"
   },
   "dependencies": {
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.46.1",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/d3": "^7.4.3",
@@ -29,6 +33,7 @@
     "@vitejs/plugin-vue-jsx": "^4.0.0",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.1",
     "d3": "^7.9.0",
     "eslint": "^8.57.0",
@@ -37,11 +42,13 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-vue": "^9.27.0",
-    "husky": "^9.1.5",
+    "husky": "^9.1.4",
+    "jsdom": "^25.0.0",
     "npm-run-all2": "^6.2.0",
     "prettier": "^3.2.5",
     "typescript": "^5.5.4",
     "vite": "^5.3.1",
+    "vitest": "^2.0.5",
     "vue-tsc": "^2.0.21"
   }
 }
