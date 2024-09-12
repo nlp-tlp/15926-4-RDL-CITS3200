@@ -144,19 +144,19 @@ onMounted(() => {
       })
       .remove()
 
-    const extraLinks: any = [];
+    const extraLinks: any = []
     nodes.forEach((d: any) => {
       if (d.data.extra_parents) {
         d.data.extra_parents.forEach((parent: any) => {
-          const parentNode = nodes.find((node: any) => node.data.name === parent.name);
+          const parentNode = nodes.find((node: any) => node.data.name === parent.name)
           if (parentNode) {
-            extraLinks.push({source: parentNode, target: d});
+            extraLinks.push({ source: parentNode, target: d })
           }
-        });
+        })
       }
-    });
+    })
 
-    const extraLink = svg.selectAll('path.extra-link').data(extraLinks);
+    const extraLink = svg.selectAll('path.extra-link').data(extraLinks)
 
     extraLink
       .enter()
@@ -165,12 +165,14 @@ onMounted(() => {
       .attr('stroke', 'red')
       .attr('fill', 'none')
       .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
-      .attr('d', (d: any) => diagonal({source: d.source, target: d.target}));
+      .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
 
-    extraLink.merge(extraLink).attr('d', (d: any) => diagonal({ source: d.source, target: d.target}));
+    extraLink
+      .merge(extraLink)
+      .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
 
-      //Remove any exiting extra links
-    extraLink.exit().remove();
+    //Remove any exiting extra links
+    extraLink.exit().remove()
 
     // Store the old positions for transition.
     nodes.forEach((d: any) => {
