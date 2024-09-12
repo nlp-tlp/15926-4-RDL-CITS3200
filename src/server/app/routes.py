@@ -40,14 +40,14 @@ def root():
 
 
 @main.route("/graph/children", methods=["GET"])
-def children():
+def get_children():
     # Extract the custom ID from the query parameters
     node_uri = request.args.get("id")
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
 
-    # For demonstration, just returning the ID, in practice, you'd fetch children from a graph
+    # Get the children if the node's URI is given
     if node_uri:
         try:
             # Check if the graph is available

@@ -69,7 +69,7 @@ def get_children(uri, graph, dep=False):
     return children_list
 
 
-#  Convert a string to a boolean. Accepts common representations of true/false.
+#  Convert a string to a boolean and accepts common representations of true/false.
 def str_to_bool(value):
     if isinstance(value, str):
         return value.lower() in ["true", "1", "t", "y", "yes"]
