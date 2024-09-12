@@ -2,8 +2,6 @@ import pytest
 from app import create_app
 from app.config import TestConfig
 
-# from app.models import Users
-
 
 @pytest.fixture(scope="module")
 def test_client():
