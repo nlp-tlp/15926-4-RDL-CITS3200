@@ -71,4 +71,27 @@ def get_children():
         return jsonify({"error": "ID/URI not provided"}), 400
 
 
-# @main.route("/graph/local-hierarchy/")
+@main.route("/node/info", methods=["GET"])
+def info():
+    # Extract the custom ID from the query parameters
+    node_uri = request.args.get("id")
+
+    if node_uri:
+        try:
+            # Check if the graph is available
+            if not hasattr(current_app, "graph"):
+                raise AttributeError("Graph is not initialised")
+
+            info = controllers.get_all_node_info(uri=node_uri, graph=current_app.graph)
+
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 404
+        except AttributeError as e:
+            return jsonify({"error": str(e)}), 500
+        except Exception as e:
+            return jsonify({"error": "Internal Error"}), 500
+
+        return jsonify(info)
+
+    else:
+        return jsonify({"error": "ID/URI not provided"}), 400
