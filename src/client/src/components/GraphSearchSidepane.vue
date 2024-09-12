@@ -79,6 +79,7 @@ export default {
             </div>
           </div>
         </div>
+        <button class="search-btn">Submit</button>
       </div>
     </div>
   </transition>
@@ -290,5 +291,24 @@ export default {
 .small-input:focus {
   border-color: var(--color-nav-background);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.search-btn {
+  width: 80%;
+  margin: 0 auto;
+  padding: 0.75rem;
+  background-color: var(--color-nav-background);
+  color: white;
+  margin-left: 20px;
+  border: 2px solid white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 20px;
+  text-align: center;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 </style>
