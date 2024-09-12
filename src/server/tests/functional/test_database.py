@@ -1,8 +1,9 @@
-def test_get_children(test_client):
+def test_get_children_with_default_deprecation(test_client):
     """
     Test the '/graph/children' route to fetch the children of the root node.
+    With dep=False by default, it should exclude Child1 (which has a deprecation date).
     """
-    # Send a request to the /graph/children route with the root node's URI
+    # Send a request to the /graph/children route with the root node's URI (default dep=False)
     response = test_client.get("/graph/children?id=http://data.15926.org/dm/Thing")
 
     # Parse the JSON response
@@ -11,36 +12,57 @@ def test_get_children(test_client):
     # Assert that the response contains the correct children
     assert response.status_code == 200
     assert "children" in data
-    assert len(data["children"]) == 2  # Expect 2 children
-    assert data["children"][0]["label"] == "Child One"
-    assert data["children"][1]["label"] == "Child Two"
+
+    # Child1 should be excluded since dep=False by default
+    assert len(data["children"]) == 1  # Expect only 1 child (Child2)
+    assert data["children"][0]["label"] == "Child Two"
 
 
-def test_get_deprecation_from_children(test_client):
+def test_get_children_without_deprecation(test_client):
     """
-    Test fetching the children of the root node (Thing) and verifying the deprecation dates of Child1 and Child2.
-    Using route '/graph/children'.
+    Test the '/graph/children' route to fetch the children of the root node.
+    With dep=False, it should exclude Child1 (which has a deprecation date).
     """
-    # Send a request to the /graph/root endpoint to get the root node's children
-    response = test_client.get("/graph/children?id=http://data.15926.org/dm/Thing")
+    # Send a request to the /graph/children route with the root node's URI (default dep=False)
+    response = test_client.get(
+        "/graph/children?id=http://data.15926.org/dm/Thing&dep=false"
+    )
 
     # Parse the JSON response
     data = response.get_json()
 
-    # Assert that the response contains the correct root node info
+    # Assert that the response contains the correct children
     assert response.status_code == 200
-    assert data["id"] == "http://data.15926.org/dm/Thing"
     assert "children" in data
-    assert len(data["children"]) == 2  # Should have exactly 2 children
 
-    # Extract children information
-    children = data["children"]
+    # Child1 should be excluded since dep=False by default
+    assert len(data["children"]) == 1  # Expect only 1 child (Child2)
+    assert data["children"][0]["label"] == "Child Two"
 
-    # Check the first child (Child1) for label and deprecation date
+
+def test_get_children_with_deprecation(test_client):
+    """
+    Test the '/graph/children' route to fetch the children of the root node with dep=True.
+    Both Child1 (with a deprecation date) and Child2 should be included.
+    """
+    # Send a request to the /graph/children route with the root node's URI and dep=True
+    response = test_client.get(
+        "/graph/children?id=http://data.15926.org/dm/Thing&dep=true"
+    )
+
+    # Parse the JSON response
+    data = response.get_json()
+
+    # Assert that the response contains the correct children
+    assert response.status_code == 200
+    assert "children" in data
+    assert len(data["children"]) == 2  # Expect 2 children (Child1 and Child2)
+
+    # Validate Child1
     child1_info = next(
         (
             child
-            for child in children
+            for child in data["children"]
             if child["id"] == "http://data.15926.org/dm/Child1"
         ),
         None,
@@ -49,11 +71,11 @@ def test_get_deprecation_from_children(test_client):
     assert child1_info["label"] == "Child One"
     assert child1_info["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
 
-    # Check the second child (Child2) for label and deprecation date
+    # Validate Child2
     child2_info = next(
         (
             child
-            for child in children
+            for child in data["children"]
             if child["id"] == "http://data.15926.org/dm/Child2"
         ),
         None,

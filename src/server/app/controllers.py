@@ -44,7 +44,7 @@ def get_root_node_info(graph):
     return get_basic_node_info(root_node_ref, graph)
 
 
-def get_children(uri, graph):
+def get_children(uri, graph, dep=False):
     children_set = set()  # Keep only unique children
     children_list = []
     uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
@@ -55,10 +55,22 @@ def get_children(uri, graph):
     # Query the graph for triples where the given URI is an object of rdfs:subClassOf
     for child, predicate, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):
         if child not in children_set:
-            children_set.add(child)  # Ensure uniqueness
-
             # Use the helper function to get child info
             child_info = get_basic_node_info(child, graph)
+
+            # If ignoring deprecated nodes and a node has a date set, then ignore it
+            if not dep and child_info.get("dep"):
+                continue
+
+            # Add the child to the set and the list
+            children_set.add(child)
             children_list.append(child_info)
 
     return children_list
+
+
+#  Convert a string to a boolean. Accepts common representations of true/false.
+def str_to_bool(value):
+    if isinstance(value, str):
+        return value.lower() in ["true", "1", "t", "y", "yes"]
+    return bool(value)

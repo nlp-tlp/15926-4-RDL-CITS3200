@@ -43,6 +43,9 @@ def root():
 def get_children():
     # Extract the custom ID from the query parameters
     node_uri = request.args.get("id")
+    include_deprecation = controllers.str_to_bool(
+        request.args.get("dep", default=False)
+    )
 
     # For demonstration, just returning the ID, in practice, you'd fetch children from a graph
     if node_uri:
@@ -51,7 +54,9 @@ def get_children():
             if not hasattr(current_app, "graph"):
                 raise AttributeError("Graph is not initialised")
 
-            children = controllers.get_children(uri=node_uri, graph=current_app.graph)
+            children = controllers.get_children(
+                uri=node_uri, graph=current_app.graph, dep=include_deprecation
+            )
 
         except ValueError as e:
             return jsonify({"error": str(e)}), 404
