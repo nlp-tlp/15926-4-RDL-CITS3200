@@ -3,15 +3,13 @@
     <h2>Graph</h2>
     <GraphSearchSidepane />
     <GraphInfoSidepane />
-    <GraphVisCollapsible :data />
-    <!-- <GraphVisualisation :data /> -->
+    <GraphVisualisation :data />
   </div>
 </template>
 
 <script setup lang="ts">
-import GraphVisCollapsible from '@/components/GraphVisCollapsible.vue'
+import GraphVisualisation from '@/components/GraphVisualisation.vue'
 
-// import GraphVisualisation from '@/components/GraphVisualisation.vue'
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 
@@ -23,9 +21,7 @@ const data = {
       children: [
         {
           name: 'flare',
-          extra_parents: [
-            {name: 'biggest-flare'}
-          ],
+          extra_parents: [{ name: 'biggest-flare' }],
           children: [
             {
               name: 'analytics',
@@ -300,10 +296,7 @@ const data = {
             },
             {
               name: 'query',
-              extra_parents: [
-            {name: 'biggest-flare'},
-            {name: 'bigger-flare'}
-          ],
+              extra_parents: [{ name: 'biggest-flare' }, { name: 'bigger-flare' }],
               children: [
                 {
                   name: 'AggregateExpression',
