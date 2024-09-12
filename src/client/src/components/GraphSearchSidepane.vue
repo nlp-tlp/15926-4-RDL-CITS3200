@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// Define props with default values using withDefaults (type-based declaration)
 const props = withDefaults(
   defineProps<{
-    /**
-     * Determines if the side panel is initially expanded (default: false).
-     */
     initialExpanded?: boolean
   }>(),
   {
@@ -14,7 +10,6 @@ const props = withDefaults(
   }
 )
 
-// Initialise isLeftExpanded with the value of initialExpanded prop
 const isLeftExpanded = ref(props.initialExpanded)
 
 function toggleLeftNav(): void {
@@ -39,109 +34,108 @@ export default {
 </script>
 
 <template>
-  <div :class="['left-sidepanel', { 'sidepanel-expanded': isLeftExpanded }]">
-    <button class="left-btn" @click="toggleLeftNav">&#9776;</button>
-    <p class="left-text">Graph Search</p>
+  <button class="left-btn" @click="toggleLeftNav" :class="{ 'expanded-btn': isLeftExpanded }">
+    &#9776;
+  </button>
 
-    <div v-if="isLeftExpanded" class="expanded-content">
-      <div class="search-container">
-        <div class="search-wrapper">
-          <svg
-            class="search-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="24"
-            height="24"
-          >
-            <path
-              d="M23 21l-5.5-5.5a9.5 9.5 0 1 0-1.4 1.4L21 22.4a1 1 0 0 0 1.4-1.4zM10 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"
-            />
-          </svg>
-          <input class="search-bar" type="text" placeholder="Search..." />
-        </div>
-        <select class="dropdown">
-          <option value="id">ID/URI</option>
-          <option value="rdf">RDF Label</option>
-        </select>
-      </div>
+  <transition name="sidepanel">
+    <div v-if="isLeftExpanded" class="left-sidepanel">
+      <p class="left-text">Graph Search</p>
 
-      <div class="toggles-and-levels">
-        <label class="toggle-label"> <input type="checkbox" /> Show Deprecated </label>
-        <label class="toggle-label"> <input type="checkbox" /> View Labels in Graph </label>
-
-        <div class="levels-inputs">
-          <div class="input-group">
-            <label class="level-label">Levels Above:</label>
-            <input type="number" min="0" max="6" class="small-input" value="0" />
+      <div v-if="isLeftExpanded" class="expanded-content">
+        <div class="search-container">
+          <div class="search-wrapper">
+            <svg
+              class="search-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+            >
+              <path
+                d="M23 21l-5.5-5.5a9.5 9.5 0 1 0-1.4 1.4L21 22.4a1 1 0 0 0 1.4-1.4zM10 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"
+              />
+            </svg>
+            <input class="search-bar" type="text" placeholder="Search..." />
           </div>
-          <div class="input-group">
-            <label class="level-label">Levels Below:</label>
-            <input type="number" min="0" max="6" class="small-input" value="0" />
+          <select class="dropdown">
+            <option value="id">ID/URI</option>
+            <option value="rdf">RDF Label</option>
+          </select>
+        </div>
+
+        <div v-if="isLeftExpanded" class="toggles-and-levels">
+          <label class="toggle-label"> <input type="checkbox" /> Show Deprecated </label>
+          <label class="toggle-label"> <input type="checkbox" /> View Labels in Graph </label>
+
+          <div v-if="isLeftExpanded" class="levels-inputs">
+            <div class="input-group">
+              <label class="level-label">Levels Above:</label>
+              <input type="number" min="0" max="6" class="small-input" value="0" />
+            </div>
+            <div v-if="isLeftExpanded" class="input-group">
+              <label class="level-label">Levels Below:</label>
+              <input type="number" min="0" max="6" class="small-input" value="0" />
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <style scoped>
-.left-sidepanel {
-  display: flex;
-  flex-direction: column;
-  padding-top: 0.25rem;
-  height: 100%;
-  width: 50px;
-  position: fixed;
-  z-index: 1;
-  top: var(--navbar-height, 4.5rem);
-  left: 0;
-  background-color: transparent;
-  transition:
-    width 0.5s ease,
-    background-color 0.5s ease;
-  overflow: hidden;
-}
-
-.sidepanel-expanded {
-  width: 250px;
-  background-color: var(--color-nav-background);
-}
-
 .left-btn {
-  position: absolute;
-  top: 0.5rem;
+  position: fixed;
+  top: 5rem;
   left: 0.5rem;
   background-color: transparent;
-  color: var(--color-nav-background);
-  transition:
-    background-color 0.5s ease,
-    color 0.5s ease;
   cursor: pointer;
   border: none;
   font-size: 22px;
   font-weight: bold;
+  z-index: 2; /* Ensure the button is always on top */
+  color: var(--color-nav-background);
+  transition: color 0.5s ease;
 }
 
-.sidepanel-expanded .left-btn {
-  background-color: var(--color-nav-background);
+.expanded-btn {
   color: white;
+}
+
+.left-sidepanel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 0.25rem;
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: var(--navbar-height, 4.5rem);
+  left: 0;
+  background-color: var(--color-nav-background);
+  transition:
+    transform 0.5s ease,
+    background-color 0.5s ease;
+  transform: translateX(0);
 }
 
 .left-text {
   margin: 0.75rem 1rem 0 auto;
   color: white;
-  transition:
-    opacity 0.5s ease,
-    transform 0.5s ease;
-  opacity: 0;
-  visibility: hidden;
   white-space: nowrap;
 }
 
-.sidepanel-expanded .left-text {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0);
+.sidepanel-enter-active,
+.sidepanel-leave-active {
+  transition: all 0.5s ease;
+}
+
+.sidepanel-enter-from,
+.sidepanel-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
 }
 
 .expanded-content {
@@ -176,7 +170,7 @@ export default {
 .search-bar {
   width: 100%;
   padding: 1rem;
-  padding-left: 40px; /* Add padding to leave space for the icon */
+  padding-left: 40px;
   margin-bottom: 0.5rem;
   max-width: 220px;
   border: 1px solid white;
@@ -285,12 +279,12 @@ export default {
   transition:
     border-color 0.3s,
     box-shadow 0.3s;
-  appearance: textfield; /* Ensure that custom styling is applied */
+  appearance: textfield;
 }
 
 .small-input::-webkit-inner-spin-button,
 .small-input::-webkit-outer-spin-button {
-  opacity: 1; /* Ensure arrows are always visible */
+  opacity: 1;
 }
 
 .small-input:focus {
