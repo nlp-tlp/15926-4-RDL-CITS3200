@@ -19,12 +19,18 @@ def ping():
 @main.route("/graph/root")
 def root():
     try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
+
         root_node_info = controllers.get_root_node_info(graph=current_app.graph)
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
-    except Exception as e:
+    except AttributeError as e:
         return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
 
     if root_node_info:
         return jsonify(root_node_info)
@@ -41,11 +47,18 @@ def get_children():
     # For demonstration, just returning the ID, in practice, you'd fetch children from a graph
     if node_uri:
         try:
+            # Check if the graph is available
+            if not hasattr(current_app, "graph"):
+                raise AttributeError("Graph is not initialised")
+
             children = controllers.get_children(uri=node_uri, graph=current_app.graph)
+
         except ValueError as e:
             return jsonify({"error": str(e)}), 404
-        except Exception as e:
+        except AttributeError as e:
             return jsonify({"error": str(e)}), 500
+        except Exception as e:
+            return jsonify({"error": "Internal Error"}), 500
 
         return jsonify({"id": node_uri, "children": children})
 
