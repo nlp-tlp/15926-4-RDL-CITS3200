@@ -9,6 +9,13 @@ def get_root_node():
     return Config.ROOT_NODE_URI
 
 
+def check_uri_exists(uri, graph):
+    uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
+
+    # True if exist any tripple with URI as the subject
+    return any(graph.triples((uri_ref, None, None)))
+
+
 # Get only the node's LABEL and DEPRECATION DATE
 def get_basic_node_info(uri, graph):
     node_info = {"id": str(uri), "label": None, "dep": None}
@@ -30,6 +37,9 @@ def get_root_node_info(graph):
     root_node_uri = get_root_node()  # Retrieve root node URI from config
     root_node_ref = URIRef(root_node_uri)  # Convert to URIRef for querying
 
+    if not check_uri_exists(uri=root_node_uri, graph=graph):
+        raise ValueError(f"URI '{root_node_uri}' does not exist within the database")
+
     # Use the helper function to get root node info
     return get_basic_node_info(root_node_ref, graph)
 
@@ -38,6 +48,9 @@ def get_children(uri, graph):
     children_set = set()  # Keep only unique children
     children_list = []
     uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
+
+    if not check_uri_exists(uri=uri, graph=graph):
+        raise ValueError(f"URI '{uri}' does not exist within the database")
 
     # Query the graph for triples where the given URI is an object of rdfs:subClassOf
     for child, predicate, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):

@@ -18,11 +18,19 @@ def ping():
 
 @main.route("/graph/root")
 def root():
-    root_node_info = controllers.get_root_node_info(graph=current_app.graph)
+    try:
+        root_node_info = controllers.get_root_node_info(graph=current_app.graph)
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
     if root_node_info:
         return jsonify(root_node_info)
+
     else:
-        return jsonify({"error": "No ROOT found"}), 400
+        return jsonify({"error": "No ROOT found"}), 404
 
 
 @main.route("/graph/children", methods=["GET"])
@@ -32,8 +40,15 @@ def get_children():
 
     # For demonstration, just returning the ID, in practice, you'd fetch children from a graph
     if node_uri:
-        children = controllers.get_children(uri=node_uri, graph=current_app.graph)
+        try:
+            children = controllers.get_children(uri=node_uri, graph=current_app.graph)
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 404
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
         return jsonify({"id": node_uri, "children": children})
+
     else:
         return jsonify({"error": "ID/URI not provided"}), 400
 
