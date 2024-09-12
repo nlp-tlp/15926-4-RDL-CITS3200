@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/client/src/*"]
+		},
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"module": "NodeNext",
+		"noEmit": true
+	}
+}
