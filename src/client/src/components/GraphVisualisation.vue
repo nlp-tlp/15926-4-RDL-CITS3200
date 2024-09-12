@@ -168,7 +168,7 @@ onMounted(() => {
 
     //Remove any exiting extra links
     extraLink.exit().remove()
-    }
+  }
 
   // Toggle children on click.
   function toggleCollapse(d: any) {
