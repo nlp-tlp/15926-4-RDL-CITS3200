@@ -77,7 +77,6 @@ onMounted(() => {
       .enter()
       .append('g')
       .attr('class', 'node')
-      .attr('transform', () => `translate(${source.y0},${source.x0})`)
       .on('click', (event, d) => toggleCollapse(d))
       .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
 
@@ -122,10 +121,6 @@ onMounted(() => {
       .enter()
       .insert('path', 'g')
       .attr('class', 'link')
-      .attr('d', () => {
-        const o = { x: source.x0, y: source.y0 }
-        return diagonal({ source: o, target: o })
-      })
       .attr('stroke', 'black')
       .attr('fill', 'none')
       .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
@@ -173,13 +168,7 @@ onMounted(() => {
 
     //Remove any exiting extra links
     extraLink.exit().remove()
-
-    // Store the old positions for transition.
-    nodes.forEach((d: any) => {
-      d.x0 = d.x
-      d.y0 = d.y
-    })
-  }
+    }
 
   // Toggle children on click.
   function toggleCollapse(d: any) {
