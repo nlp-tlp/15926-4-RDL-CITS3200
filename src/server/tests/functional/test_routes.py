@@ -52,3 +52,51 @@ def test_graph_children_route_missing_id(test_client):
     assert response.status_code == 400
     assert "error" in json_data
     assert json_data["error"] == "ID/URI not provided"
+
+
+def test_node_info_route(test_client):
+    """
+    Test the '/node/info' route with a valid ID.
+    """
+    node_uri = "http://data.15926.org/dm/Thing"
+    response = test_client.get(f"/node/info?id={node_uri}")
+    json_data = response.get_json()
+
+    # Assert the response is valid and contains the correct node information
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert "label" in json_data
+    assert "types" in json_data
+    assert "dep" in json_data
+    assert "definition" in json_data
+    assert "properties" in json_data
+
+
+def test_node_info_route_missing_id(test_client):
+    """
+    Test the '/node/info' route without providing an ID in the query parameters.
+    """
+    response = test_client.get("/node/info")
+    json_data = response.get_json()
+
+    # Assert the response is a 400 Bad Request due to missing ID/URI
+    assert response.status_code == 400
+    assert "error" in json_data
+    assert json_data["error"] == "ID/URI not provided"
+
+
+def test_node_info_route_invalid_id(test_client):
+    """
+    Test the '/node/info' route with an invalid node ID.
+    """
+    invalid_node_uri = "http://data.15926.org/dm/NonExistentNode"
+    response = test_client.get(f"/node/info?id={invalid_node_uri}")
+    json_data = response.get_json()
+
+    # Assert the response is a 404 Not Found due to the invalid node ID
+    assert response.status_code == 404
+    assert "error" in json_data
+    assert (
+        json_data["error"]
+        == f"URI '{invalid_node_uri}' does not exist within the database"
+    )

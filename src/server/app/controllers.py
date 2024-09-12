@@ -46,6 +46,10 @@ def get_all_node_info(uri, graph):
         "properties": {},  # Handle anything else
     }
 
+    # Ensure node exists within the database
+    if not check_uri_exists(uri=uri, graph=graph):
+        raise ValueError(f"URI '{uri}' does not exist within the database")
+
     uri_ref = URIRef(uri)
 
     # Query for all triples where the node is the subject

@@ -115,3 +115,62 @@ def test_invalid_query_to_children(test_client):
     assert response.status_code == 404
     assert "error" in data
     assert data["error"] == f"URI '{invalid_uri}' does not exist within the database"
+
+
+def test_get_all_node_info(test_client):
+    """
+    Test that the node information retrieved via the '/node/info' endpoint includes label, types,
+    deprecation date, definition, and properties.
+    """
+    # Node URI for the test
+    node_uri = "http://data.15926.org/dm/Child1"
+
+    # Send a request to the '/node/info' endpoint with the node URI
+    response = test_client.get(f"/node/info?id={node_uri}")
+    json_data = response.get_json()
+
+    # Assert the basic fields are correct
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert json_data["label"] == "Child One"
+    assert json_data["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
+
+    # Check types
+    assert "http://data.15926.org/dm/ChildType" in json_data["types"]
+    assert "http://data.15926.org/dm/AnotherType" in json_data["types"]
+
+    # Check definition
+    assert json_data["definition"] == "Child One is a sample node."
+
+    # Ensure no custom properties were added for this node
+    assert "properties" in json_data
+    assert len(json_data["properties"]) == 0  # No custom properties added to Child1
+
+
+def test_get_root_node_info_with_properties(test_client):
+    """
+    Test that the root node information retrieved via the '/node/info' endpoint includes label, types,
+    properties, and no deprecation date.
+    """
+    # Node URI for the root node
+    node_uri = "http://data.15926.org/dm/Thing"
+
+    # Send a request to the '/node/info' endpoint with the root node URI
+    response = test_client.get(f"/node/info?id={node_uri}")
+    json_data = response.get_json()
+
+    # Assert the basic fields are correct
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert json_data["label"] == "Thing"
+    assert json_data["dep"] is None  # Root node does not have a deprecation date
+
+    # Check type
+    assert "http://data.15926.org/dm/RootType" in json_data["types"]
+
+    # Check custom properties
+    assert "http://example.org/hasProperty" in json_data["properties"]
+    assert "Some property" in json_data["properties"]["http://example.org/hasProperty"]
+
+    # Ensure no definition was added for the root node
+    assert json_data["definition"] is None
