@@ -1,5 +1,11 @@
 # local development data
 data/
+playwright-report/
+
+# Database
+*.db
+*.ttl
+history.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
