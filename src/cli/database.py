@@ -75,50 +75,26 @@ def insert_results_into_rdflib(graph, results_csv):
     for result in csv_reader:
         try:
             # Ensure IRIs are absolute
-            subject_iri = URIRef(ensure_absolute_iri(result["id"]))
-            type_iri = (
-                URIRef(ensure_absolute_iri(result["type"]))
-                if result.get("type")
-                else None
-            )
-            parent_id_iri = (
-                URIRef(ensure_absolute_iri(result["parentId"]))
-                if result.get("parentId")
-                else None
-            )
+            subject_iri = URIRef(ensure_absolute_iri(result["id"]))  # The subject (id)
+            predicate_iri = URIRef(
+                ensure_absolute_iri(result["predicate"])
+            )  # The predicate
+            object_value = result["object"]
 
-            # Sanitize and validate literals
-            label = (
-                Literal(sanitize_literal(result["label"]))
-                if result.get("label")
-                else None
-            )
-            definition = (
-                Literal(sanitize_literal(result["definition"]))
-                if result.get("definition")
-                else None
-            )
-            deprecation_date = (
-                Literal(sanitize_literal(result["deprecationDate"]))
-                if result.get("deprecationDate")
-                else None
-            )
-
-            # Add triples to the RDFLib graph
-            if label:
-                graph.add((subject_iri, RDFS.label, label))
-            if type_iri:
-                graph.add((subject_iri, RDF.type, type_iri))  # Handle multiple rdf:type
-            if parent_id_iri:
+            # Determine whether the object is an IRI or a literal
+            if object_value.startswith("http://") or object_value.startswith(
+                "https://"
+            ):
+                object_iri = URIRef(ensure_absolute_iri(object_value))
                 graph.add(
-                    (subject_iri, RDFS.subClassOf, parent_id_iri)
-                )  # Handle multiple rdfs:subClassOf
-            if definition:
-                graph.add((subject_iri, SKOS.definition, definition))
-            if deprecation_date:
+                    (subject_iri, predicate_iri, object_iri)
+                )  # Add triple with IRI object
+            else:
+                # If it's a literal, sanitize it and add it as a literal
+                sanitized_object = sanitize_literal(object_value)
                 graph.add(
-                    (subject_iri, META.valDeprecationDate, deprecation_date)
-                )  # Add the deprecation date
+                    (subject_iri, predicate_iri, Literal(sanitized_object))
+                )  # Add triple with literal object
 
         except Exception as e:
             logging.error(f"Error processing result: {result}")
@@ -128,6 +104,69 @@ def insert_results_into_rdflib(graph, results_csv):
     logging.debug(
         f"Finished inserting results into RDFLib graph. True total length: {len(graph)}"
     )
+
+
+# Insert the SPARQL query results into the RDFLib graph
+# def insert_results_into_rdflib(graph, results_csv):
+#     # Parse the CSV data
+#     csv_reader = csv.DictReader(StringIO(results_csv))
+
+#     for result in csv_reader:
+#         try:
+#             # Ensure IRIs are absolute
+#             subject_iri = URIRef(ensure_absolute_iri(result["id"]))
+#             type_iri = (
+#                 URIRef(ensure_absolute_iri(result["type"]))
+#                 if result.get("type")
+#                 else None
+#             )
+#             parent_id_iri = (
+#                 URIRef(ensure_absolute_iri(result["parentId"]))
+#                 if result.get("parentId")
+#                 else None
+#             )
+
+#             # Sanitize and validate literals
+#             label = (
+#                 Literal(sanitize_literal(result["label"]))
+#                 if result.get("label")
+#                 else None
+#             )
+#             definition = (
+#                 Literal(sanitize_literal(result["definition"]))
+#                 if result.get("definition")
+#                 else None
+#             )
+#             deprecation_date = (
+#                 Literal(sanitize_literal(result["deprecationDate"]))
+#                 if result.get("deprecationDate")
+#                 else None
+#             )
+
+#             # Add triples to the RDFLib graph
+#             if label:
+#                 graph.add((subject_iri, RDFS.label, label))
+#             if type_iri:
+#                 graph.add((subject_iri, RDF.type, type_iri))  # Handle multiple rdf:type
+#             if parent_id_iri:
+#                 graph.add(
+#                     (subject_iri, RDFS.subClassOf, parent_id_iri)
+#                 )  # Handle multiple rdfs:subClassOf
+#             if definition:
+#                 graph.add((subject_iri, SKOS.definition, definition))
+#             if deprecation_date:
+#                 graph.add(
+#                     (subject_iri, META.valDeprecationDate, deprecation_date)
+#                 )  # Add the deprecation date
+
+#         except Exception as e:
+#             logging.error(f"Error processing result: {result}")
+#             logging.error(f"Exception: {e}")
+#             continue  # Skip to the next result
+
+#     logging.debug(
+#         f"Finished inserting results into RDFLib graph. True total length: {len(graph)}"
+#     )
 
 
 # Save the RDFLib graph to a file with a dynamic filename
