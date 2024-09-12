@@ -18,7 +18,11 @@ def ping():
 
 @main.route("/graph/root")
 def root():
-    root_node = controllers.get_root_node()
+    root_node_info = controllers.get_root_node_info(graph=current_app.graph)
+    if root_node_info:
+        return jsonify(root_node_info)
+    else:
+        return jsonify({"error": "No ROOT found"}), 400
 
 
 @main.route("/graph/children", methods=["GET"])

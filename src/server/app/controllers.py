@@ -1,9 +1,37 @@
 from .config import Config
-from rdflib import URIRef, RDFS, Literal
+from rdflib import URIRef, RDFS, Literal, Namespace
+
+# Define the namespace for deprecation date
+META = Namespace("http://data.15926.org/meta/")
 
 
 def get_root_node():
     return Config.ROOT_NODE_URI
+
+
+# Get only the node's LABEL and DEPRECATION DATE
+def get_basic_node_info(uri, graph):
+    node_info = {"id": str(uri), "label": None, "dep": None}
+
+    # Query for the label of the node
+    for _, _, label in graph.triples((uri, RDFS.label, None)):
+        if isinstance(label, Literal):
+            node_info["label"] = str(label)
+
+    # Query for the deprecation date
+    for _, _, deprecation_date in graph.triples((uri, META.valDeprecationDate, None)):
+        if isinstance(deprecation_date, Literal):
+            node_info["dep"] = str(deprecation_date)
+
+    return node_info
+
+
+def get_root_node_info(graph):
+    root_node_uri = get_root_node()  # Retrieve root node URI from config
+    root_node_ref = URIRef(root_node_uri)  # Convert to URIRef for querying
+
+    # Use the helper function to get root node info
+    return get_basic_node_info(root_node_ref, graph)
 
 
 def get_children(uri, graph):
@@ -14,27 +42,10 @@ def get_children(uri, graph):
     # Query the graph for triples where the given URI is an object of rdfs:subClassOf
     for child, predicate, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):
         if child not in children_set:
-            # Add the child to the set to ensure uniqueness
-            children_set.add(child)
+            children_set.add(child)  # Ensure uniqueness
 
-            # Dictionary to store child data
-            child_info = {"id": str(child), "label": None, "dep": None}
-
-            # Query for the label of the child
-            label = None
-            for _, _, label in graph.triples((child, RDFS.label, None)):
-                if isinstance(label, Literal):
-                    child_info["label"] = str(label)
-
-            # Query for the deprecation date
-            deprecation_date = None
-            for _, _, deprecation_date in graph.triples(
-                (child, URIRef("http://data.15926.org/meta/valDeprecationDate"), None)
-            ):
-                if isinstance(deprecation_date, Literal):
-                    child_info["dep"] = str(deprecation_date)
-
-            # Append the child info to the result list
+            # Use the helper function to get child info
+            child_info = get_basic_node_info(child, graph)
             children_list.append(child_info)
 
     return children_list
