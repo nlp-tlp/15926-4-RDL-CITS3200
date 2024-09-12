@@ -3,6 +3,8 @@
     <h1>Graph</h1>
     <GraphSearchSidepane />
     <GraphInfoSidepane />
+
+    <GraphVisualisation :data />
   </div>
 </template>
 
