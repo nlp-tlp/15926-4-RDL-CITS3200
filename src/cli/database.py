@@ -6,8 +6,8 @@ import yaml
 import psutil
 from io import StringIO
 from rdflib import Graph, Namespace, URIRef, Literal
-from rdflib.namespace import RDF, RDFS, SKOS
 from SPARQLWrapper import SPARQLWrapper, CSV
+from config import DATABASE_CONFIG, DATABASE_STORAGE_DIR
 
 from history import history_add_db, get_next_db_filename  # Import history functions
 
@@ -15,7 +15,7 @@ BASE_URI = "http://data.15926.org/iso/"
 META = Namespace("http://data.15926.org/meta/")  # Set up namespace for `/meta`
 
 # Load the config file
-with open("../db/config.yml", "r") as file:
+with open(DATABASE_CONFIG, "r") as file:
     config = yaml.safe_load(file)
 
 # Set up logging based on config file
@@ -106,12 +106,8 @@ def insert_results_into_rdflib(graph, results_csv):
 
 # Save the RDFLib graph to a file with a dynamic filename
 def save_graph_to_file(graph):
-
-    # Path to the storage directory
-    storage_dir = "../db/storage"
-
     # Ensure the storage directory exists, create it if not
-    os.makedirs(storage_dir, exist_ok=True)
+    os.makedirs(DATABASE_STORAGE_DIR, exist_ok=True)
 
     # Get the next available filename from history
     db_filename = (
@@ -119,7 +115,9 @@ def save_graph_to_file(graph):
     )  # This returns the filename and updates the history
 
     # Save the graph using the generated filename
-    graph.serialize(destination=os.path.join(storage_dir, db_filename), format="turtle")
+    graph.serialize(
+        destination=os.path.join(DATABASE_STORAGE_DIR, db_filename), format="turtle"
+    )
     logging.info(f"Graph saved to '{db_filename}'.")
     return db_filename
 

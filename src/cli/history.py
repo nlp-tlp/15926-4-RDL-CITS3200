@@ -4,8 +4,8 @@ from datetime import datetime
 from config import HISTORY_FILE, HISTORY_VERSION
 
 
+# Creates a new history file if it doesn't exist
 def history_create():
-    """Creates a new history file if it doesn't exist."""
     history_path = os.path.join(os.path.dirname(__file__), HISTORY_FILE)
 
     # Check if history file already exists
@@ -21,8 +21,8 @@ def history_create():
         print(f"History file already exists: '{history_path}'")
 
 
+# Generate the next available database filename based on the date and existing files
 def get_next_db_filename():
-    """Generate the next available database filename based on the date and existing files."""
     history_path = os.path.join(os.path.dirname(__file__), HISTORY_FILE)
 
     if os.path.exists(history_path):
@@ -47,8 +47,8 @@ def get_next_db_filename():
     return db_filename
 
 
+# Adds a new database entry to the history file and marks it as the current one
 def history_add_db(filename):
-    """Adds a new database entry to the history file and marks it as the current one."""
     history_path = os.path.join(os.path.dirname(__file__), HISTORY_FILE)
 
     if os.path.exists(history_path):
@@ -74,8 +74,8 @@ def history_add_db(filename):
     return filename
 
 
+# Returns the current database filename
 def get_current_db():
-    """Returns the current database filename."""
     history_path = os.path.join(os.path.dirname(__file__), HISTORY_FILE)
 
     if os.path.exists(history_path):

@@ -1,6 +1,6 @@
 import typer
 
-from history import history_add_db, get_current_db
+from history import get_current_db
 from database import update_db
 from config import HISTORY_VERSION
 
@@ -34,7 +34,7 @@ def main(update: bool = False, fix: bool = False):
 
 def motd():
     typer.echo("Welcome to Iso15926Vis CLI for Backend!")
-    typer.echo(f"Database history version: '{1}'\n")
+    typer.echo(f"Database history version: '{HISTORY_VERSION}'\n")
 
 
 if __name__ == "__main__":
