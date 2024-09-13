@@ -1,9 +1,3 @@
-<template>
-  <div id="tree-container">
-    <svg ref="svgRef"></svg>
-  </div>
-</template>
-
 <script setup lang="ts">
 import * as d3 from 'd3'
 import { onMounted, ref } from 'vue'
@@ -15,24 +9,29 @@ const props = defineProps({
   }
 })
 
-const svgRef = ref(null)
+const svgRef = ref<Element>()
 
 // width and height to fit the whole parent container
 const width = window.innerWidth
 const height = window.innerHeight
-const nodeDistance = 10
+const nodeDistance = 40
+const initialGraphX = 40
+const initialGraphY = (height / 7) * 3
 
 const data = props.data
 
 onMounted(() => {
   const startTime = performance.now()
   const svg = d3
-    .select(svgRef.value)
+    .select(svgRef.value as Element)
     .attr('width', width)
     .attr('height', height)
     .call(d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed) as any)
     .append('g')
-    .attr('transform', 'translate(40,0)')
+    .attr('transform', `translate(${initialGraphX},${initialGraphY})`)
+
+  // Store the initial transform
+  const initialTransform = d3.zoomIdentity.translate(initialGraphX, initialGraphY)
 
   // Add arrowhead marker
   svg
@@ -190,10 +189,25 @@ onMounted(() => {
   // Start the rendering
   update(root)
 
+  // Apply the initial transform to center the root node vertically
+  d3.select(svgRef.value as Element).call(d3.zoom().transform as any, initialTransform)
+
   const endTime = performance.now()
   console.log(`Rendering took ${endTime - startTime} ms`)
 })
 </script>
+
+<script lang="ts">
+export default {
+  name: 'GraphVisualisation'
+}
+</script>
+
+<template>
+  <div id="tree-container">
+    <svg ref="svgRef"></svg>
+  </div>
+</template>
 
 <style scoped>
 .node circle {
