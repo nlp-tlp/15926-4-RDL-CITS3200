@@ -3,6 +3,13 @@ import * as d3 from 'd3'
 import { onMounted, ref } from 'vue'
 
 const props = defineProps({
+  /**
+   * The JSON data to visualize as a graph.
+   * @type {Object}
+   * @property {string} `name` - The name of the node.
+   * @property {Object[]} [`children`] - The child nodes.
+   * @property {Object[]} [`extra_parents`] - The extra parent nodes.
+   */
   data: {
     type: Object,
     required: true
@@ -49,12 +56,20 @@ onMounted(() => {
     .attr('d', 'M0,-5L10,0L0,5')
     .attr('fill', 'black')
 
+  /**
+   * Handles the zoom event.
+   * @param {Object} event - The zoom event.
+   */
   function zoomed(event: any) {
     svg.attr('transform', event.transform)
   }
 
   const root = d3.hierarchy(data)
 
+  /**
+   * Updates the tree layout and renders the nodes and links.
+   * @param {Object} source - The source node.
+   */
   function update(source: any) {
     // Assigns the x and y position for the nodes
     const treeLayout = d3.tree().nodeSize([nodeDistance, 300])
@@ -169,7 +184,10 @@ onMounted(() => {
     extraLink.exit().remove()
   }
 
-  // Toggle children on click.
+  /**
+   * Toggles the collapse state of the node's children.
+   * @param {Object} d - The node to toggle.
+   */
   function toggleCollapse(d: any) {
     if (d.children) {
       d._children = d.children
@@ -198,6 +216,21 @@ onMounted(() => {
 </script>
 
 <script lang="ts">
+/**
+ * GraphVisualisation component represents the visualisation of a graph.
+ *
+ * This component uses D3.js to render the graph.
+ *
+ * @param {Object} data - The JSON data to visualise as a graph.
+ *
+ * Contains the following properties:
+ * @param {string} data.name - The name of the node.
+ * @param {Object[]} [data.children] - The child nodes.
+ * @param {Object[]} [data.extra_parents] - The extra parent nodes.
+ *
+ * @example
+ * <GraphVisualisation :data="data" />
+ */
 export default {
   name: 'GraphVisualisation'
 }
