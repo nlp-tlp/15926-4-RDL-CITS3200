@@ -4,7 +4,7 @@ def test_get_children_with_default_deprecation(test_client):
     With dep=False by default, it should exclude Child1 (which has a deprecation date).
     """
     # Send a request to the /graph/children route with the root node's URI (default dep=False)
-    response = test_client.get("/graph/children?id=http://data.15926.org/dm/Thing")
+    response = test_client.get("/graph/children/http://data.15926.org/dm/Thing")
 
     # Parse the JSON response
     data = response.get_json()
@@ -25,7 +25,7 @@ def test_get_children_without_deprecation(test_client):
     """
     # Send a request to the /graph/children route with the root node's URI (default dep=False)
     response = test_client.get(
-        "/graph/children?id=http://data.15926.org/dm/Thing&dep=false"
+        "/graph/children/http://data.15926.org/dm/Thing?dep=false"
     )
 
     # Parse the JSON response
@@ -47,7 +47,7 @@ def test_get_children_with_deprecation(test_client):
     """
     # Send a request to the /graph/children route with the root node's URI and dep=True
     response = test_client.get(
-        "/graph/children?id=http://data.15926.org/dm/Thing&dep=true"
+        "/graph/children/http://data.15926.org/dm/Thing?dep=true"
     )
 
     # Parse the JSON response
@@ -106,7 +106,7 @@ def test_invalid_query_to_children(test_client):
     Test an invalid query to '/graph/children', where the provided URI doesn't exist.
     """
     invalid_uri = "http://data.15926.org/dm/NonExistent"
-    response = test_client.get(f"/graph/children?id={invalid_uri}")
+    response = test_client.get(f"/graph/children/{invalid_uri}")
 
     # Parse the JSON response
     data = response.get_json()
@@ -124,7 +124,7 @@ def test_get_children_with_extra_parents(test_client):
     """
     # Send a request to the /graph/children route with the root node's URI
     response = test_client.get(
-        "/graph/children?id=http://data.15926.org/dm/Thing&dep=true&ex_parents=true"
+        "/graph/children/http://data.15926.org/dm/Thing?dep=true&ex_parents=true"
     )
 
     # Parse the JSON response

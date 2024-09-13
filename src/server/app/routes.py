@@ -4,13 +4,6 @@ from flask import jsonify, request, current_app
 from app.blueprints import main
 
 
-@main.route("/index")
-@main.route("/home")
-@main.route("/")
-def home():
-    return "<h1>Welcome to the Home Page!</h1><p>Your Flask application is running successfully.</p>"
-
-
 @main.route("/ping")
 def ping():
     return jsonify({"status": "success", "message": "Pong!"}), 200
@@ -39,10 +32,9 @@ def root():
         return jsonify({"error": "No ROOT found"}), 404
 
 
-@main.route("/graph/children", methods=["GET"])
-def children():
-    # Extract the custom ID from the query parameters
-    node_uri = request.args.get("id")
+@main.route("/graph/children/<path:node_uri>", methods=["GET"])
+def children(node_uri):
+    # Extract the custom parameters
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
@@ -50,28 +42,32 @@ def children():
         request.args.get("extra_parents", default=True)
     )
 
-    # Get the children if the node's URI is given
-    if node_uri:
-        try:
-            # Check if the graph is available
-            if not hasattr(current_app, "graph"):
-                raise AttributeError("Graph is not initialised")
+    try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
 
-            children = controllers.get_children(
-                uri=node_uri,
-                graph=current_app.graph,
-                dep=include_deprecation,
-                ex_parents=include_extra_parents,
-            )
+        children = controllers.get_children(
+            uri=node_uri,
+            graph=current_app.graph,
+            dep=include_deprecation,
+            ex_parents=include_extra_parents,
+        )
 
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 404
-        except AttributeError as e:
-            return jsonify({"error": str(e)}), 500
-        except Exception as e:
-            return jsonify({"error": "Internal Error"}), 500
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except AttributeError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
 
-        return jsonify({"id": node_uri, "children": children})
+    return jsonify({"id": node_uri, "children": children})
 
-    else:
-        return jsonify({"error": "ID/URI not provided"}), 400
+
+@main.route("/graph/children/", methods=["GET"])
+@main.route("/graph/children", methods=["GET"])
+def invalid_children():
+    return (
+        jsonify({"error": "ID/URI not provided. Must use '/graph/children/<id>'"}),
+        400,
+    )
