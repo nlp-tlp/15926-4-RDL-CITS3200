@@ -44,7 +44,7 @@ def get_root_node_info(graph):
     return get_basic_node_info(root_node_ref, graph)
 
 
-def get_children(uri, graph, dep=False):
+def get_children(uri, graph, dep=False, ex_parents=True):
     children_set = set()  # Keep only unique children
     children_list = []
     uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
@@ -53,17 +53,36 @@ def get_children(uri, graph, dep=False):
         raise ValueError(f"URI '{uri}' does not exist within the database")
 
     # Query the graph for triples where the given URI is an object of rdfs:subClassOf
-    for child, predicate, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):
+    for child, _, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):
         if child not in children_set:
             # Use the helper function to get child info
             child_info = get_basic_node_info(child, graph)
 
-            # If ignoring deprecated nodes and a node has a date set, then ignore it
+            # If ignoring deprecated nodes and a node has a deprecation date, then skip it
             if not dep and child_info.get("dep"):
                 continue
 
             # Add the child to the set and the list
             children_set.add(child)
+
+            # Initialise an empty list for extra parents
+            extra_parents_list = []
+
+            # If ex_parents is True, find any additional parents
+            if ex_parents:
+                extra_parents_list = []  # Initialise an empty list for extra parents
+
+                for _, _, other_parent in graph.triples((child, RDFS.subClassOf, None)):
+                    if str(other_parent) != str(parent):
+                        # Get info for the extra parent and add it to the extra_parents list
+                        extra_parent_info = {"id": str(other_parent)}
+                        extra_parents_list.append(extra_parent_info)
+
+                # Only add the 'extra_parents' field if there are extra parents
+                if extra_parents_list:
+                    child_info["extra_parents"] = extra_parents_list
+
+            # Append the child info to the children list
             children_list.append(child_info)
 
     return children_list

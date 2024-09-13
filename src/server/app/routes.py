@@ -40,11 +40,14 @@ def root():
 
 
 @main.route("/graph/children", methods=["GET"])
-def get_children():
+def children():
     # Extract the custom ID from the query parameters
     node_uri = request.args.get("id")
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
+    )
+    include_extra_parents = controllers.str_to_bool(
+        request.args.get("extra_parents", default=True)
     )
 
     # Get the children if the node's URI is given
@@ -55,7 +58,10 @@ def get_children():
                 raise AttributeError("Graph is not initialised")
 
             children = controllers.get_children(
-                uri=node_uri, graph=current_app.graph, dep=include_deprecation
+                uri=node_uri,
+                graph=current_app.graph,
+                dep=include_deprecation,
+                ex_parents=include_extra_parents,
             )
 
         except ValueError as e:
@@ -69,6 +75,3 @@ def get_children():
 
     else:
         return jsonify({"error": "ID/URI not provided"}), 400
-
-
-# @main.route("/graph/local-hierarchy/")
