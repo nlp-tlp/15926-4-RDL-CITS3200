@@ -48,7 +48,7 @@ def root():
         return jsonify({"error": "No ROOT found"}), 404
 
 
-@main.route("/graph/children/<path:node_uri>", methods=["GET"])
+@main.route("/node/children/<path:node_uri>", methods=["GET"])
 def children(node_uri):
     """
     Fetches the children of a given node in the graph.
@@ -98,8 +98,8 @@ def children(node_uri):
     return jsonify({"id": node_uri, "children": children})
 
 
-@main.route("/graph/children/", methods=["GET"])
-@main.route("/graph/children", methods=["GET"])
+@main.route("/node/children/", methods=["GET"])
+@main.route("/node/children", methods=["GET"])
 def invalid_children():
     """
     Fallback route for invalid children requests.
@@ -108,7 +108,7 @@ def invalid_children():
         JSON: Error message indicating the ID/URI was not provided.
     """
     return (
-        jsonify({"error": "ID/URI not provided. Must use '/graph/children/<id>'"}),
+        jsonify({"error": "ID/URI not provided. Must use '/node/children/<id>'"}),
         400,
     )
 

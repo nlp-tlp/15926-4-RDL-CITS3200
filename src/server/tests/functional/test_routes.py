@@ -28,10 +28,10 @@ def test_graph_root_route(test_client):
 
 def test_graph_children_route(test_client):
     """
-    Test the '/graph/children' route with a valid ID.
+    Test the '/node/children' route with a valid ID.
     """
     node_uri = "http://data.15926.org/dm/Thing"
-    response = test_client.get(f"/graph/children/{node_uri}")
+    response = test_client.get(f"/node/children/{node_uri}")
     json_data = response.get_json()
 
     # Assert correct response for children of the root node
@@ -43,15 +43,15 @@ def test_graph_children_route(test_client):
 
 def test_graph_children_route_missing_id(test_client):
     """
-    Test the '/graph/children' route without providing an ID in the query parameters.
+    Test the '/node/children' route without providing an ID in the query parameters.
     """
-    response = test_client.get("/graph/children/")
+    response = test_client.get("/node/children/")
     json_data = response.get_json()
 
     # Assert the response is a 400 Bad Request due to missing ID/URI
     assert response.status_code == 400
     assert "error" in json_data
-    assert json_data["error"] == "ID/URI not provided. Must use '/graph/children/<id>'"
+    assert json_data["error"] == "ID/URI not provided. Must use '/node/children/<id>'"
 
 
 def test_node_info_route(test_client):
