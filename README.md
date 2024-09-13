@@ -116,7 +116,7 @@ To run the Flask server, activate your virtual environment and run from the root
 
 ```
 cd src/server
-flask run
+flask --app "server.py" run
 ```
 
 #### CLI
