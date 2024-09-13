@@ -157,21 +157,16 @@ export default {
 .search-icon {
   position: absolute;
   left: 10px;
-  top: 50%;
+  top: 45%;
   transform: translateY(-50%);
   fill: white;
   transition: fill 0.3s;
 }
 
-.search-wrapper:hover .search-icon,
-.search-wrapper:focus-within .search-icon {
-  fill: var(--color-nav-background);
-}
-
 .search-bar {
   width: 100%;
   padding: 1rem;
-  padding-left: 40px;
+  padding-left: 50px;
   margin-bottom: 0.5rem;
   max-width: 220px;
   border: 1px solid white;
@@ -186,17 +181,6 @@ export default {
 
 .search-bar::placeholder {
   color: white;
-}
-
-.search-bar:hover::placeholder,
-.search-bar:focus::placeholder {
-  color: var(--color-nav-background);
-}
-
-.search-bar:hover,
-.search-bar:focus {
-  background-color: white;
-  color: var(--color-nav-background);
 }
 
 .dropdown {
