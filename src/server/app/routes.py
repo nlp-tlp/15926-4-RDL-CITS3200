@@ -113,27 +113,58 @@ def invalid_children():
     )
 
 
+@main.route("/node/info/<path:node_uri>", methods=["GET"])
+def info(node_uri):
+    """
+    Retrieves detailed information about a given node in the RDFLib graph,
+    including various properties such as label, types, deprecation dates,
+    and additional properties if specified.
+
+    Args:
+        node_uri (str): The URI of the node to retrieve information for.
+
+    Query Parameters:
+        all_info (bool): A query parameter that specifies whether to retrieve all
+                         available node information (default: True).
+
+    Returns:
+        JSON: The information for the given node.
+    """
+    # Extract extra parameters
+    include_all_info = controllers.str_to_bool(
+        request.args.get("all_info", default=True)
+    )
+
+    try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
+
+        info = controllers.get_all_node_info(
+            uri=node_uri, graph=current_app.graph, all_info=include_all_info
+        )
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except AttributeError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
+
+    return jsonify(info)
+
+
+@main.route("/node/info/", methods=["GET"])
 @main.route("/node/info", methods=["GET"])
-def info():
-    # Extract the custom ID from the query parameters
-    node_uri = request.args.get("id")
+def invalid_info():
+    """
+    Handles requests to '/node/info' where no node URI is provided.
+    Returns an error message with status code 400.
 
-    if node_uri:
-        try:
-            # Check if the graph is available
-            if not hasattr(current_app, "graph"):
-                raise AttributeError("Graph is not initialised")
-
-            info = controllers.get_all_node_info(uri=node_uri, graph=current_app.graph)
-
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 404
-        except AttributeError as e:
-            return jsonify({"error": str(e)}), 500
-        except Exception as e:
-            return jsonify({"error": "Internal Error"}), 500
-
-        return jsonify(info)
-
-    else:
-        return jsonify({"error": "ID/URI not provided"}), 400
+    Returns:
+        JSON: Error message indicating the ID/URI was not provided.
+    """
+    return (
+        jsonify({"error": "ID/URI not provided. Must use '/node/info/<id>'"}),
+        400,
+    )

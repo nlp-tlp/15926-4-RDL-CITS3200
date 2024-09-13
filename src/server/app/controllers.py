@@ -61,16 +61,28 @@ def get_basic_node_info(uri, graph):
 
 
 # Get all information (predicates and objects) for a given node in the RDFLib graph.
-def get_all_node_info(uri, graph):
-    node_info = {
-        "id": str(uri),
-        "label": None,  # Handle rdfs:label
-        "types": [],  # Handle multiple rdf:type entries
-        "dep": None,  # Handle meta/valDeprecationDate
-        "definition": None,  # Handle skos:definition
-        "parents": [],  # Handle rdfs:subClassOf
-        "properties": {},  # Handle anything else
-    }
+def get_all_node_info(uri, graph, all_info=True):
+    # Initialise dictionary based on option to include all extra properties.
+    if all_info:
+        node_info = {
+            "id": str(uri),
+            "label": None,  # Handle rdfs:label
+            "types": [],  # Handle multiple rdf:type entries
+            "dep": None,  # Handle meta/valDeprecationDate
+            "definition": None,  # Handle skos:definition
+            "parents": [],  # Handle rdfs:subClassOf
+            "properties": {},  # Handle anything else
+        }
+
+    else:
+        node_info = {
+            "id": str(uri),
+            "label": None,  # Handle rdfs:label
+            "types": [],  # Handle multiple rdf:type entries
+            "dep": None,  # Handle meta/valDeprecationDate
+            "definition": None,  # Handle skos:definition
+            "parents": [],  # Handle rdfs:subClassOf
+        }
 
     # Ensure node exists within the database
     if not check_uri_exists(uri=uri, graph=graph):
@@ -101,15 +113,16 @@ def get_all_node_info(uri, graph):
             node_info["parents"].append(str(obj))
 
         else:
-            # Add the predicate and object to the 'properties' dictionary
-            pred_str = str(predicate)
-            obj_str = str(obj)
+            if all_info:
+                # Add the predicate and object to the 'properties' dictionary
+                pred_str = str(predicate)
+                obj_str = str(obj)
 
-            # Store multiple values under the same predicate
-            if pred_str in node_info["properties"]:
-                node_info["properties"][pred_str].append(obj_str)
-            else:
-                node_info["properties"][pred_str] = [obj_str]
+                # Store multiple values under the same predicate
+                if pred_str in node_info["properties"]:
+                    node_info["properties"][pred_str].append(obj_str)
+                else:
+                    node_info["properties"][pred_str] = [obj_str]
 
     return node_info
 

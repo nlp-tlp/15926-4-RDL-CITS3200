@@ -167,7 +167,7 @@ def test_get_children_with_extra_parents(test_client):
     assert "extra_parents" not in child1_info
 
 
-def test_get_all_node_info(test_client):
+def test_get_node_info(test_client):
     """
     Test that the node information retrieved via the '/node/info' endpoint includes label, types,
     deprecation date, definition, and properties.
@@ -176,7 +176,7 @@ def test_get_all_node_info(test_client):
     node_uri = "http://data.15926.org/dm/Child1"
 
     # Send a request to the '/node/info' endpoint with the node URI
-    response = test_client.get(f"/node/info?id={node_uri}")
+    response = test_client.get(f"/node/info/{node_uri}")
     json_data = response.get_json()
 
     # Assert the basic fields are correct
@@ -197,7 +197,7 @@ def test_get_all_node_info(test_client):
     assert len(json_data["properties"]) == 0  # No custom properties added to Child1
 
 
-def test_get_root_node_info_with_properties(test_client):
+def test_get_all_root_node_info_with_properties(test_client):
     """
     Test that the root node information retrieved via the '/node/info' endpoint includes label, types,
     properties, and no deprecation date.
@@ -206,7 +206,7 @@ def test_get_root_node_info_with_properties(test_client):
     node_uri = "http://data.15926.org/dm/Thing"
 
     # Send a request to the '/node/info' endpoint with the root node URI
-    response = test_client.get(f"/node/info?id={node_uri}")
+    response = test_client.get(f"/node/info/{node_uri}?all_info=true")
     json_data = response.get_json()
 
     # Assert the basic fields are correct

@@ -98,7 +98,7 @@ def test_get_children_with_extra_parents(sample_graph):
 
 def test_get_all_node_info(sample_graph):
     """
-    Test the get_all_node_info function from controllers.py.
+    Test the get_all_node_info function with default all_node parameter from controllers.py.
     """
     # Test with Child1
     node_uri = "http://data.15926.org/dm/Child1"
