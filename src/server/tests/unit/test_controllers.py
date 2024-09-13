@@ -4,6 +4,7 @@ from app.controllers import (
     get_children,
     check_uri_exists,
     str_to_bool,
+    get_all_node_info,
 )
 
 
@@ -93,6 +94,26 @@ def test_get_children_with_extra_parents(sample_graph):
     assert (
         extra_parent_info["id"] == "http://data.15926.org/dm/ExtraParent"
     ), "Child2's extra parent should be 'Extra Parent'"
+
+
+def test_get_all_node_info(sample_graph):
+    """
+    Test the get_all_node_info function with default all_node parameter from controllers.py.
+    """
+    # Test with Child1
+    node_uri = "http://data.15926.org/dm/Child1"
+    node_info = get_all_node_info(node_uri, sample_graph)
+
+    # Assert the basic fields are correct
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child One"
+    assert node_info["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
+    assert "http://data.15926.org/dm/ChildType" in node_info["types"]
+    assert node_info["definition"] == "Child One is a sample node."
+
+    # Ensure there are no extra properties for Child1
+    assert "properties" in node_info
+    assert len(node_info["properties"]) == 0  # No custom properties
 
 
 def test_check_uri_exists(sample_graph):

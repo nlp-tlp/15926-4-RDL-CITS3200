@@ -1,8 +1,9 @@
 from .config import Config
-from rdflib import URIRef, RDFS, Literal, Namespace
+from rdflib import URIRef, Literal, RDF, RDFS, Namespace
 
-# Define the namespace for deprecation date
+# Define the namespace for meta and SKOS
 META = Namespace("http://data.15926.org/meta/")
+SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
 
 
 def get_root_node():
@@ -55,6 +56,96 @@ def get_basic_node_info(uri, graph):
     for _, _, deprecation_date in graph.triples((uri, META.valDeprecationDate, None)):
         if isinstance(deprecation_date, Literal):
             node_info["dep"] = str(deprecation_date)
+
+    return node_info
+
+
+# Get all information (predicates and objects) for a given node in the RDFLib graph.
+def get_all_node_info(uri, graph, all_info=True):
+    """
+    Retrieves all available information about a given node in the RDFLib graph. This includes
+    specific properties such as label, types, deprecation date, definition, and parent nodes
+    (subClassOf). If 'all_info' is set to True, additional properties are also returned.
+
+    Args:
+        uri (str): The URI of the node to retrieve information for.
+        graph (rdflib.Graph): The RDFLib graph to query the node's information from.
+        all_info (bool): A flag indicating whether to retrieve additional properties (default: True).
+
+    Returns:
+        dict: A dictionary containing all available information about the node, including:
+            - id (str): The URI of the node.
+            - label (str, optional): The rdfs:label value of the node.
+            - types (list of str): A list of rdf:type values (if the node has multiple types).
+            - dep (str, optional): The meta:valDeprecationDate value (deprecation date).
+            - definition (str, optional): The skos:definition of the node.
+            - parents (list of str): A list of URIs for parent nodes (rdfs:subClassOf).
+            - properties (dict): A dictionary of other predicates and their corresponding objects (only included if 'all_info' is True).
+
+    Raises:
+        ValueError: If the provided URI does not exist within the RDFLib graph.
+    """
+    # Initialise dictionary based on option to include all extra properties.
+    if all_info:
+        node_info = {
+            "id": str(uri),
+            "label": None,  # Handle rdfs:label
+            "types": [],  # Handle multiple rdf:type entries
+            "dep": None,  # Handle meta/valDeprecationDate
+            "definition": None,  # Handle skos:definition
+            "parents": [],  # Handle rdfs:subClassOf
+            "properties": {},  # Handle anything else
+        }
+
+    else:
+        node_info = {
+            "id": str(uri),
+            "label": None,  # Handle rdfs:label
+            "types": [],  # Handle multiple rdf:type entries
+            "dep": None,  # Handle meta/valDeprecationDate
+            "definition": None,  # Handle skos:definition
+            "parents": [],  # Handle rdfs:subClassOf
+        }
+
+    # Ensure node exists within the database
+    if not check_uri_exists(uri=uri, graph=graph):
+        raise ValueError(f"URI '{uri}' does not exist within the database")
+
+    uri_ref = URIRef(uri)
+
+    # Query for all triples where the node is the subject
+    for predicate, obj in graph.predicate_objects(subject=uri_ref):
+        # If the predicate is rdfs:label, store it separately
+        if predicate == RDFS.label and isinstance(obj, Literal):
+            node_info["label"] = str(obj)
+
+        # If the predicate is rdf:type, store it in the 'types' list
+        elif predicate == RDF.type:
+            node_info["types"].append(str(obj))
+
+        # If the predicate is the deprecation date, store it separately
+        elif predicate == META.valDeprecationDate and isinstance(obj, Literal):
+            node_info["dep"] = str(obj)
+
+        # If the predicate is skos:definition, store it separately
+        elif predicate == SKOS.definition and isinstance(obj, Literal):
+            node_info["definition"] = str(obj)
+
+        # If the predicate is rdfs:subClassOf, store it in the 'parents' list
+        elif predicate == RDFS.subClassOf:
+            node_info["parents"].append(str(obj))
+
+        else:
+            if all_info:
+                # Add the predicate and object to the 'properties' dictionary
+                pred_str = str(predicate)
+                obj_str = str(obj)
+
+                # Store multiple values under the same predicate
+                if pred_str in node_info["properties"]:
+                    node_info["properties"][pred_str].append(obj_str)
+                else:
+                    node_info["properties"][pred_str] = [obj_str]
 
     return node_info
 

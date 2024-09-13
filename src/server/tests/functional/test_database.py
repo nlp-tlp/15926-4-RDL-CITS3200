@@ -1,10 +1,10 @@
 def test_get_children_with_default_deprecation(test_client):
     """
-    Test the '/graph/children' route to fetch the children of the root node.
+    Test the '/node/children' route to fetch the children of the root node.
     With dep=False by default, it should exclude Child1 (which has a deprecation date).
     """
-    # Send a request to the /graph/children route with the root node's URI (default dep=False)
-    response = test_client.get("/graph/children/http://data.15926.org/dm/Thing")
+    # Send a request to the /node/children route with the root node's URI (default dep=False)
+    response = test_client.get("/node/children/http://data.15926.org/dm/Thing")
 
     # Parse the JSON response
     data = response.get_json()
@@ -20,12 +20,12 @@ def test_get_children_with_default_deprecation(test_client):
 
 def test_get_children_without_deprecation(test_client):
     """
-    Test the '/graph/children' route to fetch the children of the root node.
+    Test the '/node/children' route to fetch the children of the root node.
     With dep=False, it should exclude Child1 (which has a deprecation date).
     """
-    # Send a request to the /graph/children route with the root node's URI (default dep=False)
+    # Send a request to the /node/children route with the root node's URI (default dep=False)
     response = test_client.get(
-        "/graph/children/http://data.15926.org/dm/Thing?dep=false"
+        "/node/children/http://data.15926.org/dm/Thing?dep=false"
     )
 
     # Parse the JSON response
@@ -42,13 +42,11 @@ def test_get_children_without_deprecation(test_client):
 
 def test_get_children_with_deprecation(test_client):
     """
-    Test the '/graph/children' route to fetch the children of the root node with dep=True.
+    Test the '/node/children' route to fetch the children of the root node with dep=True.
     Both Child1 (with a deprecation date) and Child2 should be included.
     """
-    # Send a request to the /graph/children route with the root node's URI and dep=True
-    response = test_client.get(
-        "/graph/children/http://data.15926.org/dm/Thing?dep=true"
-    )
+    # Send a request to the /node/children route with the root node's URI and dep=True
+    response = test_client.get("/node/children/http://data.15926.org/dm/Thing?dep=true")
 
     # Parse the JSON response
     data = response.get_json()
@@ -103,10 +101,10 @@ def test_get_root_node_info(test_client):
 
 def test_invalid_query_to_children(test_client):
     """
-    Test an invalid query to '/graph/children', where the provided URI doesn't exist.
+    Test an invalid query to '/node/children', where the provided URI doesn't exist.
     """
     invalid_uri = "http://data.15926.org/dm/NonExistent"
-    response = test_client.get(f"/graph/children/{invalid_uri}")
+    response = test_client.get(f"/node/children/{invalid_uri}")
 
     # Parse the JSON response
     data = response.get_json()
@@ -119,12 +117,12 @@ def test_invalid_query_to_children(test_client):
 
 def test_get_children_with_extra_parents(test_client):
     """
-    Test the '/graph/children' route to fetch the children of the root node.
+    Test the '/node/children' route to fetch the children of the root node.
     Ensure that the 'extra_parents' field is included for nodes with multiple parents.
     """
-    # Send a request to the /graph/children route with the root node's URI
+    # Send a request to the /node/children route with the root node's URI
     response = test_client.get(
-        "/graph/children/http://data.15926.org/dm/Thing?dep=true&ex_parents=true"
+        "/node/children/http://data.15926.org/dm/Thing?dep=true&ex_parents=true"
     )
 
     # Parse the JSON response
@@ -165,3 +163,94 @@ def test_get_children_with_extra_parents(test_client):
     )
     assert child1_info is not None
     assert "extra_parents" not in child1_info
+
+
+def test_get_node_info(test_client):
+    """
+    Test that the node information retrieved via the '/node/info' endpoint includes label, types,
+    deprecation date, definition, and properties.
+    """
+    # Node URI for the test
+    node_uri = "http://data.15926.org/dm/Child1"
+
+    # Send a request to the '/node/info' endpoint with the node URI
+    response = test_client.get(f"/node/info/{node_uri}")
+    json_data = response.get_json()
+
+    # Assert the basic fields are correct
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert json_data["label"] == "Child One"
+    assert json_data["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
+
+    # Check types
+    assert "http://data.15926.org/dm/ChildType" in json_data["types"]
+    assert "http://data.15926.org/dm/AnotherType" in json_data["types"]
+
+    # Check definition
+    assert json_data["definition"] == "Child One is a sample node."
+
+    # Ensure no custom properties were added for this node
+    assert "properties" in json_data
+    assert len(json_data["properties"]) == 0  # No custom properties added to Child1
+
+
+def test_get_root_node_info_with_properties(test_client):
+    """
+    Test that the root node information retrieved via the '/node/info' endpoint includes label, types,
+    properties, and no deprecation date.
+    """
+    # Node URI for the root node
+    node_uri = "http://data.15926.org/dm/Thing"
+
+    # Send a request to the '/node/info' endpoint with the root node URI
+    response = test_client.get(f"/node/info/{node_uri}?all_info=true")
+    json_data = response.get_json()
+
+    # Assert the basic fields are correct
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert json_data["label"] == "Thing"
+    assert json_data["dep"] is None  # Root node does not have a deprecation date
+
+    # Check type
+    assert "http://data.15926.org/dm/RootType" in json_data["types"]
+
+    # Check custom properties
+    assert "http://example.org/hasProperty" in json_data["properties"]
+    assert "Some property" in json_data["properties"]["http://example.org/hasProperty"]
+
+    # Ensure no definition was added for the root node
+    assert json_data["definition"] is None
+
+
+def test_get_root_node_info_without_properties(test_client):
+    """
+    Test that the root node information retrieved via the '/node/info' endpoint includes only the label,
+    types, deprecation date, parents, and definition, but no additional properties, when 'all_info=false'.
+    """
+    # Node URI for the root node
+    node_uri = "http://data.15926.org/dm/Thing"
+
+    # Send a request to the '/node/info' endpoint with the root node URI and 'all_info=false'
+    response = test_client.get(f"/node/info/{node_uri}?all_info=false")
+    json_data = response.get_json()
+
+    # Assert the basic fields are correct
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert json_data["label"] == "Thing"
+    assert json_data["dep"] is None  # Root node does not have a deprecation date
+
+    # Check that the types include the correct type
+    assert "http://data.15926.org/dm/RootType" in json_data["types"]
+
+    # Ensure no custom properties exist, since 'all_info' is False
+    assert "properties" not in json_data  # 'properties' field should not be present
+
+    # Ensure no definition was added for the root node
+    assert json_data["definition"] is None
+
+    # Check parents field to ensure it's handled correctly (empty or filled based on data)
+    assert "parents" in json_data
+    assert len(json_data["parents"]) == 0 or isinstance(json_data["parents"], list)
