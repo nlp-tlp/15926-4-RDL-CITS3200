@@ -32,7 +32,9 @@ const mockRDFData = {
   Field10: 'Value10',
   Field12: 'Value12',
   Field13: 'Value13',
-  Field14: 'Value14'
+  Field14: 'Value14',
+  superclass: 'SuperClassExample',
+  'subclass of': 'SubClassExample'
 }
 
 // Create a reactive object to hold the RDF data
@@ -67,7 +69,11 @@ export default {
       <div class="rdf-info">
         <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
           <strong class="rdf-field-name">{{ key }}:</strong>
-          <span class="rdf-field-value">{{ value }}</span>
+          <span class="rdf-field-value">
+            <slot :name="key" :value="value">
+              {{ value }}
+            </slot>
+          </span>
         </div>
       </div>
     </div>
