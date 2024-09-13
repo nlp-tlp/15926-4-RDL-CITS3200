@@ -224,6 +224,7 @@ export default {
   align-items: center;
   color: white;
   margin-bottom: 10px;
+  margin-top: 30px;
   white-space: nowrap;
 }
 
