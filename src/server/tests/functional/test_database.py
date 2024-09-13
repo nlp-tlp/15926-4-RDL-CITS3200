@@ -197,7 +197,7 @@ def test_get_node_info(test_client):
     assert len(json_data["properties"]) == 0  # No custom properties added to Child1
 
 
-def test_get_all_root_node_info_with_properties(test_client):
+def test_get_root_node_info_with_properties(test_client):
     """
     Test that the root node information retrieved via the '/node/info' endpoint includes label, types,
     properties, and no deprecation date.
@@ -224,3 +224,35 @@ def test_get_all_root_node_info_with_properties(test_client):
 
     # Ensure no definition was added for the root node
     assert json_data["definition"] is None
+
+
+def test_get_root_node_info_without_properties(test_client):
+    """
+    Test that the root node information retrieved via the '/node/info' endpoint includes only the label,
+    types, deprecation date, parents, and definition, but no additional properties, when 'all_info=false'.
+    """
+    # Node URI for the root node
+    node_uri = "http://data.15926.org/dm/Thing"
+
+    # Send a request to the '/node/info' endpoint with the root node URI and 'all_info=false'
+    response = test_client.get(f"/node/info/{node_uri}?all_info=false")
+    json_data = response.get_json()
+
+    # Assert the basic fields are correct
+    assert response.status_code == 200
+    assert json_data["id"] == node_uri
+    assert json_data["label"] == "Thing"
+    assert json_data["dep"] is None  # Root node does not have a deprecation date
+
+    # Check that the types include the correct type
+    assert "http://data.15926.org/dm/RootType" in json_data["types"]
+
+    # Ensure no custom properties exist, since 'all_info' is False
+    assert "properties" not in json_data  # 'properties' field should not be present
+
+    # Ensure no definition was added for the root node
+    assert json_data["definition"] is None
+
+    # Check parents field to ensure it's handled correctly (empty or filled based on data)
+    assert "parents" in json_data
+    assert len(json_data["parents"]) == 0 or isinstance(json_data["parents"], list)
