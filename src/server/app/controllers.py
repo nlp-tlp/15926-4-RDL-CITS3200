@@ -62,6 +62,29 @@ def get_basic_node_info(uri, graph):
 
 # Get all information (predicates and objects) for a given node in the RDFLib graph.
 def get_all_node_info(uri, graph, all_info=True):
+    """
+    Retrieves all available information about a given node in the RDFLib graph. This includes
+    specific properties such as label, types, deprecation date, definition, and parent nodes
+    (subClassOf). If 'all_info' is set to True, additional properties are also returned.
+
+    Args:
+        uri (str): The URI of the node to retrieve information for.
+        graph (rdflib.Graph): The RDFLib graph to query the node's information from.
+        all_info (bool): A flag indicating whether to retrieve additional properties (default: True).
+
+    Returns:
+        dict: A dictionary containing all available information about the node, including:
+            - id (str): The URI of the node.
+            - label (str, optional): The rdfs:label value of the node.
+            - types (list of str): A list of rdf:type values (if the node has multiple types).
+            - dep (str, optional): The meta:valDeprecationDate value (deprecation date).
+            - definition (str, optional): The skos:definition of the node.
+            - parents (list of str): A list of URIs for parent nodes (rdfs:subClassOf).
+            - properties (dict): A dictionary of other predicates and their corresponding objects (only included if 'all_info' is True).
+
+    Raises:
+        ValueError: If the provided URI does not exist within the RDFLib graph.
+    """
     # Initialise dictionary based on option to include all extra properties.
     if all_info:
         node_info = {
