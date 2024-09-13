@@ -15,8 +15,5 @@
   "license": "ISC",
   "devDependencies": {
     "husky": "^8.0.0"
-  },
-  "dependencies": {
-    "vitest": "^2.1.0"
   }
 }
