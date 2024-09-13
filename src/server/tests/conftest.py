@@ -20,15 +20,20 @@ def sample_graph():
     root_node = URIRef("http://data.15926.org/dm/Thing")
     child1 = URIRef("http://data.15926.org/dm/Child1")
     child2 = URIRef("http://data.15926.org/dm/Child2")
+    extra_parent = URIRef("http://data.15926.org/dm/ExtraParent")
 
     # Add triples to the graph
     graph.add((root_node, RDFS.label, Literal("Thing")))
     graph.add((child1, RDFS.label, Literal("Child One")))
     graph.add((child2, RDFS.label, Literal("Child Two")))
+    graph.add((extra_parent, RDFS.label, Literal("Another Parent")))
 
     # Add subclass relationships (children)
     graph.add((child1, RDFS.subClassOf, root_node))
     graph.add((child2, RDFS.subClassOf, root_node))
+
+    # Add subclass relationship for another parent
+    graph.add((child2, RDFS.subClassOf, extra_parent))
 
     # Add deprecation date for one of the children
     graph.add((child1, META.valDeprecationDate, Literal("2021-03-21Z")))

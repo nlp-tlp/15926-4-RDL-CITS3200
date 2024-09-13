@@ -67,6 +67,34 @@ def test_get_children_with_deprecation_included(sample_graph):
             assert child["dep"] is None, "Child2 should not have a deprecation date."
 
 
+def test_get_children_with_extra_parents(sample_graph):
+    """
+    Test the get_children function from controllers.py to ensure extra parents are included correctly.
+    """
+    # Call get_children with ex_parents=True (default)
+    children = get_children(
+        "http://data.15926.org/dm/Thing", sample_graph, dep=True, ex_parents=True
+    )
+
+    # Validate that Child2 has an extra parent
+    child2_info = next(
+        (
+            child
+            for child in children
+            if child["id"] == "http://data.15926.org/dm/Child2"
+        ),
+        None,
+    )
+    assert child2_info is not None, "Child2 should exist in the children list"
+    assert len(child2_info["extra_parents"]) == 1, "Child2 should have 1 extra parent"
+
+    # Validate the extra parent info
+    extra_parent_info = child2_info["extra_parents"][0]
+    assert (
+        extra_parent_info["id"] == "http://data.15926.org/dm/ExtraParent"
+    ), "Child2's extra parent should be 'Extra Parent'"
+
+
 def test_check_uri_exists(sample_graph):
     """
     Test the check_uri_exists function from controllers.py.
