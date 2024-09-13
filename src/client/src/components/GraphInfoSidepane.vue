@@ -58,26 +58,28 @@ export default {
 </script>
 
 <template>
-  <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
-    &#9776;
-  </button>
+  <div>
+    <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
+      &#9776;
+    </button>
 
-  <transition name="sidepanel">
-    <div v-if="isRightExpanded" class="right-sidepanel">
-      <p class="right-text">Graph Information</p>
+    <transition name="sidepanel">
+      <div v-if="isRightExpanded" class="right-sidepanel">
+        <p class="right-text">Graph Information</p>
 
-      <div class="rdf-info">
-        <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
-          <strong class="rdf-field-name">{{ key }}:</strong>
-          <span class="rdf-field-value">
-            <slot :name="key" :value="value">
-              {{ value }}
-            </slot>
-          </span>
+        <div class="rdf-info">
+          <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
+            <strong class="rdf-field-name">{{ key }}:</strong>
+            <span class="rdf-field-value">
+              <slot :name="key" :value="value">
+                {{ value }}
+              </slot>
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
 </template>
 
 <style scoped>
@@ -104,7 +106,7 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   padding-top: 0.25rem;
-  height: 100%;
+  height: calc(100vh - var(--navbar-height, 4.5rem));
   width: 250px;
   position: fixed;
   z-index: 1;
@@ -115,6 +117,7 @@ export default {
     transform 0.5s ease,
     background-color 0.5s ease;
   transform: translateX(0);
+  overflow: hidden; /* Ensure the side panel itself does not scroll */
 }
 
 .right-text {
@@ -135,33 +138,17 @@ export default {
 }
 
 .rdf-info {
+  flex: 1; /* Allow rdf-info to take up remaining space */
   margin: 1rem;
   color: white;
-  max-height: calc(100vh - 80px);
   overflow-y: auto;
   overflow-x: hidden;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .rdf-info::-webkit-scrollbar {
-  width: 12px;
-}
-
-.rdf-info::-webkit-scrollbar-track {
-  background: var(--color-scrollbar-track, #f1f1f1);
-}
-
-.rdf-info::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar-thumb, #888);
-  border-radius: 6px;
-}
-
-.rdf-info::-webkit-scrollbar-thumb:hover {
-  background: var(--color-scrollbar-thumb-hover, #555);
-}
-
-.rdf-info {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-scrollbar-thumb, #888) var(--color-scrollbar-track, #f1f1f1);
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .rdf-field {
