@@ -10,12 +10,9 @@ body {
 
 #app {
   position: relative;
-  top: 2.5rem;
-  left: 1rem;
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 2rem;
   font-weight: normal;
 }
 
