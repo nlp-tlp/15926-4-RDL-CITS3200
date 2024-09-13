@@ -4,7 +4,7 @@ def test_get_children_with_default_deprecation(test_client):
     With dep=False by default, it should exclude Child1 (which has a deprecation date).
     """
     # Send a request to the /graph/children route with the root node's URI (default dep=False)
-    response = test_client.get("/graph/children?id=http://data.15926.org/dm/Thing")
+    response = test_client.get("/graph/children/http://data.15926.org/dm/Thing")
 
     # Parse the JSON response
     data = response.get_json()
@@ -25,7 +25,7 @@ def test_get_children_without_deprecation(test_client):
     """
     # Send a request to the /graph/children route with the root node's URI (default dep=False)
     response = test_client.get(
-        "/graph/children?id=http://data.15926.org/dm/Thing&dep=false"
+        "/graph/children/http://data.15926.org/dm/Thing?dep=false"
     )
 
     # Parse the JSON response
@@ -47,7 +47,7 @@ def test_get_children_with_deprecation(test_client):
     """
     # Send a request to the /graph/children route with the root node's URI and dep=True
     response = test_client.get(
-        "/graph/children?id=http://data.15926.org/dm/Thing&dep=true"
+        "/graph/children/http://data.15926.org/dm/Thing?dep=true"
     )
 
     # Parse the JSON response
@@ -106,7 +106,7 @@ def test_invalid_query_to_children(test_client):
     Test an invalid query to '/graph/children', where the provided URI doesn't exist.
     """
     invalid_uri = "http://data.15926.org/dm/NonExistent"
-    response = test_client.get(f"/graph/children?id={invalid_uri}")
+    response = test_client.get(f"/graph/children/{invalid_uri}")
 
     # Parse the JSON response
     data = response.get_json()
@@ -115,6 +115,56 @@ def test_invalid_query_to_children(test_client):
     assert response.status_code == 404
     assert "error" in data
     assert data["error"] == f"URI '{invalid_uri}' does not exist within the database"
+
+
+def test_get_children_with_extra_parents(test_client):
+    """
+    Test the '/graph/children' route to fetch the children of the root node.
+    Ensure that the 'extra_parents' field is included for nodes with multiple parents.
+    """
+    # Send a request to the /graph/children route with the root node's URI
+    response = test_client.get(
+        "/graph/children/http://data.15926.org/dm/Thing?dep=true&ex_parents=true"
+    )
+
+    # Parse the JSON response
+    data = response.get_json()
+
+    # Assert that the response contains the correct children
+    assert response.status_code == 200
+    assert "children" in data
+
+    # There should be 2 children (Child1 and Child2)
+    assert len(data["children"]) == 2
+
+    # Validate Child2, which should have an extra parent (AnotherParent)
+    child2_info = next(
+        (
+            child
+            for child in data["children"]
+            if child["id"] == "http://data.15926.org/dm/Child2"
+        ),
+        None,
+    )
+    assert child2_info is not None
+    assert child2_info["label"] == "Child Two"
+    assert "extra_parents" in child2_info
+    assert len(child2_info["extra_parents"]) == 1
+    assert (
+        child2_info["extra_parents"][0]["id"] == "http://data.15926.org/dm/ExtraParent"
+    )
+
+    # Validate that Child1 does not have extra parents
+    child1_info = next(
+        (
+            child
+            for child in data["children"]
+            if child["id"] == "http://data.15926.org/dm/Child1"
+        ),
+        None,
+    )
+    assert child1_info is not None
+    assert "extra_parents" not in child1_info
 
 
 def test_get_all_node_info(test_client):

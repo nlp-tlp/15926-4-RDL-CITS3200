@@ -5,6 +5,19 @@ from .config import Config
 
 # Load the latest database (Turtle file) into the RDFLib graph based on the history file.
 def load_latest_db(graph):
+    """
+    Loads the latest Turtle database file into the RDFLib graph based on the history file.
+
+    Args:
+        graph (rdflib.Graph): The RDFLib graph object to load the Turtle data into.
+
+    Raises:
+        LookupError: If no current database is found in the history file.
+        Exception: If there is an error while loading the database or parsing the Turtle file.
+
+    Returns:
+        rdflib.Graph: The RDFLib graph object with the Turtle data loaded.
+    """
     try:
         # Load history data
         with open(Config.DB_HISTORY_FILE, "r") as f:

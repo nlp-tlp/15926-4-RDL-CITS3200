@@ -21,6 +21,7 @@ def sample_graph():
     root_node = URIRef("http://data.15926.org/dm/Thing")
     child1 = URIRef("http://data.15926.org/dm/Child1")
     child2 = URIRef("http://data.15926.org/dm/Child2")
+    extra_parent = URIRef("http://data.15926.org/dm/ExtraParent")
     child3 = URIRef("http://data.15926.org/dm/Child3")
 
     # Add labels
@@ -28,10 +29,14 @@ def sample_graph():
     graph.add((child1, RDFS.label, Literal("Child One")))
     graph.add((child2, RDFS.label, Literal("Child Two")))
     graph.add((child3, RDFS.label, Literal("Child Three")))
+    graph.add((extra_parent, RDFS.label, Literal("Another Parent")))
 
     # Add subclass relationships (children)
     graph.add((child1, RDFS.subClassOf, root_node))
     graph.add((child2, RDFS.subClassOf, root_node))
+
+    # Add subclass relationship for another parent
+    graph.add((child2, RDFS.subClassOf, extra_parent))
     graph.add((child3, RDFS.subClassOf, child1))  # Make child3 a subclass of child1
 
     # Add deprecation date for one of the children
