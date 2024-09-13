@@ -18,21 +18,21 @@ function toggleRightNav(): void {
 
 // Mock RDF data for demonstration purposes
 const mockRDFData = {
-  "Class Name": "ExampleClass",
-  "Description": "This is an example class with detailed metadata fields.",
-  "Field1": "This is another example class with detailed metadata fields.",
-  "Field2": "Value2",
-  "Field3": "Value3",
-  "Field4": "Value4",
-  "Field5": "Value5",
-  "Field6": "Value6",
-  "Field7": "Value7",
-  "Field8": "Value8",
-  "Field9": "Value9",
-  "Field10": "Value10",
-  "Field12": "Value12",
-  "Field13": "Value13",
-  "Field14": "Value14"
+  'Class Name': 'ExampleClass',
+  Description: 'This is an example class with detailed metadata fields.',
+  Field1: 'This is another example class with detailed metadata fields.',
+  Field2: 'Value2',
+  Field3: 'Value3',
+  Field4: 'Value4',
+  Field5: 'Value5',
+  Field6: 'Value6',
+  Field7: 'Value7',
+  Field8: 'Value8',
+  Field9: 'Value9',
+  Field10: 'Value10',
+  Field12: 'Value12',
+  Field13: 'Value13',
+  Field14: 'Value14'
 }
 
 // Create a reactive object to hold the RDF data
@@ -131,33 +131,31 @@ export default {
 .rdf-info {
   margin: 1rem;
   color: white;
-  max-height: calc(100vh - 80px); 
-  overflow-y: auto; 
-  overflow-x: hidden; 
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-
 .rdf-info::-webkit-scrollbar {
-  width: 12px; 
+  width: 12px;
 }
 
 .rdf-info::-webkit-scrollbar-track {
-  background: var(--color-scrollbar-track, #f1f1f1); 
+  background: var(--color-scrollbar-track, #f1f1f1);
 }
 
 .rdf-info::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar-thumb, #888); 
-  border-radius: 6px; 
+  background: var(--color-scrollbar-thumb, #888);
+  border-radius: 6px;
 }
 
 .rdf-info::-webkit-scrollbar-thumb:hover {
-  background: var(--color-scrollbar-thumb-hover, #555); 
+  background: var(--color-scrollbar-thumb-hover, #555);
 }
 
-
 .rdf-info {
-  scrollbar-width: thin; 
-  scrollbar-color: var(--color-scrollbar-thumb, #888) var(--color-scrollbar-track, #f1f1f1); 
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar-thumb, #888) var(--color-scrollbar-track, #f1f1f1);
 }
 
 .rdf-field {
@@ -172,7 +170,7 @@ export default {
 .rdf-field-value {
   display: block;
   margin-left: 1rem;
-  white-space: normal; 
-  word-wrap: break-word; 
+  white-space: normal;
+  word-wrap: break-word;
 }
 </style>
