@@ -1,6 +1,7 @@
 # Imports
 import sys
 from flask import Flask
+from flask_cors import CORS
 
 
 def create_app(config):
@@ -21,6 +22,9 @@ def create_app(config):
 
     # Configure flask app
     flaskApp.config.from_object(config)
+
+    # Apply CORS to the app
+    CORS(flaskApp)
 
     from app.blueprints import main
 
