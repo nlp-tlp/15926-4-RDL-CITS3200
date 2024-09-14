@@ -33,6 +33,7 @@ const props = defineProps({
 const svgRef = ref<Element>()
 
 // width and height to fit the whole parent container
+// Need to figure out how to dynamically adjust based on other elements e.g. sidepane and navbar as this is why scrollbars are appearing
 const width = window.innerWidth
 const height = window.innerHeight
 const nodeDistance = 40

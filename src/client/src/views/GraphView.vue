@@ -6,35 +6,6 @@ import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
-// const data = ref({
-//   name: 'root',
-//   children: [
-//     {
-//       name: 'child1',
-//       children: [
-//         {
-//           name: 'child1.1',
-//           children: [
-//             {
-//               name: 'child1.1.1',
-//               children: [],
-//               extra_parents: [{ name: 'child1.2' }]
-//             }
-//           ]
-//         },
-//         {
-//           name: 'child1.2',
-//           children: []
-//         }
-//       ]
-//     },
-//     {
-//       name: 'child2',
-//       children: []
-//     }
-//   ]
-// })
-
 const data = ref({})
 const depth = ref(2) // Specify the depth up to which the graph should be fetched
 
