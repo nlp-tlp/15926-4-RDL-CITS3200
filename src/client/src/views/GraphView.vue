@@ -7,10 +7,59 @@ import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
 const data = ref({})
-const depth = ref(2) // Specify the depth up to which the graph should be fetched
+const depth = ref(3) // Specify the depth up to which the graph should be fetched
 
 onMounted(() => {
   fetchGraphData()
+  // Test data
+  //   data.value = {
+  //     "id": 'https://root',
+  //     "label": 'root',
+  //     "children" : [
+  //       {
+  //       "id": 'https://child1',
+  //       "label": 'child1',
+  //       "children": [
+  //         {
+  //           "id": 'https://child1-1',
+  //           "label": 'child1-1',
+  //           "children": []
+  //         },
+  //         {
+  //           "id": 'https://child1-2',
+  //           "label": 'child1-2',
+  //           "children": []
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       "id": 'https://child2',
+  //       "label": 'child2',
+  //       "children": []
+  //     },
+  //     {
+  //       "id": 'https://child3',
+  //       "label": 'child3',
+  //       "children": [
+  //         {
+  //           "id": 'https://child3-1',
+  //           "label": 'child3-1',
+  //           "children": [],
+  //           "extra_parents": [
+  //             {
+  //               "id": 'https://child1',
+
+  //             }]
+  //         },
+  //         {
+  //           "id": 'https://child3-2',
+  //           "label": 'child3-2',
+  //           "children": []
+  //         }
+  //       ]
+  //     }
+  //   ]
+  //   }
 })
 
 async function fetchGraphData() {

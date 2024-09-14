@@ -36,7 +36,7 @@ const svgRef = ref<Element>()
 // Need to figure out how to dynamically adjust based on other elements e.g. sidepane and navbar as this is why scrollbars are appearing
 const width = window.innerWidth
 const height = window.innerHeight
-const nodeDistance = 40
+const nodeDistance = 20
 const initialGraphX = (width / 7) * 1
 const initialGraphY = (height / 7) * 3
 
@@ -142,7 +142,7 @@ function update(source: any) {
  * @param {Object[]} nodes - The nodes to render.
  */
 function renderNodes(nodes: any) {
-  const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.label))
+  const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.id))
 
   const nodeEnter: any = node
     .enter()
@@ -209,7 +209,7 @@ function renderExtraLinks(nodes: any) {
   nodes.forEach((d: any) => {
     if (d.data.extra_parents) {
       d.data.extra_parents.forEach((parent: any) => {
-        const parentNode = nodes.find((node: any) => node.data.label === parent.label)
+        const parentNode = nodes.find((node: any) => node.data.id === parent.id)
         if (parentNode) {
           extraLinks.push({ source: parentNode, target: d })
         }
