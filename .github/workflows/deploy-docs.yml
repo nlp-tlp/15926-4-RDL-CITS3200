@@ -35,6 +35,11 @@ jobs:
         run: |
           mkdocs build --config-file ./docs/mkdocs.yml
 
+      # Add CNAME file based on the branch or PR
+      - name: Add CNAME for custom domain
+        run: |
+          echo ${{ github.event_name == 'pull_request' && format('pr-${{ github.event.pull_request.number }}.docs.iso15926vis.org') || 'docs.iso15926vis.org' }} > docs/site/CNAME
+
       # Upload the built site as an artifact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
@@ -46,9 +51,6 @@ jobs:
   # Deployment job
   deploy:
     name: Deploy Documentation Pages
-    environment:
-      name: ${{ github.event_name == 'pull_request' && format('PR-{0}', github.head_ref) || 'Documentation' }}
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     permissions:
@@ -59,8 +61,8 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v2
         with:
-          artifact_name: documentation-pages # Ensure same artefact is used (MUST MATCH NAMES)
+          artifact_name: documentation-pages
 
-      - name: Get deployment URL
-        id: get-url
-        run: echo "URL=${{ steps.deployment.outputs.page_url }}" >> $GITHUB_ENV
+      - name: Output deployment URL
+        if: github.event_name == 'pull_request'
+        run: echo "🚀 Preview available at pr-${{ github.event.pull_request.number }}.docs.iso15926vis.org"
