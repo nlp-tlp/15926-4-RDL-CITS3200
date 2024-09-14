@@ -15,11 +15,35 @@ const isRightExpanded = ref(props.initialExpanded)
 function toggleRightNav(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
+
+// Mock RDF data for demonstration purposes
+const mockRDFData = {
+  'Class Name': 'ExampleClass',
+  Description: 'This is an example class with detailed metadata fields.',
+  Field1: 'This is another example class with detailed metadata fields.',
+  Field2: 'Value2',
+  Field3: 'Value3',
+  Field4: 'Value4',
+  Field5: 'Value5',
+  Field6: 'Value6',
+  Field7: 'Value7',
+  Field8: 'Value8',
+  Field9: 'Value9',
+  Field10: 'Value10',
+  Field12: 'Value12',
+  Field13: 'Value13',
+  Field14: 'Value14',
+  superclass: 'SuperClassExample',
+  'subclass of': 'SubClassExample'
+}
+
+// Create a reactive object to hold the RDF data
+const rdfData = ref(mockRDFData)
 </script>
 
 <script lang="ts">
 /**
- * GraphInfoSidepane component represents the expandable side panel containing information functionality.
+ * GraphInfoSidepane component represents the expandable side panel containing RDF information functionality.
  *
  * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
  *
@@ -34,15 +58,28 @@ export default {
 </script>
 
 <template>
-  <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
-    &#9776;
-  </button>
+  <div>
+    <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
+      &#9776;
+    </button>
 
-  <transition name="sidepanel">
-    <div v-if="isRightExpanded" class="right-sidepanel">
-      <p class="right-text">Right Sidepanel</p>
-    </div>
-  </transition>
+    <transition name="sidepanel">
+      <div v-if="isRightExpanded" class="right-sidepanel">
+        <p class="right-text">Graph Information</p>
+
+        <div class="rdf-info">
+          <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
+            <strong class="rdf-field-name">{{ key }}:</strong>
+            <span class="rdf-field-value">
+              <slot :name="key" :value="value">
+                {{ value }}
+              </slot>
+            </span>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <style scoped>
@@ -66,9 +103,10 @@ export default {
 
 .right-sidepanel {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   padding-top: 0.25rem;
-  height: 100%;
+  height: calc(100vh - var(--navbar-height, 4.5rem));
   width: 250px;
   position: fixed;
   z-index: 1;
@@ -79,6 +117,7 @@ export default {
     transform 0.5s ease,
     background-color 0.5s ease;
   transform: translateX(0);
+  overflow: hidden; /* Ensure the side panel itself does not scroll */
 }
 
 .right-text {
@@ -96,5 +135,35 @@ export default {
 .sidepanel-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+.rdf-info {
+  flex: 1; /* Allow rdf-info to take up remaining space */
+  margin: 1rem;
+  color: white;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.rdf-info::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.rdf-field {
+  margin-bottom: 1rem;
+}
+
+.rdf-field-name {
+  display: block;
+  font-weight: bold;
+}
+
+.rdf-field-value {
+  display: block;
+  margin-left: 1rem;
+  white-space: normal;
+  word-wrap: break-word;
 }
 </style>
