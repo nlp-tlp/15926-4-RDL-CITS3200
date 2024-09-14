@@ -15,6 +15,7 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "prepare": "husky",
+    "fix": "npm run type-check && npm run lint:fix && npm run format",
     "test:unit": "vitest run --root tests/unit",
     "test:e2e": "npx playwright test --config playwright.config.ts",
     "start": "vite"

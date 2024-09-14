@@ -25,7 +25,8 @@ header {
 }
 
 .main-content {
-  padding-top: 2rem; /* Adjust this value based on the height of your navbar */
+  padding-top: 4.5rem;
+  padding-left: 1rem;
 }
 
 @media (min-width: 1024px) {
