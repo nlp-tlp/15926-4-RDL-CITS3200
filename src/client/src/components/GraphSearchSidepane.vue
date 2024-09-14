@@ -34,55 +34,57 @@ export default {
 </script>
 
 <template>
-  <button class="left-btn" @click="toggleLeftNav" :class="{ 'expanded-btn': isLeftExpanded }">
-    &#9776;
-  </button>
+  <div>
+    <button class="left-btn" @click="toggleLeftNav" :class="{ 'expanded-btn': isLeftExpanded }">
+      &#9776;
+    </button>
 
-  <transition name="sidepanel">
-    <div v-if="isLeftExpanded" class="left-sidepanel">
-      <p class="left-text">Graph Search</p>
+    <transition name="sidepanel">
+      <div v-if="isLeftExpanded" class="left-sidepanel">
+        <p class="left-text">Graph Search</p>
 
-      <div v-if="isLeftExpanded" class="expanded-content">
-        <div class="search-container">
-          <div class="search-wrapper">
-            <svg
-              class="search-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-            >
-              <path
-                d="M23 21l-5.5-5.5a9.5 9.5 0 1 0-1.4 1.4L21 22.4a1 1 0 0 0 1.4-1.4zM10 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"
-              />
-            </svg>
-            <input class="search-bar" type="text" placeholder="Search..." />
-          </div>
-          <select class="dropdown">
-            <option value="id">ID/URI</option>
-            <option value="rdf">RDF Label</option>
-          </select>
-        </div>
-
-        <div v-if="isLeftExpanded" class="toggles-and-levels">
-          <label class="toggle-label"> <input type="checkbox" /> Show Deprecated </label>
-          <label class="toggle-label"> <input type="checkbox" /> View Labels in Graph </label>
-
-          <div v-if="isLeftExpanded" class="levels-inputs">
-            <div class="input-group">
-              <label class="level-label">Levels Above:</label>
-              <input type="number" min="0" max="6" class="small-input" value="0" />
+        <div v-if="isLeftExpanded" class="expanded-content">
+          <div class="search-container">
+            <div class="search-wrapper">
+              <svg
+                class="search-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+              >
+                <path
+                  d="M23 21l-5.5-5.5a9.5 9.5 0 1 0-1.4 1.4L21 22.4a1 1 0 0 0 1.4-1.4zM10 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"
+                />
+              </svg>
+              <input class="search-bar" type="text" placeholder="Search..." />
             </div>
-            <div v-if="isLeftExpanded" class="input-group">
-              <label class="level-label">Levels Below:</label>
-              <input type="number" min="0" max="6" class="small-input" value="0" />
+            <select class="dropdown">
+              <option value="id">ID/URI</option>
+              <option value="rdf">RDF Label</option>
+            </select>
+          </div>
+
+          <div v-if="isLeftExpanded" class="toggles-and-levels">
+            <label class="toggle-label"> <input type="checkbox" /> Show Deprecated </label>
+            <label class="toggle-label"> <input type="checkbox" /> View Labels in Graph </label>
+
+            <div v-if="isLeftExpanded" class="levels-inputs">
+              <div class="input-group">
+                <label class="level-label">Levels Above:</label>
+                <input type="number" min="0" max="6" class="small-input" value="0" />
+              </div>
+              <div v-if="isLeftExpanded" class="input-group">
+                <label class="level-label">Levels Below:</label>
+                <input type="number" min="0" max="6" class="small-input" value="0" />
+              </div>
             </div>
           </div>
+          <button class="search-btn">Submit</button>
         </div>
-        <button class="search-btn">Submit</button>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
 </template>
 
 <style scoped>
