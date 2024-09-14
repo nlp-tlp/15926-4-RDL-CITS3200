@@ -21,6 +21,7 @@
     "start": "vite"
   },
   "dependencies": {
+    "d3": "^7.9.0",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
@@ -36,7 +37,6 @@
     "@vue/eslint-config-typescript": "^13.0.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.5.1",
-    "d3": "^7.9.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
