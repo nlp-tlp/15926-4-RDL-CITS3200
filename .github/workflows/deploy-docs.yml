@@ -38,7 +38,11 @@ jobs:
       # Add CNAME file based on the branch or PR
       - name: Add CNAME for custom domain
         run: |
-          echo ${{ github.event_name == 'pull_request' && format('pr-${{ github.event.pull_request.number }}.docs.iso15926vis.org') || 'docs.iso15926vis.org' }} > docs/site/CNAME
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "pr-${{ github.event.pull_request.number }}.docs.iso15926vis.org" > docs/site/CNAME
+          else
+            echo "docs.iso15926vis.org" > docs/site/CNAME
+          fi
 
       # Upload the built site as an artifact
       - name: Upload artifact
