@@ -37,7 +37,6 @@ jobs:
 
       # Conditionally add CNAME for main branch
       - name: Add CNAME for custom domain (only for main)
-        if: github.ref == 'refs/heads/main'
         run: echo "docs.iso15926vis.org" > docs/site/CNAME
 
       # Upload the built site as an artifact
