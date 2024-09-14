@@ -1,14 +1,28 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
   /**
-   * The JSON data to visualize as a graph.
+   * The JSON data to visualise as a graph.
+   *
    * @type {Object}
-   * @property {string} `name` - The name of the node.
-   * @property {Object[]} [`children`] - The child nodes.
-   * @property {Object[]} [`extra_parents`] - The extra parent nodes.
+   * @required
+   * @example
+   *  {
+   *    label: 'root',
+   *    children: [
+   *      {
+   *        label: 'child1',
+   *        children: [],
+   *        extra_parents: []
+   *      },
+   *      {
+   *        label: 'child2',
+   *        children: []
+   *      }
+   *    ]
+   *  }
    */
   data: {
     type: Object,
@@ -22,14 +36,32 @@ const svgRef = ref<Element>()
 const width = window.innerWidth
 const height = window.innerHeight
 const nodeDistance = 40
-const initialGraphX = 40
+const initialGraphX = (width / 7) * 1
 const initialGraphY = (height / 7) * 3
 
-const data = props.data
+let svg: any
+let root: any
 
 onMounted(() => {
-  const startTime = performance.now()
-  const svg = d3
+  initialiseGraph()
+  renderGraph()
+})
+
+// watcher for data changes
+watch(
+  () => props.data,
+  (newData) => {
+    if (newData) {
+      renderGraph()
+    }
+  }
+)
+
+/**
+ * Initialises the graph by creating the SVG element and setting up the zoom behaviour.
+ */
+function initialiseGraph() {
+  svg = d3
     .select(svgRef.value as Element)
     .attr('width', width)
     .attr('height', height)
@@ -37,10 +69,8 @@ onMounted(() => {
     .append('g')
     .attr('transform', `translate(${initialGraphX},${initialGraphY})`)
 
-  // Store the initial transform
   const initialTransform = d3.zoomIdentity.translate(initialGraphX, initialGraphY)
 
-  // Add arrowhead marker
   svg
     .append('defs')
     .append('marker')
@@ -56,163 +86,172 @@ onMounted(() => {
     .attr('d', 'M0,-5L10,0L0,5')
     .attr('fill', 'black')
 
-  /**
-   * Handles the zoom event.
-   * @param {Object} event - The zoom event.
-   */
-  function zoomed(event: any) {
-    svg.attr('transform', event.transform)
-  }
-
-  const root = d3.hierarchy(data)
-
-  /**
-   * Updates the tree layout and renders the nodes and links.
-   * @param {Object} source - The source node.
-   */
-  function update(source: any) {
-    // Assigns the x and y position for the nodes
-    const treeLayout = d3.tree().nodeSize([nodeDistance, 300])
-    const treeData = treeLayout(root as unknown as d3.HierarchyNode<unknown>)
-
-    // Compute the new tree layout.
-    const nodes = treeData.descendants()
-    const links = treeData.links()
-
-    // Normalize for fixed-depth.
-    nodes.forEach((d) => (d.y = d.depth * 180))
-
-    // ********** Nodes section **********
-
-    const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.name))
-
-    // Enter any new nodes at the parent's previous position.
-    const nodeEnter: any = node
-      .enter()
-      .append('g')
-      .attr('class', 'node')
-      .on('click', (event, d) => toggleCollapse(d))
-      .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
-
-    // Add Circle for the nodes
-    nodeEnter
-      .append('circle')
-      .attr('r', 5)
-      .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
-
-    // Add labels for the nodes
-    nodeEnter
-      .append('text')
-      .attr('dy', '.35em')
-      .attr('x', (d: any) => (d.children || d._children ? -10 : 10))
-      .style('text-anchor', (d: any) => (d.children || d._children ? 'end' : 'start'))
-      .text((d: any) => d.data.name)
-
-    // Update the node positions
-    const nodeUpdate = nodeEnter.merge(node)
-
-    nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
-
-    // Update the node attributes and style
-    nodeUpdate
-      .select('circle')
-      .attr('r', 5)
-      .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
-
-    // Remove any exiting nodes
-    const nodeExit = node.exit().remove()
-
-    nodeExit.select('circle').attr('r', 0)
-
-    nodeExit.select('text').style('fill-opacity', 0)
-
-    // ********** Links section **********
-
-    const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
-
-    // Enter new links at the parent's previous position.
-    const linkEnter = link
-      .enter()
-      .insert('path', 'g')
-      .attr('class', 'link')
-      .attr('stroke', 'black')
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
-
-    // Update links
-    const linkUpdate = linkEnter.merge(link)
-
-    linkUpdate.attr('d', diagonal)
-
-    // Remove exiting links
-    link
-      .exit()
-      .attr('d', () => {
-        const o = { x: source.x, y: source.y }
-        return diagonal({ source: o, target: o })
-      })
-      .remove()
-
-    const extraLinks: any = []
-    nodes.forEach((d: any) => {
-      if (d.data.extra_parents) {
-        d.data.extra_parents.forEach((parent: any) => {
-          const parentNode = nodes.find((node: any) => node.data.name === parent.name)
-          if (parentNode) {
-            extraLinks.push({ source: parentNode, target: d })
-          }
-        })
-      }
-    })
-
-    const extraLink = svg.selectAll('path.extra-link').data(extraLinks)
-
-    extraLink
-      .enter()
-      .insert('path', 'g')
-      .attr('class', 'extra-link')
-      .attr('stroke', 'red')
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
-      .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
-
-    extraLink
-      .merge(extraLink)
-      .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
-
-    //Remove any exiting extra links
-    extraLink.exit().remove()
-  }
-
-  /**
-   * Toggles the collapse state of the node's children.
-   * @param {Object} d - The node to toggle.
-   */
-  function toggleCollapse(d: any) {
-    if (d.children) {
-      d._children = d.children
-      d.children = null
-    } else {
-      d.children = d._children
-      d._children = null
-    }
-    update(d)
-  }
-
-  const diagonal: any = d3
-    .linkHorizontal()
-    .x((d: any) => d.y)
-    .y((d: any) => d.x)
-
-  // Start the rendering
-  update(root)
-
-  // Apply the initial transform to center the root node vertically
   d3.select(svgRef.value as Element).call(d3.zoom().transform as any, initialTransform)
+}
+
+/**
+ * Zooms the graph.
+ *
+ * @param {Object} event - The zoom event.
+ */
+function zoomed(event: any) {
+  svg.attr('transform', event.transform)
+}
+
+/**
+ * Renders the graph.
+ */
+function renderGraph() {
+  if (!props.data) {
+    return
+  }
+
+  const startTime = performance.now()
+
+  root = d3.hierarchy(props.data)
+
+  update(root)
 
   const endTime = performance.now()
   console.log(`Rendering took ${endTime - startTime} ms`)
-})
+}
+
+/**
+ * Updates the graph with the given source node.
+ *
+ * @param {Object} source - The source node.
+ */
+function update(source: any) {
+  const treeLayout = d3.tree().nodeSize([nodeDistance, 300])
+  const treeData = treeLayout(root as unknown as d3.HierarchyNode<unknown>)
+
+  const nodes = treeData.descendants()
+  const links = treeData.links()
+
+  nodes.forEach((d) => (d.y = d.depth * 180))
+
+  renderNodes(nodes)
+  renderLinks(links, source)
+  renderExtraLinks(nodes)
+}
+
+/**
+ * Renders the nodes.
+ *
+ * @param {Object[]} nodes - The nodes to render.
+ */
+function renderNodes(nodes: any) {
+  const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.label))
+
+  const nodeEnter: any = node
+    .enter()
+    .append('g')
+    .attr('class', 'node')
+    .on('click', (event: Event, d: any) => toggleCollapse(d))
+    .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
+
+  nodeEnter
+    .append('circle')
+    .attr('r', 5)
+    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+
+  nodeEnter
+    .append('text')
+    .attr('dy', '.35em')
+    .attr('x', (d: any) => (d.children || d._children ? -10 : 10))
+    .style('text-anchor', (d: any) => (d.children || d._children ? 'end' : 'start'))
+    .text((d: any) => d.data.label)
+
+  const nodeUpdate = nodeEnter.merge(node)
+
+  nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+
+  nodeUpdate
+    .select('circle')
+    .attr('r', 5)
+    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+
+  node.exit().remove()
+}
+
+/**
+ * Renders the links.
+ *
+ * @param {Object[]} links - The links to render.
+ * @param {Object} source - The source node.
+ */
+function renderLinks(links: any, source: any) {
+  const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
+
+  const linkEnter = link
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'link')
+    .attr('stroke', 'black')
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow)')
+
+  const linkUpdate = linkEnter.merge(link)
+
+  linkUpdate.attr('d', diagonal)
+
+  link.exit().remove()
+}
+
+/**
+ * Renders the extra links.
+ *
+ * @param {Object[]} nodes - The nodes to render the extra links for.
+ */
+function renderExtraLinks(nodes: any) {
+  const extraLinks: any = []
+  nodes.forEach((d: any) => {
+    if (d.data.extra_parents) {
+      d.data.extra_parents.forEach((parent: any) => {
+        const parentNode = nodes.find((node: any) => node.data.label === parent.label)
+        if (parentNode) {
+          extraLinks.push({ source: parentNode, target: d })
+        }
+      })
+    }
+  })
+
+  const extraLink = svg.selectAll('path.extra-link').data(extraLinks)
+
+  extraLink
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'extra-link')
+    .attr('stroke', 'red')
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow)')
+    .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
+
+  extraLink.merge(extraLink).attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
+
+  extraLink.exit().remove()
+}
+
+/**
+ * Toggles the collapse of the given node.
+ *
+ * @param {Object} d - The node to toggle the collapse for.
+ */
+function toggleCollapse(d: any) {
+  if (d.children) {
+    d._children = d.children
+    d.children = null
+  } else {
+    d.children = d._children
+    d._children = null
+  }
+  update(d)
+}
+
+const diagonal: any = d3
+  .linkHorizontal()
+  .x((d: any) => d.y)
+  .y((d: any) => d.x)
 </script>
 
 <script lang="ts">
@@ -224,7 +263,7 @@ onMounted(() => {
  * @param {Object} data - The JSON data to visualise as a graph.
  *
  * Contains the following properties:
- * @param {string} data.name - The name of the node.
+ * @param {string} data.label - The label of the node.
  * @param {Object[]} [data.children] - The child nodes.
  * @param {Object[]} [data.extra_parents] - The extra parent nodes.
  *
