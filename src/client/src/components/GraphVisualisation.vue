@@ -3,37 +3,18 @@ import * as d3 from 'd3'
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
-  /**
-   * The JSON data to visualise as a graph.
-   *
-   * @type {Object}
-   * @required
-   * @example
-   *  {
-   *    label: 'root',
-   *    children: [
-   *      {
-   *        label: 'child1',
-   *        children: [],
-   *        extra_parents: []
-   *      },
-   *      {
-   *        label: 'child2',
-   *        children: []
-   *      }
-   *    ]
-   *  }
-   */
   data: {
     type: Object,
+    required: true
+  },
+  fetchChildren: {
+    type: Function,
     required: true
   }
 })
 
 const svgRef = ref<Element>()
 
-// width and height to fit the whole parent container
-// Need to figure out how to dynamically adjust based on other elements e.g. sidepane and navbar as this is why scrollbars are appearing
 const width = window.innerWidth
 const height = window.innerHeight
 const nodeDistance = 20
@@ -48,7 +29,6 @@ onMounted(() => {
   renderGraph()
 })
 
-// watcher for data changes
 watch(
   () => props.data,
   (newData) => {
@@ -58,9 +38,6 @@ watch(
   }
 )
 
-/**
- * Initialises the graph by creating the SVG element and setting up the zoom behaviour.
- */
 function initialiseGraph() {
   svg = d3
     .select(svgRef.value as Element)
@@ -90,18 +67,10 @@ function initialiseGraph() {
   d3.select(svgRef.value as Element).call(d3.zoom().transform as any, initialTransform)
 }
 
-/**
- * Zooms the graph.
- *
- * @param {Object} event - The zoom event.
- */
 function zoomed(event: any) {
   svg.attr('transform', event.transform)
 }
 
-/**
- * Renders the graph.
- */
 function renderGraph() {
   if (!props.data) {
     return
@@ -117,11 +86,6 @@ function renderGraph() {
   console.log(`Rendering took ${endTime - startTime} ms`)
 }
 
-/**
- * Updates the graph with the given source node.
- *
- * @param {Object} source - The source node.
- */
 function update(source: any) {
   const treeLayout = d3.tree().nodeSize([nodeDistance, 300])
   const treeData = treeLayout(root as unknown as d3.HierarchyNode<unknown>)
@@ -136,11 +100,6 @@ function update(source: any) {
   renderExtraLinks(nodes)
 }
 
-/**
- * Renders the nodes.
- *
- * @param {Object[]} nodes - The nodes to render.
- */
 function renderNodes(nodes: any) {
   const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.id))
 
@@ -175,12 +134,6 @@ function renderNodes(nodes: any) {
   node.exit().remove()
 }
 
-/**
- * Renders the links.
- *
- * @param {Object[]} links - The links to render.
- * @param {Object} source - The source node.
- */
 function renderLinks(links: any, source: any) {
   const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
 
@@ -199,11 +152,6 @@ function renderLinks(links: any, source: any) {
   link.exit().remove()
 }
 
-/**
- * Renders the extra links.
- *
- * @param {Object[]} nodes - The nodes to render the extra links for.
- */
 function renderExtraLinks(nodes: any) {
   const extraLinks: any = []
   nodes.forEach((d: any) => {
@@ -233,16 +181,15 @@ function renderExtraLinks(nodes: any) {
   extraLink.exit().remove()
 }
 
-/**
- * Toggles the collapse of the given node.
- *
- * @param {Object} d - The node to toggle the collapse for.
- */
-function toggleCollapse(d: any) {
+async function toggleCollapse(d: any) {
   if (d.children) {
     d._children = d.children
     d.children = null
   } else {
+    if (!d._children && !d.children) {
+      // Fetch children dynamically
+      await props.fetchChildren(d.data)
+    }
     d.children = d._children
     d._children = null
   }
@@ -256,21 +203,6 @@ const diagonal: any = d3
 </script>
 
 <script lang="ts">
-/**
- * GraphVisualisation component represents the visualisation of a graph.
- *
- * This component uses D3.js to render the graph.
- *
- * @param {Object} data - The JSON data to visualise as a graph.
- *
- * Contains the following properties:
- * @param {string} data.label - The label of the node.
- * @param {Object[]} [data.children] - The child nodes.
- * @param {Object[]} [data.extra_parents] - The extra parent nodes.
- *
- * @example
- * <GraphVisualisation :data="data" />
- */
 export default {
   name: 'GraphVisualisation'
 }
