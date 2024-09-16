@@ -8,6 +8,7 @@ from io import StringIO
 from rdflib import Graph, Namespace, URIRef, Literal
 from SPARQLWrapper import SPARQLWrapper, CSV
 from config import DATABASE_CONFIG, DATABASE_STORAGE_DIR
+from tests import test_new_database
 
 from history import history_add_db, get_next_db_filename  # Import history functions
 
@@ -36,8 +37,8 @@ def ensure_absolute_iri(iri, base_uri=BASE_URI):
     return iri
 
 
-# Sanitize the literal by replacing control characters
-def sanitize_literal(value):
+# Sanitise the literal by replacing control characters
+def sanitise_literal(value):
     value = value.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
     return value
 
@@ -89,7 +90,7 @@ def insert_results_into_rdflib(graph, results_csv):
                 )  # Add triple with IRI object
             else:
                 # If it's a literal, sanitize it and add it as a literal
-                sanitized_object = sanitize_literal(object_value)
+                sanitized_object = sanitise_literal(object_value)
                 graph.add(
                     (subject_iri, predicate_iri, Literal(sanitized_object))
                 )  # Add triple with literal object
@@ -169,6 +170,9 @@ def update_db():
 
     else:
         try:
+            # Test the database to ensure nothing is wrong with it
+            test_new_database(graph=graph)
+
             # Save the RDFLib graph to a file after processing all batches
             db_filename = save_graph_to_file(graph=graph)
 
@@ -204,6 +208,7 @@ def update_db():
                 f"An error occurred while saving the database: {save_error}"
             )
             print(f"Failed to save the database: {save_error}")
+            print(f"Rolling database back...")
             return  # Exit the function if saving fails to avoid history update
 
     finally:
