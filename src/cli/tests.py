@@ -87,7 +87,7 @@ def test_literal_values(graph):
 def test_sparql_query(graph):
     """
     Executes a SPARQL query on the graph to check for the presence of triples where the
-    subject starts with one of the expected namespaces (iso, rdl, dm, coco, lci). The test
+    subject starts with one of the expected namespaces (rdl, dm, lci). The test
     asserts that at least one result is returned.
     """
     test_query = """
@@ -95,10 +95,8 @@ def test_sparql_query(graph):
     WHERE {
         ?s ?p ?o .
         FILTER (
-            STRSTARTS(STR(?s), "http://data.15926.org/iso/") ||
             STRSTARTS(STR(?s), "http://data.15926.org/rdl/") ||
             STRSTARTS(STR(?s), "http://data.15926.org/dm/") ||
-            STRSTARTS(STR(?s), "http://data.15926.org/coco/") ||
             STRSTARTS(STR(?s), "http://data.15926.org/lci/")
         )
     } LIMIT 1
@@ -112,7 +110,7 @@ def test_sparql_query(graph):
 
 def test_included_graphs(graph):
     """
-    Ensures that subjects from each of the expected namespaces (/rdl/, /dm/, /coco/, /lci/)
+    Ensures that subjects from each of the expected namespaces (/rdl/, /dm/, /lci/)
     are present in the graph. It asserts that there is at least one subject from each namespace.
     """
     namespaces = [
