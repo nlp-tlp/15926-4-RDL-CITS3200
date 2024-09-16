@@ -7,6 +7,7 @@ query_source: |
     GRAPH ?g {
       ?id ?predicate ?object .
     }
-    FILTER(?g IN (<http://data.15926.org/rdl>, <http://data.15926.org/dm>, <http://data.15926.org/coco>))
+    FILTER(?g IN (<http://data.15926.org/rdl>, <http://data.15926.org/dm>, <http://data.15926.org/coco>, <http://data.15926.org/lci>))
   }
 
+# Note: `/coco` is used for further types, while `/dm` and `/lci` are for the data model
