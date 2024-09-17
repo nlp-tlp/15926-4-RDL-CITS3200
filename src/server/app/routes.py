@@ -59,6 +59,7 @@ def children(node_uri):
     Query Parameters:
         dep (bool): Whether to include deprecated nodes. Default is False.
         extra_parents (bool): Whether to include extra parents for each child. Default is True.
+        has_children (bool): Whether to include a boolean flag indicating if the child has children. Default is True.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -66,7 +67,7 @@ def children(node_uri):
         Exception: For any other internal error.
 
     Returns:
-        JSON: The children of the given node, along with other requested details.
+        JSON: The id of the node, the children of the given node in alphabetical order, along with other requested details.
     """
     # Extract the custom parameters
     include_deprecation = controllers.str_to_bool(
@@ -74,6 +75,9 @@ def children(node_uri):
     )
     include_extra_parents = controllers.str_to_bool(
         request.args.get("extra_parents", default=True)
+    )
+    include_has_children = controllers.str_to_bool(
+        request.args.get("has_children", default=True)
     )
 
     try:
@@ -86,6 +90,7 @@ def children(node_uri):
             graph=current_app.graph,
             dep=include_deprecation,
             ex_parents=include_extra_parents,
+            children_flag=include_has_children,
             order=True,
         )
 
