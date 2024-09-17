@@ -119,9 +119,27 @@ cd src/server
 flask --app "server.py" run
 ```
 
+** WARNING: Before the server can be run, the CLI tool needs to be run accordingly to ensure a database exists.**
+
 #### CLI
 
-🚧 CLI setup is currently under development. 🚧
+To generate a database file on initial setup:
+
+```
+source src/server/venv/bin/activate  # Activate virtual environment for correct packages
+cd src/cli
+python3 cli.py --update
+```
+
+To modify the database in use the provided menu in the CLI tool:
+
+```
+source src/server/venv/bin/activate  # Activate virtual environment for correct packages
+cd src/cli
+python3 cli.py
+```
+
+Follow the directions given in the menu to modify the database and view other parameters.
 
 ## Development
 
