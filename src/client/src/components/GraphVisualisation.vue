@@ -131,6 +131,11 @@ function renderNodes(nodes: any) {
     .attr('r', 5)
     .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
 
+  nodeUpdate
+    .select('text')
+    .attr('x', (d: any) => (d.children || d._children ? -10 : 10))
+    .style('text-anchor', (d: any) => (d.children || d._children ? 'end' : 'start'))
+
   node.exit().remove()
 }
 

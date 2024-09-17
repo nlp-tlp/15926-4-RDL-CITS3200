@@ -31,7 +31,6 @@ async function fetchChildren(node: any) {
 
 <template>
   <div class="container">
-    <h1>Graph</h1>
     <GraphSearchSidepane />
     <GraphInfoSidepane />
     <GraphVisualisation :data="data" :fetch-children="fetchChildren" />
