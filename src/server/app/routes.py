@@ -2,6 +2,7 @@
 from . import controllers
 from flask import jsonify, request, current_app
 from app.blueprints import main
+from app.config import Config
 
 
 @main.route("/ping")
@@ -169,3 +170,87 @@ def invalid_info():
         jsonify({"error": "ID/URI not provided. Must use '/node/info/<id>'"}),
         400,
     )
+
+
+@main.route("/search/id/<path:node_uri>", methods=["GET"])
+def search_by_id(node_uri):
+    """
+    Searches the graph by a node ID (URI) and returns matching nodes.
+
+    Args:
+        node_uri (str): The URI of the node to search for.
+
+    Query Parameters:
+        dep (bool): Whether to include deprecated nodes. Default is False.
+        limit (int): Maximum number of results to return. Default is 5, max is 25.
+
+    Returns:
+        JSON: The search results by node ID.
+    """
+    # Extract custom parameters
+    include_deprecation = controllers.str_to_bool(
+        request.args.get("dep", default=False)
+    )
+    limit = min(int(request.args.get("limit", 5)), int(Config.MAX_SEARCH_LIMIT))
+
+    try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
+
+        results = controllers.search(
+            search_key=node_uri,
+            field="URI",
+            graph=current_app.graph,
+            dep=include_deprecation,
+            limit=limit,
+        )
+
+    except AttributeError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
+
+    return jsonify({"id": node_uri, "results": results})
+
+
+@main.route("/search/label/<path:node_label>", methods=["GET"])
+def search_by_label(node_label):
+    """
+    Searches the graph by a node label and returns matching nodes.
+
+    Args:
+        node_uri (str): The label of the node to search for.
+
+    Query Parameters:
+        dep (bool): Whether to include deprecated nodes. Default is False.
+        limit (int): Maximum number of results to return. Default is 5, max is 25.
+
+    Returns:
+        JSON: The search results by node label.
+    """
+    # Extract custom parameters
+    include_deprecation = controllers.str_to_bool(
+        request.args.get("dep", default=False)
+    )
+    limit = min(int(request.args.get("limit", 5)), int(Config.MAX_SEARCH_LIMIT))
+
+    try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
+
+        results = controllers.search(
+            search_key=node_label,
+            field="LABEL",
+            graph=current_app.graph,
+            dep=include_deprecation,
+            limit=limit,
+        )
+
+    except AttributeError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
+
+    return jsonify({"label": node_label, "results": results})

@@ -1,4 +1,4 @@
-from .config import Config
+from app.config import Config
 from rdflib import URIRef, Literal, RDF, RDFS, Namespace
 
 # Define the namespace for meta and SKOS
@@ -235,6 +235,69 @@ def get_children(uri, graph, dep=False, ex_parents=True, order=True):
         children_list.sort(key=lambda x: (x.get("label") or ""))
 
     return children_list
+
+
+def search(search_key, field, graph, dep=False, limit=5):
+    """
+    Search the RDFLib graph for nodes by URI or label, with optional filtering for deprecated nodes.
+
+    Args:
+        search_key (str): The search term (either part of a URI or part of a label).
+        field (str): The field to search by ('URI' or 'LABEL').
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool, optional): Whether to include deprecated nodes. Defaults to False.
+        limit (int, optional): Maximum number of results to return. Defaults to 5.
+
+    Returns:
+        list: A list of unique dictionaries containing node information.
+    """
+
+    results = []
+    unique_subjects = set()  # Set to track unique subjects
+    count = 0
+
+    # Check if the field is "LABEL", otherwise default to "URI"
+    if field.upper() == "LABEL":
+        # Search by label (rdfs:label) for partial match
+        for subject, predicate, obj in graph.triples((None, RDFS.label, None)):
+            if isinstance(obj, Literal) and search_key.lower() in str(obj).lower():
+                if subject in unique_subjects:
+                    continue  # Skip if subject is already added
+
+                # Get basic node info
+                node_info = get_basic_node_info(subject, graph)
+
+                # Skip if we don't want deprecated nodes
+                if not dep and node_info.get("dep"):
+                    continue
+
+                results.append(node_info)
+                unique_subjects.add(subject)  # Track this subject
+                count += 1
+
+                if count >= limit:
+                    break
+    else:
+        # Default or explicit "URI" search (substring match)
+        for subject in graph.subjects():
+            if search_key.lower() in str(subject).lower():
+                if subject in unique_subjects:
+                    continue  # Skip if subject is already added
+
+                node_info = get_basic_node_info(subject, graph)
+
+                # Skip if we don't want deprecated nodes
+                if not dep and node_info.get("dep"):
+                    continue
+
+                results.append(node_info)
+                unique_subjects.add(subject)  # Track this subject
+                count += 1
+
+                if count >= limit:
+                    break
+
+    return results
 
 
 #  Convert a string to a boolean and accepts common representations of true/false.

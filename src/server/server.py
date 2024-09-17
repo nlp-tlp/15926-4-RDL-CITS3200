@@ -2,7 +2,7 @@
 import sys
 from rdflib import Graph
 from app import create_app
-from app.config import TestConfig, DeploymentConfig
+from app.config import DeploymentConfig
 from app.models import load_latest_db
 
 # Deployment Configuration
