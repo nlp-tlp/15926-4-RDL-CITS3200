@@ -86,6 +86,7 @@ def children(node_uri):
             graph=current_app.graph,
             dep=include_deprecation,
             ex_parents=include_extra_parents,
+            order=True,
         )
 
     except ValueError as e:
