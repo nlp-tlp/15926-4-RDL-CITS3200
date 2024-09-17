@@ -7,7 +7,9 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "module": "NodeNext",
-    "noEmit": true
+    "noEmit": true,
+    "lib": ["ES2015", "DOM"],
+    "target": "ES2015"  // Target ES2015 or later to ensure support for async/await
   },
   "files": [],
   "references": [
