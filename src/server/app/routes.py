@@ -211,7 +211,7 @@ def search_by_id(node_uri):
     except Exception as e:
         return jsonify({"error": "Internal Error"}), 500
 
-    return jsonify({"id": node_uri, "results": results})
+    return jsonify({"search_key": node_uri, "results": results})
 
 
 @main.route("/search/label/<path:node_label>", methods=["GET"])
@@ -253,4 +253,4 @@ def search_by_label(node_label):
     except Exception as e:
         return jsonify({"error": "Internal Error"}), 500
 
-    return jsonify({"label": node_label, "results": results})
+    return jsonify({"search_key": node_label, "results": results})
