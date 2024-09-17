@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { onMounted, ref } from 'vue'
+import {onMounted, ref } from 'vue'
 
 const props = defineProps({
   data: {
@@ -14,6 +14,9 @@ const props = defineProps({
     required: true
   }
 })
+
+const emit = defineEmits(['toggle-right-nav'])
+
 
 const svgRef = ref(null)
 
@@ -30,7 +33,7 @@ onMounted(() => {
     .select(svgRef.value)
     .attr('width', width)
     .attr('height', height)
-    .call(d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed) as any)
+    .call(d3.zoom().scaleExtent([0.1, 10]).on('zoom', zoomed) as any)
     .append('g')
     .attr('transform', 'translate(40,0)')
 
@@ -78,13 +81,25 @@ onMounted(() => {
       .append('g')
       .attr('class', 'node')
       .on('click', (event, d) => toggleCollapse(d))
-      .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
 
     // Add Circle for the nodes
     nodeEnter
       .append('circle')
       .attr('r', 5)
       .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+      .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
+      .on('mouseover', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+       .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+      })
+      .on('click', (event: any, d: any) => {
+      event.stopPropagation(); // Stop event from bubbling to the text click event
+      toggleCollapse(d); // Only collapse/expand the node when the circle is clicked
+      });
 
     // Add labels for the nodes
     nodeEnter
@@ -92,7 +107,22 @@ onMounted(() => {
       .attr('dy', '.35em')
       .attr('x', (d: any) => (d.children || d._children ? -10 : 10))
       .style('text-anchor', (d: any) => (d.children || d._children ? 'end' : 'start'))
+      .style('cursor', () => ('pointer'))
       .text((d: any) => d.data.name)
+      .on('mouseover', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+        .style('font-weight', 'bold');
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+       .style('fill', '')
+        .style('font-weight', 'normal');
+      })
+      .on('click', (event: any, d: any) => {
+        event.stopPropagation();
+        emit('toggle-right-nav', d);
+      });
 
     // Update the node positions
     const nodeUpdate = nodeEnter.merge(node)

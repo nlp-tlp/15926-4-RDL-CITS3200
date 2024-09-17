@@ -2,17 +2,25 @@
   <div class="container">
     <h1>Graph</h1>
     <GraphSearchSidepane />
-    <GraphInfoSidepane />
+    <GraphInfoSidepane ref="infoPaneRef"/>
 
-    <GraphVisualisation :data />
+    <GraphVisualisation @toggle-right-nav="handleToggleRightNav" :data />
   </div>
 </template>
 
 <script setup lang="ts">
+import {ref} from 'vue'
+
 import GraphVisualisation from '@/components/GraphVisualisation.vue'
 
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
+
+const infoPaneRef = ref();
+
+function handleToggleRightNav() {
+  infoPaneRef.value.toggleRightNav();
+}
 
 const data = {
   name: 'biggest-flare',
