@@ -1,6 +1,7 @@
 from rdflib import URIRef
 from app.controllers import (
     get_root_node_info,
+    has_children,
     get_children,
     check_uri_exists,
     str_to_bool,
@@ -29,6 +30,21 @@ def test_get_root_node_info(sample_graph):
     assert root_info["id"] == "http://data.15926.org/dm/Thing"
     assert root_info["label"] == "Thing"
     assert root_info["dep"] is None, "Root node should not have a deprecation date."
+
+
+def test_has_children(sample_graph):
+    """
+    Test the has_children function from controllers.py.
+    """
+    # Test with a node that has children
+    assert has_children(
+        "http://data.15926.org/dm/Thing", sample_graph
+    ), "Root node should have children."
+
+    # Test with a node that doesn't have children
+    assert not has_children(
+        "http://data.15926.org/dm/Child2", sample_graph
+    ), "Child2 should not have children."
 
 
 def test_get_children_without_deprecation(sample_graph):

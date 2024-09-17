@@ -6,7 +6,7 @@ META = Namespace("http://data.15926.org/meta/")
 SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
 
 
-def get_root_node():
+def get_root_node() -> str:
     """
     Retrieves the root node URI from the configuration.
 
@@ -16,7 +16,7 @@ def get_root_node():
     return Config.ROOT_NODE_URI
 
 
-def check_uri_exists(uri, graph):
+def check_uri_exists(uri: str, graph) -> bool:
     """
     Checks if a given URI exists as a subject in the RDFLib graph.
 
@@ -34,7 +34,7 @@ def check_uri_exists(uri, graph):
 
 
 # Get only the node's LABEL and DEPRECATION DATE
-def get_basic_node_info(uri, graph):
+def get_basic_node_info(uri: str, graph) -> dict[str, any]:
     """
     Retrieves basic information about a node, including its label and deprecation date.
 
@@ -61,7 +61,7 @@ def get_basic_node_info(uri, graph):
 
 
 # Get all information (predicates and objects) for a given node in the RDFLib graph.
-def get_all_node_info(uri, graph, all_info=True):
+def get_all_node_info(uri: str, graph, all_info: bool = True) -> dict[str, any]:
     """
     Retrieves all available information about a given node in the RDFLib graph. This includes
     specific properties such as label, types, deprecation date, definition, and parent nodes
@@ -150,7 +150,7 @@ def get_all_node_info(uri, graph, all_info=True):
     return node_info
 
 
-def get_root_node_info(graph):
+def get_root_node_info(graph) -> dict[str, any]:
     """
     Retrieves information about the root node of the graph.
 
@@ -173,15 +173,40 @@ def get_root_node_info(graph):
     return get_basic_node_info(root_node_ref, graph)
 
 
-def get_children(uri, graph, dep=False, ex_parents=True, order=True):
+def has_children(uri: str, graph) -> bool:
+    """
+    Checks if a given node has any children.
+
+    Args:
+        uri (str): The URI of the node to check for children.
+        graph (rdflib.Graph): The RDFLib graph to query.
+
+    Returns:
+        bool: True if the node has children, otherwise False.
+    """
+    uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
+
+    # Query the graph for triples where the given URI is the object of rdfs:subClassOf (i.e., has children)
+    return any(graph.triples((None, RDFS.subClassOf, uri_ref)))
+
+
+def get_children(
+    uri: str,
+    graph,
+    dep: bool = False,
+    ex_parents: bool = True,
+    children_flag: bool = True,
+    order: bool = True,
+) -> list[dict[str, any]]:
     """
     Retrieves the children of a given node, with optional inclusion of deprecated nodes and extra parents.
 
     Args:
         uri (str): The URI of the node to fetch children for.
         graph (rdflib.Graph): The RDFLib graph to query.
-        dep (bool, optional): Whether to include deprecated nodes. Defaults to False.
-        ex_parents (bool, optional): Whether to include extra parents for each child. Defaults to True.
+        dep (bool, optional): Whether to include deprecated nodes. (default: False).
+        ex_parents (bool, optional): Whether to include extra parents for each child. (default: True).
+        children_flag (bool, optional): Whether to include a boolean flag indicating if the child has children. (default: True).
         order (bool, optional): A flag indicating whether to order the children alphabetically (default: True).
 
     Raises:
@@ -227,6 +252,10 @@ def get_children(uri, graph, dep=False, ex_parents=True, order=True):
                 if extra_parents_list:
                     child_info["extra_parents"] = extra_parents_list
 
+            # Add the 'has_children' field
+            if children_flag:
+                child_info["has_children"] = has_children(str(child), graph)
+
             # Append the child info to the children list
             children_list.append(child_info)
 
@@ -238,7 +267,7 @@ def get_children(uri, graph, dep=False, ex_parents=True, order=True):
 
 
 #  Convert a string to a boolean and accepts common representations of true/false.
-def str_to_bool(value):
+def str_to_bool(value: str) -> bool:
     """
     Converts a string to a boolean, accepting common representations of true/false.
 
