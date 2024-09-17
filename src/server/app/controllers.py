@@ -70,7 +70,7 @@ def get_all_node_info(uri, graph, all_info=True):
     Args:
         uri (str): The URI of the node to retrieve information for.
         graph (rdflib.Graph): The RDFLib graph to query the node's information from.
-        all_info (bool): A flag indicating whether to retrieve additional properties (default: True).
+        all_info (bool, optional): A flag indicating whether to retrieve additional properties (default: True).
 
     Returns:
         dict: A dictionary containing all available information about the node, including:
@@ -173,7 +173,7 @@ def get_root_node_info(graph):
     return get_basic_node_info(root_node_ref, graph)
 
 
-def get_children(uri, graph, dep=False, ex_parents=True):
+def get_children(uri, graph, dep=False, ex_parents=True, order=True):
     """
     Retrieves the children of a given node, with optional inclusion of deprecated nodes and extra parents.
 
@@ -182,6 +182,7 @@ def get_children(uri, graph, dep=False, ex_parents=True):
         graph (rdflib.Graph): The RDFLib graph to query.
         dep (bool, optional): Whether to include deprecated nodes. Defaults to False.
         ex_parents (bool, optional): Whether to include extra parents for each child. Defaults to True.
+        order (bool, optional): A flag indicating whether to order the children alphabetically (default: True).
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -228,6 +229,10 @@ def get_children(uri, graph, dep=False, ex_parents=True):
 
             # Append the child info to the children list
             children_list.append(child_info)
+
+    # Order the children by their label if 'order' is set to True
+    if order:
+        children_list.sort(key=lambda x: (x.get("label") or ""))
 
     return children_list
 
