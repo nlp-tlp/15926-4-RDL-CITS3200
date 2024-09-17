@@ -12,33 +12,33 @@ const props = withDefaults(
 
 const isRightExpanded = ref(props.initialExpanded)
 
+// Reactive object to hold RDF data
+const rdfData = ref<Record<string, any> | null>(null)
+
+// Function to toggle the side panel
 function toggleRightNav(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
 
-// Mock RDF data for demonstration purposes
-const mockRDFData = {
-  'Class Name': 'ExampleClass',
-  Description: 'This is an example class with detailed metadata fields.',
-  Field1: 'This is another example class with detailed metadata fields.',
-  Field2: 'Value2',
-  Field3: 'Value3',
-  Field4: 'Value4',
-  Field5: 'Value5',
-  Field6: 'Value6',
-  Field7: 'Value7',
-  Field8: 'Value8',
-  Field9: 'Value9',
-  Field10: 'Value10',
-  Field12: 'Value12',
-  Field13: 'Value13',
-  Field14: 'Value14',
-  superclass: 'SuperClassExample',
-  'subclass of': 'SubClassExample'
+// Function to fetch node data from the API
+async function fetchNodeData(nodeUri: string) {
+  try {
+    const response = await fetch(`http://localhost:5000/node/info/${encodeURIComponent(nodeUri)}`)
+    if (!response.ok) {
+      throw new Error("Failed to fetch data")
+    }
+    rdfData.value = await response.json()
+  } catch (error) {
+    console.error("Failed to fetch node data:", error)
+  }
 }
 
-// Create a reactive object to hold the RDF data
-const rdfData = ref(mockRDFData)
+// Expose this function to be called from parent component when a node is selected
+defineExpose({
+  onNodeSelect(nodeUri: string) {
+    fetchNodeData(nodeUri)
+  }
+})
 </script>
 
 <script lang="ts">
@@ -68,13 +68,19 @@ export default {
         <p class="right-text">Graph Information</p>
 
         <div class="rdf-info">
-          <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
-            <strong class="rdf-field-name">{{ key }}:</strong>
-            <span class="rdf-field-value">
-              <slot :name="key" :value="value">
-                {{ value }}
-              </slot>
-            </span>
+          <!-- Render RDF data if it exists -->
+          <div v-if="rdfData">
+            <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
+              <strong class="rdf-field-name">{{ key }}:</strong>
+              <span class="rdf-field-value">
+                <slot :name="key" :value="value">
+                  {{ value }}
+                </slot>
+              </span>
+            </div>
+          </div>
+          <div v-else>
+            <p>Loading data...</p>
           </div>
         </div>
       </div>
