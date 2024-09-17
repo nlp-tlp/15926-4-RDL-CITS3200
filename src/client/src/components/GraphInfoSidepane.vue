@@ -19,6 +19,11 @@ function toggleRightNav(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
 
+defineExpose({
+  toggleRightNav
+})
+
+
 // Mock RDF data for demonstration purposes
 const mockRDFData = {
   Label: 'AbstractObject',
@@ -50,6 +55,9 @@ export default {
 
 <template>
   <div>
+
+    <!-- <GraphVisualisation @open-side-panel="toggleRightNav" /> -->
+    
     <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
       &#9776;
     </button>
