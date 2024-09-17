@@ -113,7 +113,7 @@ function renderNodes(nodes: any) {
   nodeEnter
     .append('circle')
     .attr('r', 5)
-    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+    .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
 
   nodeEnter
     .append('text')
@@ -129,7 +129,7 @@ function renderNodes(nodes: any) {
   nodeUpdate
     .select('circle')
     .attr('r', 5)
-    .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+    .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
 
   nodeUpdate
     .select('text')
