@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -22,6 +22,7 @@ const searchOption = ref('id') // The dropdown option selected by the user
 const results = ref<SearchResult[]>([]) // Store search results
 const isSearching = ref(false) // Track API call state
 const isLeftExpanded = ref(props.initialExpanded)
+const showResults = ref(true) // Control whether search results are displayed
 
 // API base URL (NEEDS MODIFICATION FOR PRODUCTION)
 const apiUrl = 'http://localhost:5000'
@@ -44,6 +45,7 @@ watch(searchTerm, (newSearchTerm) => {
     debounceSearch(() => search(newSearchTerm))
   } else {
     results.value = [] // Clear results when input is empty
+    showResults.value = true // Show results again if search term is cleared
   }
 })
 
@@ -66,6 +68,19 @@ async function search(query: string): Promise<void> {
     console.error('Error fetching search results:', error)
   } finally {
     isSearching.value = false
+  }
+}
+
+// Handle result click
+function clickResult(result: SearchResult): void {
+  if (
+    (searchOption.value === 'id' && result.id === searchTerm.value) ||
+    (searchOption.value === 'rdf' && result.label === searchTerm.value)
+  ) {
+    showResults.value = false // Hide search results if the clicked result is already in searchTerm
+  } else {
+    searchTerm.value = searchOption.value === 'id' ? result.id || '' : result.label || ''
+    showResults.value = false // Hide search results after setting the search term
   }
 }
 </script>
@@ -119,9 +134,14 @@ export default {
           </div>
 
           <!-- Scrollable search results -->
-          <div v-if="results.length > 0" class="search-results">
+          <div v-if="showResults && results.length > 0" class="search-results">
             <ul>
-              <li v-for="(result, index) in results" :key="index" class="result-item">
+              <li
+                v-for="(result, index) in results"
+                :key="index"
+                class="result-item"
+                @click="clickResult(result)"
+              >
                 <!-- Display based on search type -->
                 <span v-if="searchOption === 'id'">{{ result.id }}</span>
                 <span v-else>{{ result.label }}</span>
@@ -371,22 +391,39 @@ export default {
 
 /* Scrollable search results */
 .search-results {
-  max-height: 200px;
+  max-height: 300px;
   overflow-y: auto;
   background-color: var(--color-nav-background);
   margin: 1rem;
   padding: 1rem;
   border: 1px solid white;
   border-radius: 8px;
+  position: absolute;
+  top: 11.5rem;
+  left: -1rem;
+  width: calc(100%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  scrollbar-width: none;
 }
 
-.result-item {
+.search-results::-webkit-scrollbar {
+  display: none;
+}
+
+.search-results ul {
+  list-style-type: disc;
+  padding: 0;
+  margin: 0;
+}
+
+.search-results .result-item {
   padding: 0.5rem;
   color: white;
   cursor: pointer;
 }
 
-.result-item:hover {
+.search-results .result-item:hover {
   background-color: var(--color-nav-background-dark);
 }
 
