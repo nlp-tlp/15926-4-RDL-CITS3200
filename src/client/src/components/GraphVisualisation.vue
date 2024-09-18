@@ -1,6 +1,5 @@
 <template>
-
-<div id="app">
+  <div id="app">
     <!-- Button to capture screen -->
     <button @click="captureScreen">Capture Screen</button>
 
@@ -22,9 +21,10 @@
         <button @click="saveScreenshot">Save</button>
       </div>
     </div>
-  <div id="captureArea">
-    <svg ref="svgRef"></svg>
-  </div></div>
+    <div id="captureArea">
+      <svg ref="svgRef"></svg>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -33,7 +33,6 @@ import { saveAs } from 'file-saver'
 import html2canvas from 'html2canvas'
 import { onMounted, ref } from 'vue'
 
-
 const props = defineProps({
   data: {
     type: Object,
@@ -41,49 +40,49 @@ const props = defineProps({
   }
 })
 
-const selectedFileType = ref('png');  // Selected file type for export
-const isPreviewVisible = ref(false);  // Toggle to show/hide the preview modal
-const screenshotDataUrl = ref('');    // Store the data URL of the screenshot
+const selectedFileType = ref('png') // Selected file type for export
+const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
+const screenshotDataUrl = ref('') // Store the data URL of the screenshot
 
 // Function to capture the screen and show the preview modal
 const captureScreen = () => {
-  const captureArea = document.getElementById('captureArea');
-  
+  const captureArea = document.getElementById('captureArea')
+
   if (captureArea) {
     html2canvas(captureArea, {
-      scale: 2, // Increase scale for better quality
-    }).then(canvas => {
-      screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`);
-      isPreviewVisible.value = true; // Show the preview modal
-    });
+      scale: 2 // Increase scale for better quality
+    }).then((canvas) => {
+      screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
+      isPreviewVisible.value = true // Show the preview modal
+    })
   }
-};
+}
 
 // Function to save the screenshot based on the selected file type
 const saveScreenshot = () => {
-  const canvas = document.createElement('canvas');
-  const img = new Image();
-  img.src = screenshotDataUrl.value;
+  const canvas = document.createElement('canvas')
+  const img = new Image()
+  img.src = screenshotDataUrl.value
 
   img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    ctx?.drawImage(img, 0, 0);
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')
+    ctx?.drawImage(img, 0, 0)
 
-    canvas.toBlob(blob => {
+    canvas.toBlob((blob) => {
       if (blob) {
-        const fileName = `screenshot.${selectedFileType.value}`;
-        saveAs(blob, fileName); // Save the image
+        const fileName = `screenshot.${selectedFileType.value}`
+        saveAs(blob, fileName) // Save the image
       }
-    }, `image/${selectedFileType.value}`);
-  };
-};
+    }, `image/${selectedFileType.value}`)
+  }
+}
 
 // Function to close the preview modal
 const closePreview = () => {
-  isPreviewVisible.value = false;
-};
+  isPreviewVisible.value = false
+}
 
 const svgRef = ref(null)
 
@@ -333,5 +332,4 @@ select {
   width: 100%;
   border-radius: 5px;
 }
-
 </style>
