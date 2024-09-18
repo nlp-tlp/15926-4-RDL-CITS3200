@@ -1,12 +1,38 @@
 <template>
-  <div id="tree-container">
+
+<div id="app">
+    <!-- Button to capture screen -->
+    <button @click="captureScreen">Capture Screen</button>
+
+    <!-- Modal for preview -->
+    <div v-if="isPreviewVisible" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closePreview">&times;</span>
+        <h3>Screenshot Preview</h3>
+        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="screenshot-preview" />
+
+        <!-- Dropdown for file type selection -->
+        <select v-model="selectedFileType">
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="svg">SVG</option>
+        </select>
+
+        <!-- Save button -->
+        <button @click="saveScreenshot">Save</button>
+      </div>
+    </div>
+  <div id="captureArea">
     <svg ref="svgRef"></svg>
-  </div>
+  </div></div>
 </template>
 
 <script setup lang="ts">
 import * as d3 from 'd3'
+import { saveAs } from 'file-saver'
+import html2canvas from 'html2canvas'
 import { onMounted, ref } from 'vue'
+
 
 const props = defineProps({
   data: {
@@ -14,6 +40,50 @@ const props = defineProps({
     required: true
   }
 })
+
+const selectedFileType = ref('png');  // Selected file type for export
+const isPreviewVisible = ref(false);  // Toggle to show/hide the preview modal
+const screenshotDataUrl = ref('');    // Store the data URL of the screenshot
+
+// Function to capture the screen and show the preview modal
+const captureScreen = () => {
+  const captureArea = document.getElementById('captureArea');
+  
+  if (captureArea) {
+    html2canvas(captureArea, {
+      scale: 2, // Increase scale for better quality
+    }).then(canvas => {
+      screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`);
+      isPreviewVisible.value = true; // Show the preview modal
+    });
+  }
+};
+
+// Function to save the screenshot based on the selected file type
+const saveScreenshot = () => {
+  const canvas = document.createElement('canvas');
+  const img = new Image();
+  img.src = screenshotDataUrl.value;
+
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(img, 0, 0);
+
+    canvas.toBlob(blob => {
+      if (blob) {
+        const fileName = `screenshot.${selectedFileType.value}`;
+        saveAs(blob, fileName); // Save the image
+      }
+    }, `image/${selectedFileType.value}`);
+  };
+};
+
+// Function to close the preview modal
+const closePreview = () => {
+  isPreviewVisible.value = false;
+};
 
 const svgRef = ref(null)
 
@@ -211,4 +281,57 @@ onMounted(() => {
   stroke-width: 1.5px;
   stroke-opacity: 0.4;
 }
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.screenshot-preview {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Button Styles */
+button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+select {
+  margin-bottom: 1rem;
+  padding: 0.3rem;
+  width: 100%;
+  border-radius: 5px;
+}
+
 </style>
