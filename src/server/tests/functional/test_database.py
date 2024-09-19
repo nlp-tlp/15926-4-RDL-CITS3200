@@ -14,8 +14,12 @@ def test_get_children_with_default_deprecation(test_client):
     assert "children" in data
 
     # Child1 should be excluded since dep=False by default
-    assert len(data["children"]) == 1  # Expect only 1 child (Child2)
+    assert len(data["children"]) == 2  # Expect 2 children (Child2 and Child4)
+    data["children"].sort(
+        key=lambda x: x["id"]
+    )  # Sort children by ID for consistent order
     assert data["children"][0]["label"] == "Child Two"
+    assert data["children"][1]["label"] == "Child Four"
 
 
 def test_get_children_without_deprecation(test_client):
@@ -36,14 +40,18 @@ def test_get_children_without_deprecation(test_client):
     assert "children" in data
 
     # Child1 should be excluded since dep=False by default
-    assert len(data["children"]) == 1  # Expect only 1 child (Child2)
+    assert len(data["children"]) == 2  # Expect 2 children (Child2 and Child4)
+    data["children"].sort(
+        key=lambda x: x["id"]
+    )  # Sort children by ID for consistent order
     assert data["children"][0]["label"] == "Child Two"
+    assert data["children"][1]["label"] == "Child Four"
 
 
 def test_get_children_with_deprecation(test_client):
     """
     Test the '/node/children' route to fetch the children of the root node with dep=True.
-    Both Child1 (with a deprecation date) and Child2 should be included.
+    This should include Child1, which has a deprecation date as well as Child2 and Child4 (no deprecation).
     """
     # Send a request to the /node/children route with the root node's URI and dep=True
     response = test_client.get("/node/children/http://data.15926.org/dm/Thing?dep=true")
@@ -54,7 +62,7 @@ def test_get_children_with_deprecation(test_client):
     # Assert that the response contains the correct children
     assert response.status_code == 200
     assert "children" in data
-    assert len(data["children"]) == 2  # Expect 2 children (Child1 and Child2)
+    assert len(data["children"]) == 3  # Expect 3 children (Child1, Child2, and Child4)
 
     # Validate Child1
     child1_info = next(
@@ -81,6 +89,19 @@ def test_get_children_with_deprecation(test_client):
     assert child2_info is not None
     assert child2_info["label"] == "Child Two"
     assert child2_info["dep"] is None  # Child2 does not have a deprecation date
+
+    # Validate Child4
+    child4_info = next(
+        (
+            child
+            for child in data["children"]
+            if child["id"] == "http://data.15926.org/dm/Child4"
+        ),
+        None,
+    )
+    assert child4_info is not None
+    assert child4_info["label"] == "Child Four"
+    assert child4_info["dep"] is None  # Child4 does not have a deprecation date
 
 
 def test_get_root_node_info(test_client):
@@ -132,8 +153,8 @@ def test_get_children_with_extra_parents(test_client):
     assert response.status_code == 200
     assert "children" in data
 
-    # There should be 2 children (Child1 and Child2)
-    assert len(data["children"]) == 2
+    # There should be 3 children (Child1, Child2, and Child4)
+    assert len(data["children"]) == 3
 
     # Validate Child2, which should have an extra parent (AnotherParent)
     child2_info = next(
@@ -163,6 +184,18 @@ def test_get_children_with_extra_parents(test_client):
     )
     assert child1_info is not None
     assert "extra_parents" not in child1_info
+
+    # Validate that Child4 does not have extra parents
+    child4_info = next(
+        (
+            child
+            for child in data["children"]
+            if child["id"] == "http://data.15926.org/dm/Child4"
+        ),
+        None,
+    )
+    assert child4_info is not None
+    assert "extra_parents" not in child4_info
 
 
 def test_get_node_info(test_client):
