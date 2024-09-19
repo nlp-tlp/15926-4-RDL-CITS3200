@@ -180,7 +180,7 @@ def has_children(uri: str, graph, dep: bool) -> bool:
     Args:
         uri (str): The URI of the node to check for children.
         graph (rdflib.Graph): The RDFLib graph to query.
-        dep (bool, optional): Whether to include deprecated nodes. Default is False.
+        dep (bool): Whether to include deprecated nodes.
 
     Returns:
         bool: True if the node has children, otherwise False.
@@ -189,12 +189,13 @@ def has_children(uri: str, graph, dep: bool) -> bool:
 
     # Query the graph for triples where the given URI is the object of rdfs:subClassOf (i.e., if any triples are found, the node has children)
     for child, _, _ in graph.triples((None, RDFS.subClassOf, uri_ref)):
-        # Check dep flag to see whether to include deprecated nodes in children count
+        # Check deprecation flag
         if dep:
             return True
         else:
-            # If the child is not deprecated, return True
-            if not get_basic_node_info(child, graph).get("dep"):
+            # Directly query for the deprecation date of the child node
+            deprecated = any(graph.triples((child, META.valDeprecationDate, None)))
+            if not deprecated:
                 return True
 
     return False
