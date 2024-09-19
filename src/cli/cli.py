@@ -68,7 +68,7 @@ def menu():
 
         elif choice == "M":
             typer.echo("Entering Database Version Control menu...")
-            modify_db_menu()  # Placeholder for the actual function
+            modify_db_menu()
 
         else:
             typer.echo("!! Invalid choice. Please try again.")
@@ -92,7 +92,7 @@ def modify_db_menu():
 
     typer.echo("\nOptions:")
     typer.echo("D = Delete a database")
-    typer.echo("U = Update the current database in use")
+    typer.echo("C = Change the current database in use")
     typer.echo("Q = Return to previous menu")
 
     # Get user input for action
@@ -110,7 +110,7 @@ def modify_db_menu():
         else:
             delete_db(dbs[delete_choice]["filename"])
 
-    elif choice == "U":
+    elif choice == "C":
         # Update the current database
         update_choice = (
             int(input("Enter the number of the database to set as current: ")) - 1
