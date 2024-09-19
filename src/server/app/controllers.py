@@ -173,21 +173,32 @@ def get_root_node_info(graph) -> dict[str, any]:
     return get_basic_node_info(root_node_ref, graph)
 
 
-def has_children(uri: str, graph) -> bool:
+def has_children(uri: str, graph, dep: bool) -> bool:
     """
-    Checks if a given node has any children.
+    Checks if a given node has any children, considering the deprecation status.
 
     Args:
         uri (str): The URI of the node to check for children.
         graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool): Whether to include deprecated nodes.
 
     Returns:
         bool: True if the node has children, otherwise False.
     """
     uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
 
-    # Query the graph for triples where the given URI is the object of rdfs:subClassOf (i.e., has children)
-    return any(graph.triples((None, RDFS.subClassOf, uri_ref)))
+    # Query the graph for triples where the given URI is the object of rdfs:subClassOf (i.e., if any triples are found, the node has children)
+    for child, _, _ in graph.triples((None, RDFS.subClassOf, uri_ref)):
+        # Check deprecation flag
+        if dep:
+            return True
+        else:
+            # Directly query for the deprecation date of the child node
+            deprecated = any(graph.triples((child, META.valDeprecationDate, None)))
+            if not deprecated:
+                return True
+
+    return False
 
 
 def get_children(
@@ -254,7 +265,7 @@ def get_children(
 
             # Add the 'has_children' field
             if children_flag:
-                child_info["has_children"] = has_children(str(child), graph)
+                child_info["has_children"] = has_children(str(child), graph, dep)
 
             # Append the child info to the children list
             children_list.append(child_info)
