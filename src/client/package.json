@@ -15,18 +15,21 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "prepare": "husky",
+    "fix": "npm run type-check && npm run lint:fix && npm run format",
     "test:unit": "vitest run --root tests/unit",
     "test:e2e": "npx playwright test --config playwright.config.ts",
     "start": "vite"
   },
   "dependencies": {
+    "d3": "^7.9.0",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.46.1",
+    "@playwright/test": "^1.47.0",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
+    "@types/d3": "^7.4.3",
     "@types/node": "^20.14.5",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vitejs/plugin-vue-jsx": "^4.0.0",
@@ -45,7 +48,7 @@
     "npm-run-all2": "^6.2.0",
     "prettier": "^3.2.5",
     "typescript": "^5.5.4",
-    "vite": "^5.3.1",
+    "vite": "^5.4.6",
     "vitest": "^2.0.5",
     "vue-tsc": "^2.0.21"
   }
