@@ -176,10 +176,9 @@ def invalid_info():
     )
 
 
-@main.route("/graph/local-hierarchy", methods=["GET"])
-def local_hierarchy():
+@main.route("/node/local-hierarchy/<path:node_uri>", methods=["GET"])
+def local_hierarchy(node_uri):
     # Extract the required parameters
-    node_uri = request.args.get("id")
     dist_above = request.args.get("above", default=6, type=int)
     dist_below = request.args.get("below", default=6, type=int)
 
@@ -193,7 +192,10 @@ def local_hierarchy():
 
         # Fetch the local hierarchy
         hierarchy = controllers.get_local_hierarchy(
-            uri=node_uri, graph=current_app.graph, dist_below=dist_below
+            uri=node_uri,
+            graph=current_app.graph,
+            dist_below=dist_below,
+            dist_above=dist_above,
         )
 
     except ValueError as e:
