@@ -293,11 +293,12 @@ def str_to_bool(value: str) -> bool:
     return bool(value)
 
 
-def get_hierarchy_below(uri, graph, dist_below, current_level=0):
+def get_hierarchy_below(uri, graph, dist):
     """
     Recursively fetch the hierarchy below (children) of a node.
     """
-    if current_level >= dist_below:
+    # Once its reached the maximum depth given, return empty list
+    if dist == -1:
         return []
 
     children = []
@@ -321,57 +322,124 @@ def get_hierarchy_below(uri, graph, dist_below, current_level=0):
                 child_info["extra_parents"].append(extra_parent_info)
 
         # Recursively get the children of this child
-        child_info["children"] = get_hierarchy_below(
-            str(child), graph, dist_below, current_level + 1
-        )
+        child_info["children"] = get_hierarchy_below(str(child), graph, dist - 1)
 
         children.append(child_info)
 
     return children
 
 
-def get_hierarchy_above(uri, graph, dist_above, current_level=0):
+def get_hierarchy_below(
+    uri, graph, dist, dep=False, ex_parents=True, children_flag=True, order=True
+):
     """
-    Recursively fetch the hierarchy above (parents) of a node.
-    This is not part of your example, but in case you need it later.
+    Recursively fetch the hierarchy below (children) of a node using the get_children function.
+
+    Args:
+        uri (str): The URI of the node.
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dist (int): The maximum depth to retrieve.
+        dep (bool): Whether to include deprecated nodes.
+        ex_parents (bool): Whether to include extra parents.
+        children_flag (bool): Whether to include a flag indicating if the child has children.
+        order (bool): Whether to order the children alphabetically.
+
+    Returns:
+        list: A list of children with their respective hierarchy.
     """
-    if current_level >= dist_above:
+    # If we've reached the maximum depth, return an empty list
+    if dist == -1:
         return []
 
-    parents = []
-    uri_ref = URIRef(uri)
+    # Retrieve the direct children of the node using the get_children function
+    children = get_children(
+        uri=uri,
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=children_flag,
+        order=order,
+    )
 
+    # Recursively retrieve children for each child node
+    for child in children:
+        child_uri = child["id"]
+        # Recursively get the children of this child, reducing the depth by 1
+        child["children"] = get_hierarchy_below(
+            uri=child_uri,
+            graph=graph,
+            dist=dist - 1,  # Reduce the distance to ensure it caps itself
+            dep=dep,
+            ex_parents=ex_parents,
+            children_flag=children_flag,
+            order=order,
+        )
+
+    return children
+
+
+def get_hierarchy_above_and_merge(
+    node_uri, graph, current_hierarchy, max_height, current_level=0
+):
+    if current_level >= max_height:
+        return current_hierarchy
+
+    uri_ref = URIRef(node_uri)
+    parents = []
+
+    # Query for the parent nodes (rdfs:subClassOf)
     for parent, _, _ in graph.triples((None, RDFS.subClassOf, uri_ref)):
         parent_info = {
             "id": str(parent),
             "label": get_node_label(parent, graph),
-            "children": get_hierarchy_above(
-                str(parent), graph, dist_above, current_level + 1
-            ),
+            # Recursively get the parent's children and attach the known hierarchy below
+            "children": current_hierarchy,
             "extra_parents": [],
         }
 
+        # Insert the current hierarchy as one of the children of the parent
+        parent_info["children"].append(current_hierarchy)
+
+        # Add this parent to the list of parents
         parents.append(parent_info)
 
+        # Recursively fetch the parent's parents up to the maximum height
+        parent_info = get_hierarchy_above_and_merge(
+            str(parent), graph, parent_info, max_height, current_level + 1
+        )
+
+    # Return the hierarchy for the parent level
     return parents
 
 
-def get_local_hierarchy(uri, graph, dist_below):
+def get_local_hierarchy(uri, graph, dist_below=3, dist_above=3):
     """
-    Get the hierarchy structure below a node.
+    Get the hierarchy structure both below (children) and above (parents) a node.
+    The function first retrieves the hierarchy below a node and then recursively
+    gets the parents and their children, inserting the already known hierarchy into the parents.
+
+    Args:
+        uri (str): The URI of the node.
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dist_below (int): The maximum depth to retrieve for children.
+        dist_above (int): The maximum height to retrieve for parents.
+
+    Returns:
+        dict: The full hierarchy structure including the node itself, its children, and its ancestors' children.
     """
     if not check_uri_exists(uri, graph):
         raise ValueError(f"URI '{uri}' does not exist within the database")
 
+    # Step 1: Get the children hierarchy below the node
     hierarchy = {
         "id": uri,
         "label": get_node_label(URIRef(uri), graph),
-        "children": [],
+        "children": get_hierarchy_below(uri, graph, dist_below),
         "extra_parents": [],
     }
 
-    # Recursively get the hierarchy below the node
-    hierarchy["children"] = get_hierarchy_below(uri, graph, dist_below)
+    # Fetch the parents and their children, inserting the hierarchy below recursively upwards
+    # hierarchy["extra_parents"] = get_hierarchy_above_and_merge(uri, graph, hierarchy, dist_above)
 
     return hierarchy
 
