@@ -208,6 +208,7 @@ def get_children(
     ex_parents: bool = True,
     children_flag: bool = True,
     order: bool = True,
+    levels: int = 1,
 ) -> list[dict[str, any]]:
     """
     Retrieves the children of a given node, with optional inclusion of deprecated nodes and extra parents.
@@ -266,6 +267,18 @@ def get_children(
             # Add the 'has_children' field
             if children_flag:
                 child_info["has_children"] = has_children(str(child), graph, dep)
+
+            # Recursively get the children's children if theres more levels to go
+            if levels > 1:
+                child_info["children"] = get_children(
+                    uri=uri,
+                    graph=graph,
+                    dep=dep,
+                    ex_parents=ex_parents,
+                    children_flag=children_flag,
+                    order=order,
+                    levels=(levels - 1),
+                )
 
             # Append the child info to the children list
             children_list.append(child_info)

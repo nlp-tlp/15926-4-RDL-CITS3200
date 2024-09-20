@@ -79,6 +79,7 @@ def children(node_uri):
     include_has_children = controllers.str_to_bool(
         request.args.get("has_children", default=True)
     )
+    levels = request.args.get("levels", default=1, type=int)
 
     try:
         # Check if the graph is available
@@ -92,6 +93,7 @@ def children(node_uri):
             ex_parents=include_extra_parents,
             children_flag=include_has_children,
             order=True,
+            levels=levels,
         )
 
     except ValueError as e:
