@@ -23,24 +23,35 @@ def sample_graph():
     child2 = URIRef("http://data.15926.org/dm/Child2")
     extra_parent = URIRef("http://data.15926.org/dm/ExtraParent")
     child3 = URIRef("http://data.15926.org/dm/Child3")
+    child4 = URIRef("http://data.15926.org/dm/Child4")
+    child5 = URIRef("http://data.15926.org/dm/Child5")
 
     # Add labels
     graph.add((root_node, RDFS.label, Literal("Thing")))
     graph.add((child1, RDFS.label, Literal("Child One")))
     graph.add((child2, RDFS.label, Literal("Child Two")))
     graph.add((child3, RDFS.label, Literal("Child Three")))
+    graph.add((child4, RDFS.label, Literal("Child Four")))
+    graph.add((child5, RDFS.label, Literal("Child Five")))
     graph.add((extra_parent, RDFS.label, Literal("Another Parent")))
 
     # Add subclass relationships (children)
     graph.add((child1, RDFS.subClassOf, root_node))
     graph.add((child2, RDFS.subClassOf, root_node))
+    graph.add((child4, RDFS.subClassOf, root_node))
 
     # Add subclass relationship for another parent
     graph.add((child2, RDFS.subClassOf, extra_parent))
     graph.add((child3, RDFS.subClassOf, child1))  # Make child3 a subclass of child1
+    graph.add((child5, RDFS.subClassOf, child4))  # Make child5 a subclass of child4
 
-    # Add deprecation date for one of the children
-    graph.add((child1, META.valDeprecationDate, Literal("2021-03-21Z")))
+    # Add deprecation dates
+    graph.add(
+        (child1, META.valDeprecationDate, Literal("2021-03-21Z"))
+    )  # Child1 is deprecated
+    graph.add(
+        (child5, META.valDeprecationDate, Literal("2021-03-21Z"))
+    )  # Child5 is deprecated
 
     # Add types to the nodes
     graph.add((root_node, RDF.type, URIRef("http://data.15926.org/dm/RootType")))
