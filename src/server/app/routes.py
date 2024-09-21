@@ -120,7 +120,7 @@ def invalid_children():
 
 
 @main.route("/node/parents/<path:node_uri>", methods=["GET"])
-def children(node_uri):
+def parents(node_uri):
     """
     Fetches the parents of a given node in the graph, including information about their children and other optional details.
 
