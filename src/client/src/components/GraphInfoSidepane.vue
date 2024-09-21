@@ -1,59 +1,77 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
     initialExpanded?: boolean
+    nodeUri?: string
   }>(),
   {
     initialExpanded: false
   }
 )
 
-const isRightExpanded = ref(props.initialExpanded)
+const isRightExpanded = ref(props.initialExpanded) // Controls side panel expansion
+const rdfData = ref<Record<string, any> | null>(null) // Stores RDF data
+const loading = ref(false) // Tracks data loading state
+const apiUrl = 'http://localhost:5000'
 
-// Reactive object to hold RDF data
-const rdfData = ref<Record<string, any> | null>(null)
-
-// Function to toggle the side panel
+// Function to toggle the right nav
 function toggleRightNav(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
 
-// Function to fetch node data from the API
-async function fetchNodeData(nodeUri: string) {
+// Function to fetch node data from API
+async function fetchNodeData(nodeUri: string): Promise<void> {
+  loading.value = true
   try {
-    const response = await fetch(`http://localhost:5000/node/info/${encodeURIComponent(nodeUri)}`)
+    const endpoint = `/node/info/${encodeURIComponent(nodeUri)}`
+    console.log(`Fetching data from: ${apiUrl}${endpoint}`) // Debug log
+    const response = await fetch(`${apiUrl}${endpoint}`)
+
     if (!response.ok) {
-      throw new Error("Failed to fetch data")
+      throw new Error(`Failed to fetch node data: ${response.statusText}`)
     }
-    rdfData.value = await response.json()
+
+    const data = await response.json()
+    console.log('Fetched data:', data)
+
+    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+      rdfData.value = data
+    } else {
+      console.warn('Unexpected data structure or empty data:', data)
+      rdfData.value = null
+    }
   } catch (error) {
-    console.error("Failed to fetch node data:", error)
+    console.error('Error fetching node data:', error)
+    rdfData.value = null
+  } finally {
+    loading.value = false
   }
 }
 
-// Expose this function to be called from parent component when a node is selected
-defineExpose({
-  onNodeSelect(nodeUri: string) {
-    fetchNodeData(nodeUri)
-  }
-})
-</script>
+// Watch nodeUri changes to trigger data fetching
+watch(
+  () => props.nodeUri,
+  (newNodeUri) => {
+    if (newNodeUri) {
+      fetchNodeData(newNodeUri) // Trigger data fetching when nodeUri changes
+    } else {
+      console.warn('No nodeUri provided')
+    }
+  },
+  { immediate: true }
+)
 
-<script lang="ts">
-/**
- * GraphInfoSidepane component represents the expandable side panel containing RDF information functionality.
- *
- * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
- *
- * @example
- * <GraphInfoSidepane :initialExpanded="true" />
- * <GraphInfoSidepane initialExpanded />
- * <GraphInfoSidepane />
- */
-export default {
-  name: 'GraphInfoSidepane'
+// Function to format the RDF data for display
+function formatValue(value: any) {
+  if (Array.isArray(value)) {
+    return value.join(', ') // Format array as a string
+  } else if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2) // Format object as JSON string
+  } else {
+    return value // Return other types of values
+  }
 }
 </script>
 
@@ -63,25 +81,28 @@ export default {
       &#9776;
     </button>
 
+    <GraphInfoSidepane :nodeUri="'http://data.15926.org/dm/Thing'" />
+
     <transition name="sidepanel">
       <div v-if="isRightExpanded" class="right-sidepanel">
         <p class="right-text">Graph Information</p>
 
         <div class="rdf-info">
-          <!-- Render RDF data if it exists -->
-          <div v-if="rdfData">
+          <!-- If data is loading, show loading state -->
+          <div v-if="loading">Loading data...</div>
+
+          <!-- If RDF data exists, display RDF information -->
+          <div v-if="rdfData && !loading">
+            <pre>{{ rdfData }}</pre>
+            <!-- For debugging -->
             <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
               <strong class="rdf-field-name">{{ key }}:</strong>
-              <span class="rdf-field-value">
-                <slot :name="key" :value="value">
-                  {{ value }}
-                </slot>
-              </span>
+              <span class="rdf-field-value">{{ formatValue(value) }}</span>
             </div>
           </div>
-          <div v-else>
-            <p>Loading data...</p>
-          </div>
+
+          <!-- If no data and not loading, show no data message -->
+          <div v-else-if="!loading && !rdfData">No data available.</div>
         </div>
       </div>
     </transition>
@@ -123,7 +144,7 @@ export default {
     transform 0.5s ease,
     background-color 0.5s ease;
   transform: translateX(0);
-  overflow: hidden; /* Ensure the side panel itself does not scroll */
+  overflow: hidden; /* Ensure the sidebar itself doesn't scroll */
 }
 
 .right-text {
@@ -149,12 +170,6 @@ export default {
   color: white;
   overflow-y: auto;
   overflow-x: hidden;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-.rdf-info::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }
 
 .rdf-field {
