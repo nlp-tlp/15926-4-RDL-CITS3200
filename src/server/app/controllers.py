@@ -201,6 +201,34 @@ def has_children(uri: str, graph, dep: bool) -> bool:
     return False
 
 
+def has_parents(uri: str, graph, dep: bool) -> bool:
+    """
+    Checks if a given node has any parents, considering the deprecation status.
+
+    Args:
+        uri (str): The URI of the node to check for parents.
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool): Whether to include deprecated nodes.
+
+    Returns:
+        bool: True if the node has parents, otherwise False.
+    """
+    uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
+
+    # Query the graph for triples where the given URI is the subject of rdfs:subClassOf (i.e., if any triples are found, the node has parents)
+    for _, _, parent in graph.triples((uri_ref, RDFS.subClassOf, None)):
+        # Check deprecation flag
+        if dep:
+            return True
+        else:
+            # Directly query for the deprecation date of the parent node
+            deprecated = any(graph.triples((parent, META.valDeprecationDate, None)))
+            if not deprecated:
+                return True
+
+    return False
+
+
 def get_children(
     uri: str,
     graph,
@@ -208,7 +236,7 @@ def get_children(
     ex_parents: bool = True,
     children_flag: bool = True,
     order: bool = True,
-    levels: int = 1,
+    ignore_id: str = None,
 ) -> list[dict[str, any]]:
     """
     Retrieves the children of a given node, with optional inclusion of deprecated nodes and extra parents.
@@ -236,6 +264,9 @@ def get_children(
 
     # Query the graph for triples where the given URI is an object of rdfs:subClassOf
     for child, _, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):
+        if str(child) == ignore_id:
+            continue  # Skip the node to be ignored
+
         if child not in children_set:
             # Use the helper function to get child info
             child_info = get_basic_node_info(child, graph)
@@ -246,9 +277,6 @@ def get_children(
 
             # Add the child to the set and the list
             children_set.add(child)
-
-            # Initialise an empty list for extra parents
-            extra_parents_list = []
 
             # If ex_parents is True, find any additional parents
             if ex_parents:
@@ -268,18 +296,6 @@ def get_children(
             if children_flag:
                 child_info["has_children"] = has_children(str(child), graph, dep)
 
-            # Recursively get the children's children if theres more levels to go
-            if levels > 1:
-                child_info["children"] = get_children(
-                    uri=uri,
-                    graph=graph,
-                    dep=dep,
-                    ex_parents=ex_parents,
-                    children_flag=children_flag,
-                    order=order,
-                    levels=(levels - 1),
-                )
-
             # Append the child info to the children list
             children_list.append(child_info)
 
@@ -288,6 +304,125 @@ def get_children(
         children_list.sort(key=lambda x: (x.get("label") or ""))
 
     return children_list
+
+
+def get_parents(
+    uri: str,
+    graph,
+    dep: bool = False,
+    children_flag: bool = True,
+    parent_flag: bool = True,
+    order: bool = True,
+) -> list[dict[str, any]]:
+    """
+    Retrieves the parents of a given node and ensures that its children are unique across all parents.
+
+    Args:
+        uri (str): The URI of the node to fetch parents for.
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool, optional): Whether to include deprecated nodes. (default: False).
+        children_flag (bool, optional): Whether to include a boolean flag indicating if the parent has children. (default: True).
+        parent_flag (bool, optional): Whether to include a boolean flag indicating if the parent has other parents. (default: True).
+        order (bool, optional): A flag indicating whether to order the parents alphabetically by their label (default: True).
+
+    Raises:
+        ValueError: If the node does not exist in the graph.
+
+    Returns:
+        list: A list of dictionaries, each containing information about a parent node.
+    """
+    hierarchy = []
+    uri_ref = URIRef(uri)  # Convert the URI string to an RDFLib URIRef object
+    num_parents = 0
+
+    if not check_uri_exists(uri=uri, graph=graph):
+        raise ValueError(f"URI '{uri}' does not exist within the database")
+
+    # Get ALL the parents of node
+    for child, _, parent in graph.triples((uri_ref, RDFS.subClassOf, None)):
+        parent_info = get_basic_node_info(parent, graph)
+
+        # If ignoring deprecated nodes and a node has a deprecation date, then skip it
+        if not dep and parent_info.get("dep"):
+            continue
+
+        # Add the 'has_children' field
+        if parent_flag:
+            parent_info["has_parents"] = has_parents(str(parent), graph, dep)
+
+        # Incriment number of parents since it has now been included as a parent
+        num_parents += 1
+
+        # Ensure only the original node is the child in ONE PLACE (the ex_parents field will handle the rest)
+        if num_parents == 1:
+            parent_info["children"] = get_children(
+                uri=parent,
+                graph=graph,
+                dep=dep,
+                ex_parents=True,
+                children_flag=children_flag,
+                order=order,
+            )
+
+        else:
+            parent_info["children"] = get_children(
+                uri=parent,
+                graph=graph,
+                dep=dep,
+                ex_parents=True,
+                children_flag=children_flag,
+                order=order,
+                ignore_id=uri,
+            )
+
+        # Append the parent to the hierarchy
+        hierarchy.append(parent_info)
+
+    # Order the children by their label if 'order' is set to True
+    if order:
+        hierarchy.sort(key=lambda x: (x.get("label") or ""))
+
+    # Ensure no duplicate children nodes in the list (causes bugs), multiple parents are handled through the ex_parents attribute
+    hierarchy = fix_unique_nodes(hierarchy=hierarchy)
+
+    return hierarchy
+
+
+def fix_unique_nodes(hierarchy: list[dict[str, any]]) -> list[dict[str, any]]:
+    """
+    Ensures that each child node is unique across all parents in the hierarchy.
+
+    Args:
+        hierarchy (list[dict]): A list of dictionaries representing the hierarchy of parent nodes and their children.
+
+    Returns:
+        list[dict]: The updated hierarchy with unique child nodes across all parents. The updated structure ensures
+                    that no child node appears under multiple parents in the same hierarchy.
+    """
+    node_set = set()  # Keep only unique nodes
+
+    for parent in hierarchy:
+        # ASSUME PARENT CANNOT BE ITS OWN CHILD, so dont bother adding parent to set
+
+        children_list = parent.get("children", [])
+        unique_children = []  # Make a new list to rebuild the parent's children
+
+        for child in children_list:
+            child_id = child.get("id")
+
+            if child_id in node_set:
+                # Skip this child if it already exists in the set
+                continue
+
+            else:
+                # Add the child to the unique set and to the unique_children list
+                node_set.add(child_id)
+                unique_children.append(child)
+
+        # Update the parent's children list with unique children only
+        parent["children"] = unique_children
+
+    return hierarchy
 
 
 #  Convert a string to a boolean and accepts common representations of true/false.

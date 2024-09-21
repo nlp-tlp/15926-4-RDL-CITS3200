@@ -79,7 +79,6 @@ def children(node_uri):
     include_has_children = controllers.str_to_bool(
         request.args.get("has_children", default=True)
     )
-    levels = request.args.get("levels", default=1, type=int)
 
     try:
         # Check if the graph is available
@@ -93,7 +92,6 @@ def children(node_uri):
             ex_parents=include_extra_parents,
             children_flag=include_has_children,
             order=True,
-            levels=levels,
         )
 
     except ValueError as e:
@@ -119,6 +117,62 @@ def invalid_children():
         jsonify({"error": "ID/URI not provided. Must use '/node/children/<id>'"}),
         400,
     )
+
+
+@main.route("/node/parents/<path:node_uri>", methods=["GET"])
+def children(node_uri):
+    """
+    Fetches the parents of a given node in the graph, including information about their children and other optional details.
+
+    Args:
+        node_uri (str): The URI of the node to fetch parents for.
+
+    Query Parameters:
+        dep (bool, optional): Whether to include deprecated nodes. Default is False.
+        has_children (bool, optional): Whether to include a boolean flag indicating if the parents have children. Default is True.
+        has_parent (bool, optional): Whether to include a boolean flag indicating if the parent nodes have other parents. Default is True.
+
+    Raises:
+        ValueError: If the node does not exist in the graph.
+        AttributeError: If the graph is not initialized in the application context.
+        Exception: For any other internal error.
+
+    Returns:
+        JSON: A JSON object with the expanded node id and the hierarchy.
+    """
+    # Extract the custom parameters
+    include_deprecation = controllers.str_to_bool(
+        request.args.get("dep", default=False)
+    )
+    include_has_children = controllers.str_to_bool(
+        request.args.get("has_children", default=True)
+    )
+    include_has_parent = controllers.str_to_bool(
+        request.args.get("has_parent", default=True)
+    )
+
+    try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
+
+        hierarchy = controllers.get_parents(
+            uri=node_uri,
+            graph=current_app.graph,
+            dep=include_deprecation,
+            children_flag=include_has_children,
+            parent_flag=include_has_parent,
+            order=True,
+        )
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except AttributeError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
+
+    return jsonify({"id": node_uri, "hierarchy": hierarchy})
 
 
 @main.route("/node/info/<path:node_uri>", methods=["GET"])
