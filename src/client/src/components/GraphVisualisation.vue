@@ -26,14 +26,14 @@ let root: any
 
 onMounted(() => {
   initialiseGraph()
-  renderGraph()
+  initialGraphRender()
 })
 
 watch(
   () => props.data,
   (newData) => {
     if (newData) {
-      renderGraph()
+      updateGraph()
     }
   }
 )
@@ -58,7 +58,7 @@ function initialiseGraph() {
     .attr('refY', 0)
     .attr('markerWidth', 6)
     .attr('markerHeight', 6)
-    .attr('orient', 'auto-start-reverse')
+    .attr('orient', 'auto')
     .attr('markerUnits', 'strokeWidth')
     .append('path')
     .attr('d', 'M0,-5L10,0L0,5')
@@ -71,19 +71,20 @@ function zoomed(event: any) {
   svg.attr('transform', event.transform)
 }
 
-function renderGraph() {
+function initialGraphRender() {
   if (!props.data) {
     return
   }
-
-  const startTime = performance.now()
-
   root = d3.hierarchy(props.data)
-
   update(root)
+}
 
-  const endTime = performance.now()
-  console.log(`Rendering took ${endTime - startTime} ms`)
+function updateGraph() {
+  if (!props.data) {
+    return
+  }
+  root = d3.hierarchy(props.data)
+  update(root)
 }
 
 function update(source: any) {
@@ -100,6 +101,33 @@ function update(source: any) {
   renderExtraLinks(nodes)
 }
 
+async function toggleCollapse(d: any) {
+  if (d.children) {
+    // Collapse the node
+    d._children = d.children
+    d.children = null
+  } else {
+    // if node has children
+    if (d.data.has_children) {
+      // if children are not loaded yet
+      if (!d.children) {
+        await props.fetchChildren(d.data)
+      }
+      // Expand the node
+      d.children = d._children
+      d._children = null
+    } else {
+      // if node has no children
+      console.log('Node has no children:', d.data)
+      return
+    }
+  }
+
+  // Trigger the update to re-render the graph with the updated node
+  update(d)
+  console.log('Toggled node:', d.data)
+}
+
 function renderNodes(nodes: any) {
   const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.id))
 
@@ -108,12 +136,12 @@ function renderNodes(nodes: any) {
     .append('g')
     .attr('class', 'node')
     .on('click', (event: Event, d: any) => toggleCollapse(d))
-    .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
 
   nodeEnter
     .append('circle')
     .attr('r', 5)
     .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
+    .style('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
 
   nodeEnter
     .append('text')
@@ -184,21 +212,6 @@ function renderExtraLinks(nodes: any) {
   extraLink.merge(extraLink).attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
 
   extraLink.exit().remove()
-}
-
-async function toggleCollapse(d: any) {
-  if (d.children) {
-    d._children = d.children
-    d.children = null
-  } else {
-    if (!d._children && !d.children) {
-      // Fetch children dynamically
-      await props.fetchChildren(d.data)
-    }
-    d.children = d._children
-    d._children = null
-  }
-  update(d)
 }
 
 const diagonal: any = d3
