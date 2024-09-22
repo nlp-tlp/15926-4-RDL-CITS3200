@@ -256,7 +256,7 @@ def search(search_key, field, graph, dep=False, limit=5):
     unique_subjects = set()  # Set to track unique subjects
     count = 0
 
-    # Check if the field is "LABEL", otherwise default to "URI"
+    # Check if the field is "LABEL"
     if field.upper() == "LABEL":
         # Search by label (rdfs:label) for partial match
         for subject, predicate, obj in graph.triples((None, RDFS.label, None)):
@@ -277,6 +277,8 @@ def search(search_key, field, graph, dep=False, limit=5):
 
                 if count >= limit:
                     break
+
+    # Otherwise default to "URI"
     else:
         # Default or explicit "URI" search (substring match)
         for subject in graph.subjects():
