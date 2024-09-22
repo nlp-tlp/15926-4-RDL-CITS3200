@@ -254,13 +254,14 @@ def search(search_key, field, graph, dep=False, limit=5):
 
     results = []
     unique_subjects = set()  # Set to track unique subjects
+    search_key_lower = search_key.lower()
     count = 0
 
     # Check if the field is "LABEL"
     if field.upper() == "LABEL":
         # Search by label (rdfs:label) for partial match
         for subject, predicate, obj in graph.triples((None, RDFS.label, None)):
-            if isinstance(obj, Literal) and search_key.lower() in str(obj).lower():
+            if isinstance(obj, Literal) and search_key_lower in str(obj).lower():
                 if subject in unique_subjects:
                     continue  # Skip if subject is already added
 
@@ -282,7 +283,7 @@ def search(search_key, field, graph, dep=False, limit=5):
     else:
         # Default or explicit "URI" search (substring match)
         for subject in graph.subjects():
-            if search_key.lower() in str(subject).lower():
+            if search_key_lower in str(subject).lower():
                 if subject in unique_subjects:
                     continue  # Skip if subject is already added
 
