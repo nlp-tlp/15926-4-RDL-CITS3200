@@ -8,7 +8,7 @@ def test_search_by_id(test_client, sample_graph):
 
     # Assert the response is valid and the node exists
     assert response.status_code == 200
-    assert json_data["id"] == node_uri
+    assert json_data["search_key"] == node_uri
     assert len(json_data["results"]) > 0  # Ensure results are returned
 
     # Check that the node exists in the results
@@ -26,7 +26,7 @@ def test_search_by_id_no_results(test_client):
 
     # Assert that no results are returned
     assert response.status_code == 200
-    assert json_data["id"] == invalid_node_uri
+    assert json_data["search_key"] == invalid_node_uri
     assert len(json_data["results"]) == 0  # Ensure no results are returned
 
 
@@ -40,7 +40,7 @@ def test_search_by_label(test_client, sample_graph):
 
     # Assert the response is valid and the node with the label exists
     assert response.status_code == 200
-    assert json_data["label"] == node_label
+    assert json_data["search_key"] == node_label
     assert len(json_data["results"]) > 0  # Ensure results are returned
 
     # Check that the node with the label exists in the results
@@ -58,5 +58,5 @@ def test_search_by_label_no_results(test_client):
 
     # Assert that no results are returned
     assert response.status_code == 200
-    assert json_data["label"] == invalid_label
+    assert json_data["search_key"] == invalid_label
     assert len(json_data["results"]) == 0  # Ensure no results are returned
