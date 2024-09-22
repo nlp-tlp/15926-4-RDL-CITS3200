@@ -191,7 +191,9 @@ def search_by_id(node_uri):
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
-    limit = min(int(request.args.get("limit", 5)), int(Config.MAX_SEARCH_LIMIT))
+    # Ensure limit is not negative and within max limits
+    abs_limit = abs(int(request.args.get("limit", 5)))
+    limit = min(abs_limit, int(Config.MAX_SEARCH_LIMIT))
 
     try:
         # Check if the graph is available
@@ -233,7 +235,9 @@ def search_by_label(node_label):
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
-    limit = min(int(request.args.get("limit", 5)), int(Config.MAX_SEARCH_LIMIT))
+    # Ensure limit is not negative and within max limits
+    abs_limit = abs(int(request.args.get("limit", 5)))
+    limit = min(abs_limit, int(Config.MAX_SEARCH_LIMIT))
 
     try:
         # Check if the graph is available
