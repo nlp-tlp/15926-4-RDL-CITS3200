@@ -376,6 +376,7 @@ def get_parents(
     uri: str,
     graph,
     dep: bool = False,
+    ex_parents: bool = True,
     children_flag: bool = True,
     parent_flag: bool = True,
     order: bool = True,
@@ -387,6 +388,7 @@ def get_parents(
         uri (str): The URI of the node to fetch parents for.
         graph (rdflib.Graph): The RDFLib graph to query.
         dep (bool, optional): Whether to include deprecated nodes. (default: False).
+        ex_parents (bool, optional): Whether to include extra parents for each child. (default: True).
         children_flag (bool, optional): Whether to include a boolean flag indicating if the parent has children. (default: True).
         parent_flag (bool, optional): Whether to include a boolean flag indicating if the parent has other parents. (default: True).
         order (bool, optional): A flag indicating whether to order the parents alphabetically by their label (default: True).
@@ -425,7 +427,7 @@ def get_parents(
                 uri=parent,
                 graph=graph,
                 dep=dep,
-                ex_parents=True,
+                ex_parents=ex_parents,
                 children_flag=children_flag,
                 order=order,
             )
@@ -435,7 +437,7 @@ def get_parents(
                 uri=parent,
                 graph=graph,
                 dep=dep,
-                ex_parents=True,
+                ex_parents=ex_parents,
                 children_flag=children_flag,
                 order=order,
                 ignore_id=uri,
@@ -505,3 +507,71 @@ def str_to_bool(value: str) -> bool:
     if isinstance(value, str):
         return value.lower() in ["true", "1", "t", "y", "yes"]
     return bool(value)
+
+
+def get_local_hierarchy(
+    uri: str,
+    graph,
+    dep: bool = False,
+    ex_parents: bool = True,
+    children_flag: bool = True,
+    parent_flag: bool = True,
+    order: bool = True,
+) -> list[dict[str, any]]:
+    """
+    Get the local hierarchy of a node, placing its children within the structure
+    where the node is found as a child of its parents.
+
+    Args:
+        uri (str): The URI of the node to retrieve the hierarchy for.
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool, optional): Whether to include deprecated nodes (default: False).
+        ex_parents (bool, optional): Whether to include extra parents (default: True).
+        children_flag (bool, optional): Whether to include a flag indicating if the node has children (default: True).
+        parent_flag (bool, optional): Whether to include a flag indicating if the node has parents (default: True).
+        order (bool, optional): Whether to order children alphabetically by label (default: True).
+
+    Returns:
+        list[dict]: A list representing the hierarchy, with the node's children placed correctly under its parents.
+    """
+
+    # Get the children of the node
+    children = get_children(
+        uri=uri,
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=children_flag,
+        order=order,
+    )
+
+    # Get the parents of the node
+    parents = get_parents(
+        uri=uri,
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=children_flag,
+        parent_flag=parent_flag,
+        order=order,
+    )
+
+    # Insert the node's children into the hierarchy if it has children
+    if len(children) > 0:
+        for parent in parents:
+            for child in parent.get("children", []):
+                # If we find the node as a child in this parent's list
+                if child["id"] == uri:
+                    # Add the children to this node's "children" attribute
+                    child["children"] = children
+
+                    # Set the 'center' flag to True for the node
+                    child["center"] = True
+
+                    # Set the children flag
+                    if children_flag:
+                        child["has_children"] = True
+
+                    return parents  # Stop further processing once we find and update the node
+
+    return parents
