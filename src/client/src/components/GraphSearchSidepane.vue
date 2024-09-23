@@ -42,11 +42,13 @@ function debounceSearch(fn: () => void, delay: number = 350) {
 
 // Watch the search term and trigger the search function on changes
 watch(searchTerm, (newSearchTerm) => {
-  if (newSearchTerm) {
-    debounceSearch(() => search(newSearchTerm))
+  // If the length of the search term is less than 1, clear results and do not display
+  if (newSearchTerm.length < 1) {
+    results.value = [] // Clear results
+    showResults.value = false // Hide search results
   } else {
-    results.value = [] // Clear results when input is empty
-    showResults.value = true // Show results again if search term is cleared
+    debounceSearch(() => search(newSearchTerm)) // Perform search
+    showResults.value = true // Show search results
   }
 })
 
