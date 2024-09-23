@@ -1,4 +1,4 @@
-from .config import Config
+from app.config import Config
 from rdflib import URIRef, Literal, RDF, RDFS, Namespace
 
 # Define the namespace for meta and SKOS
@@ -306,6 +306,72 @@ def get_children(
     return children_list
 
 
+def search(search_key, field, graph, dep=False, limit=5):
+    """
+    Search the RDFLib graph for nodes by URI or label, with optional filtering for deprecated nodes.
+
+    Args:
+        search_key (str): The search term (either part of a URI or part of a label).
+        field (str): The field to search by ('URI' or 'LABEL').
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool, optional): Whether to include deprecated nodes. Defaults to False.
+        limit (int, optional): Maximum number of results to return. Defaults to 5.
+
+    Returns:
+        list: A list of unique dictionaries containing node information.
+    """
+
+    results = []
+    unique_subjects = set()  # Set to track unique subjects
+    search_key_lower = search_key.lower()
+    count = 0
+
+    # Check if the field is "LABEL"
+    if field.upper() == "LABEL":
+        # Search by label (rdfs:label) for partial match
+        for subject, _, obj in graph.triples((None, RDFS.label, None)):
+            if isinstance(obj, Literal) and search_key_lower in str(obj).lower():
+                if subject in unique_subjects:
+                    continue  # Skip if subject is already added
+
+                # Get basic node info
+                node_info = get_basic_node_info(subject, graph)
+
+                # Skip if we don't want deprecated nodes
+                if not dep and node_info.get("dep"):
+                    continue
+
+                results.append(node_info)
+                unique_subjects.add(subject)  # Track this subject
+                count += 1
+
+                if count >= limit:
+                    break
+
+    # Otherwise default to "URI"
+    else:
+        # Default or explicit "URI" search (substring match)
+        for subject in graph.subjects():
+            if search_key_lower in str(subject).lower():
+                if subject in unique_subjects:
+                    continue  # Skip if subject is already added
+
+                node_info = get_basic_node_info(subject, graph)
+
+                # Skip if we don't want deprecated nodes
+                if not dep and node_info.get("dep"):
+                    continue
+
+                results.append(node_info)
+                unique_subjects.add(subject)  # Track this subject
+                count += 1
+
+                if count >= limit:
+                    break
+
+    return results
+
+
 def get_parents(
     uri: str,
     graph,
@@ -339,7 +405,7 @@ def get_parents(
         raise ValueError(f"URI '{uri}' does not exist within the database")
 
     # Get ALL the parents of node
-    for child, _, parent in graph.triples((uri_ref, RDFS.subClassOf, None)):
+    for _, _, parent in graph.triples((uri_ref, RDFS.subClassOf, None)):
         parent_info = get_basic_node_info(parent, graph)
 
         # If ignoring deprecated nodes and a node has a deprecation date, then skip it
