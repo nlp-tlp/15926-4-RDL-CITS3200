@@ -1,6 +1,6 @@
 import json
 
-from .config import Config
+from app.config import Config
 
 
 # Load the latest database (Turtle file) into the RDFLib graph based on the history file.
