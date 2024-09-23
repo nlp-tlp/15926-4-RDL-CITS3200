@@ -296,7 +296,27 @@ def search(field, search_key):
 
 @main.route("/graph/local-hierarchy/<path:node_uri>", methods=["GET"])
 def local_hierarchy(node_uri):
-    # order (bool, optional): Whether to order the nodes in alphabetical order. Default is True.
+    """
+    Fetches the local hierarchy for a given node in the RDF graph, including its parents, children, and other optional details.
+
+    Args:
+        node_uri (str): The URI of the node to fetch the local hierarchy for.
+
+    Query Parameters:
+        dep (bool, optional): Whether to include deprecated nodes. Default is False.
+        extra_parents (bool, optional): Whether to include extra parents for each node. Default is True.
+        has_children (bool, optional): Whether to include a boolean flag indicating if each node has children. Default is True.
+        has_parent (bool, optional): Whether to include a boolean flag indicating if each node has parents. Default is True.
+        order (bool, optional): Whether to order the nodes alphabetically by label. Default is True.
+
+    Raises:
+        ValueError: If the node does not exist in the graph.
+        AttributeError: If the graph is not initialized in the application context.
+        Exception: For any other internal error.
+
+    Returns:
+        JSON: A JSON object containing the id of the centre node and the hierarchy (level above and below):
+    """
     # Extract custom parameters
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)

@@ -493,22 +493,6 @@ def fix_unique_nodes(hierarchy: list[dict[str, any]]) -> list[dict[str, any]]:
     return hierarchy
 
 
-#  Convert a string to a boolean and accepts common representations of true/false.
-def str_to_bool(value: str) -> bool:
-    """
-    Converts a string to a boolean, accepting common representations of true/false.
-
-    Args:
-        value (str or any): The value to convert to boolean.
-
-    Returns:
-        bool: True if the string is a truthy value ('true', '1', 't', 'y', 'yes'), otherwise False.
-    """
-    if isinstance(value, str):
-        return value.lower() in ["true", "1", "t", "y", "yes"]
-    return bool(value)
-
-
 def get_local_hierarchy(
     uri: str,
     graph,
@@ -565,8 +549,8 @@ def get_local_hierarchy(
                     # Add the children to this node's "children" attribute
                     child["children"] = children
 
-                    # Set the 'center' flag to True for the node
-                    child["center"] = True
+                    # Set the 'centre' flag to True for the node
+                    child["centre"] = True
 
                     # Set the children flag
                     if children_flag:
@@ -575,3 +559,19 @@ def get_local_hierarchy(
                     return parents  # Stop further processing once we find and update the node
 
     return parents
+
+
+#  Convert a string to a boolean and accepts common representations of true/false.
+def str_to_bool(value: str) -> bool:
+    """
+    Converts a string to a boolean, accepting common representations of true/false.
+
+    Args:
+        value (str or any): The value to convert to boolean.
+
+    Returns:
+        bool: True if the string is a truthy value ('true', '1', 't', 'y', 'yes'), otherwise False.
+    """
+    if isinstance(value, str):
+        return value.lower() in ["true", "1", "t", "y", "yes"]
+    return bool(value)
