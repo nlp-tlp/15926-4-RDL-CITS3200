@@ -3,6 +3,9 @@ import { ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
+    /**
+     * Determines if the side panel is initially expanded.
+     */
     initialExpanded?: boolean
   }>(),
   {
@@ -129,6 +132,7 @@ export default {
   flex: 1; /* Allow rdf-info to take up remaining space */
   margin: 1rem;
   color: white;
+  /* Allow scrolling within the rdf-info div but no scrollbars */
   overflow-y: auto;
   overflow-x: hidden;
   -ms-overflow-style: none; /* IE and Edge */
