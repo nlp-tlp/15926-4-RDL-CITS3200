@@ -61,6 +61,7 @@ def children(node_uri):
         dep (bool): Whether to include deprecated nodes. Default is False.
         extra_parents (bool): Whether to include extra parents for each child. Default is True.
         has_children (bool): Whether to include a boolean flag indicating if the child has children. Default is True.
+        order (bool, optional): Whether to order the nodes in alphabetical order. Default is True.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -80,6 +81,7 @@ def children(node_uri):
     include_has_children = controllers.str_to_bool(
         request.args.get("has_children", default=True)
     )
+    order = controllers.str_to_bool(request.args.get("order", default=True))
 
     try:
         # Check if the graph is available
@@ -92,7 +94,7 @@ def children(node_uri):
             dep=include_deprecation,
             ex_parents=include_extra_parents,
             children_flag=include_has_children,
-            order=True,
+            order=order,
         )
 
     except ValueError as e:
@@ -130,8 +132,10 @@ def parents(node_uri):
 
     Query Parameters:
         dep (bool, optional): Whether to include deprecated nodes. Default is False.
+        extra_parents (bool): Whether to include extra parents for each child. Default is True.
         has_children (bool, optional): Whether to include a boolean flag indicating if the parents have children. Default is True.
         has_parent (bool, optional): Whether to include a boolean flag indicating if the parent nodes have other parents. Default is True.
+        order (bool, optional): Whether to order the nodes in alphabetical order. Default is True.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -145,12 +149,16 @@ def parents(node_uri):
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
+    include_extra_parents = controllers.str_to_bool(
+        request.args.get("extra_parents", default=True)
+    )
     include_has_children = controllers.str_to_bool(
         request.args.get("has_children", default=True)
     )
     include_has_parent = controllers.str_to_bool(
         request.args.get("has_parent", default=True)
     )
+    order = controllers.str_to_bool(request.args.get("order", default=True))
 
     try:
         # Check if the graph is available
@@ -161,9 +169,10 @@ def parents(node_uri):
             uri=node_uri,
             graph=current_app.graph,
             dep=include_deprecation,
+            ex_parents=include_extra_parents,
             children_flag=include_has_children,
             parent_flag=include_has_parent,
-            order=True,
+            order=order,
         )
 
     except ValueError as e:
@@ -285,14 +294,23 @@ def search(field, search_key):
     return jsonify({"search_key": search_key, "results": results})
 
 
-@main.route("/node/local-hierarchy/<path:node_uri>", methods=["GET"])
+@main.route("/graph/local-hierarchy/<path:node_uri>", methods=["GET"])
 def local_hierarchy(node_uri):
-    # Extract the required parameters
-    dist_above = request.args.get("above", default=6, type=int)
-    dist_below = request.args.get("below", default=6, type=int)
-
-    if not node_uri:
-        return jsonify({"error": "ID/URI not provided"}), 400
+    # order (bool, optional): Whether to order the nodes in alphabetical order. Default is True.
+    # Extract custom parameters
+    include_deprecation = controllers.str_to_bool(
+        request.args.get("dep", default=False)
+    )
+    include_extra_parents = controllers.str_to_bool(
+        request.args.get("extra_parents", default=True)
+    )
+    include_has_children = controllers.str_to_bool(
+        request.args.get("has_children", default=True)
+    )
+    include_has_parent = controllers.str_to_bool(
+        request.args.get("has_parent", default=True)
+    )
+    order = controllers.str_to_bool(request.args.get("order", default=True))
 
     try:
         # Check if the graph is available
@@ -303,8 +321,11 @@ def local_hierarchy(node_uri):
         hierarchy = controllers.get_local_hierarchy(
             uri=node_uri,
             graph=current_app.graph,
-            dist_below=dist_below,
-            dist_above=dist_above,
+            dep=include_deprecation,
+            ex_parents=include_extra_parents,
+            children_flag=include_has_children,
+            parent_flag=include_has_parent,
+            order=order,
         )
 
     except ValueError as e:
