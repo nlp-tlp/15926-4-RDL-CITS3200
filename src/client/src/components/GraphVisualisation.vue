@@ -64,11 +64,7 @@ function initialiseGraph() {
     .attr('height', height)
     .call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
     .append('g')
-    // Reposition the graph to the center vertically
-    .attr('transform', `translate(${initialGraphX},${initialGraphY})`)
-
-  // Store the initial transform to reset the graph position later
-  const initialTransform = d3.zoomIdentity.translate(initialGraphX, initialGraphY)
+    .attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())
 
   // Add the arrow marker for the links
   svg
@@ -101,17 +97,21 @@ function initialiseGraph() {
     .append('path')
     .attr('d', 'M0,-5L10,0L0,5')
     .attr('fill', 'red')
-
-  // Reset the graph position to the center using the initial transform
-  d3.select(svgRef.value as SVGSVGElement).call(d3.zoom().transform as any, initialTransform)
 }
 
 /**
  * Zoom the graph.
  * @param event The zoom event.
  */
-function zoomed(event: any) {
-  svg.attr('transform', event.transform)
+function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
+  const transform = event.transform
+
+  // Combine the new transform with the initial transform
+  const combinedTransform = d3.zoomIdentity
+    .translate(initialGraphX + transform.x, initialGraphY + transform.y)
+    .scale(transform.k)
+
+  svg.attr('transform', combinedTransform.toString())
 }
 
 /**
