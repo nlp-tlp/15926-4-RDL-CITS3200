@@ -23,6 +23,7 @@ const results = ref<SearchResult[]>([]) // Store search results
 const isSearching = ref(false) // Track API call state
 const isLeftExpanded = ref(props.initialExpanded)
 const showResults = ref(true) // Control whether search results are displayed
+const errorMessage = ref('')
 
 // API base URL (NEEDS MODIFICATION FOR PRODUCTION)
 const apiUrl = 'http://localhost:5000'
@@ -52,6 +53,7 @@ watch(searchTerm, (newSearchTerm) => {
 // API search function
 async function search(query: string): Promise<void> {
   isSearching.value = true
+  errorMessage.value = ''
   try {
     const endpoint = searchOption.value === 'id' ? '/search/id/' : '/search/label/'
     const response = await fetch(`${apiUrl}${endpoint}${encodeURIComponent(query)}`)
@@ -63,9 +65,12 @@ async function search(query: string): Promise<void> {
         label: result.label,
         dep: result.dep
       }))
+    } else {
+      errorMessage.value = 'No results found.'
     }
   } catch (error) {
     console.error('Error fetching search results:', error)
+    errorMessage.value = 'Failed to fetch search results. Please try again later.'
   } finally {
     isSearching.value = false
   }
@@ -131,6 +136,10 @@ export default {
               <option value="id">ID/URI</option>
               <option value="rdf">RDF Label</option>
             </select>
+          </div>
+
+          <div v-if="errorMessage">
+            <p class="error">{{ errorMessage }}</p>
           </div>
 
           <!-- Scrollable search results -->
