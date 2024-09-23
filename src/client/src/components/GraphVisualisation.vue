@@ -20,7 +20,7 @@ const props = defineProps({
 })
 
 // Reference to the SVG element
-const svgRef = ref<Element>()
+const svgRef = ref<SVGSVGElement | null>(null)
 
 // Graph dimensions
 const width: number = window.innerWidth
@@ -59,7 +59,7 @@ watch(
  */
 function initialiseGraph() {
   svg = d3
-    .select(svgRef.value as Element)
+    .select(svgRef.value as SVGSVGElement)
     .attr('width', width)
     .attr('height', height)
     .call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
@@ -103,7 +103,7 @@ function initialiseGraph() {
     .attr('fill', 'red')
 
   // Reset the graph position to the center using the initial transform
-  d3.select(svgRef.value as Element).call(d3.zoom().transform as any, initialTransform)
+  d3.select(svgRef.value as SVGSVGElement).call(d3.zoom().transform as any, initialTransform)
 }
 
 /**
@@ -336,8 +336,4 @@ export default {
   <svg ref="svgRef"></svg>
 </template>
 
-<style scoped>
-svg {
-  border: 1px solid black; /* for debugging */
-}
-</style>
+<style scoped></style>
