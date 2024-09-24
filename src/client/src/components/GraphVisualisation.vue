@@ -288,7 +288,7 @@ onMounted(() => {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 300px;
+  width: 1000px;
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -314,8 +314,9 @@ onMounted(() => {
 
 /* Button Styles */
 button {
+  width: 100px;
   padding: 0.5rem 1rem;
-  background-color: #007bff;
+  background-color: var(--color-nav-background);
   color: white;
   border: none;
   border-radius: 5px;
@@ -323,7 +324,7 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  color: var(--color-nav-text-active);
 }
 
 select {
