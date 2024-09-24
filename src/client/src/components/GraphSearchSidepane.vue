@@ -58,7 +58,7 @@ async function search(query: string): Promise<void> {
   errorMessage.value = ''
   try {
     const endpoint = searchOption.value === 'id' ? '/search/id/' : '/search/label/'
-    const response = await fetch(`${apiUrl}${endpoint}${encodeURIComponent(query)}`)
+    const response = await fetch(`${apiUrl}${endpoint}${encodeURIComponent(query)}?limit=20`)
     const data = await response.json()
 
     if (data.results) {
