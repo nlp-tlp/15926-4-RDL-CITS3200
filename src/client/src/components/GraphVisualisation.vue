@@ -327,6 +327,18 @@ const diagonal: any = d3
 </script>
 
 <script lang="ts">
+/**
+ * GraphVisualisation component represents the global graph hierarchy visualisation.
+ * It uses D3.js to render the graph with the provided data object.
+ * The graph is interactive and allows for collapsing and expanding nodes.
+ * The component also fetches the children of a node from the server upon node expansion.
+ *
+ * @param {Object} data - The reactive data object to be visualised.
+ * @param {Function} fetchChildren - Function to fetch the children of a node from the server.
+ *
+ * @example
+ * <GraphVisualisation :data="data" :fetch-children="fetchChildren" />
+ */
 export default {
   name: 'GraphVisualisation'
 }
