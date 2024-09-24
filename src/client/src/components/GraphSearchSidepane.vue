@@ -412,9 +412,10 @@ export default {
   position: absolute;
   top: 11.5rem;
   left: -1rem;
-  width: calc(100%);
+  width: calc(95%);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   z-index: 10;
+  margin-left: 22px;
   scrollbar-width: none;
 }
 
@@ -423,7 +424,7 @@ export default {
 }
 
 .search-results ul {
-  list-style-type: disc;
+  list-style-type: none;
   padding: 0;
   margin: 0;
 }
@@ -432,6 +433,7 @@ export default {
   padding: 0.5rem;
   color: white;
   cursor: pointer;
+  margin-left: -20px;
 }
 
 .search-results .result-item:hover {
