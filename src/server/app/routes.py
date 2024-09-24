@@ -60,6 +60,7 @@ def children(node_uri):
     Query Parameters:
         dep (bool): Whether to include deprecated nodes. Default is False.
         extra_parents (bool): Whether to include extra parents for each child. Default is True.
+        has_children (bool): Whether to include a boolean flag indicating if the child has children. Default is True.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -67,7 +68,7 @@ def children(node_uri):
         Exception: For any other internal error.
 
     Returns:
-        JSON: The children of the given node, along with other requested details.
+        JSON: The id of the node, the children of the given node in alphabetical order, along with other requested details.
     """
     # Extract the custom parameters
     include_deprecation = controllers.str_to_bool(
@@ -75,6 +76,9 @@ def children(node_uri):
     )
     include_extra_parents = controllers.str_to_bool(
         request.args.get("extra_parents", default=True)
+    )
+    include_has_children = controllers.str_to_bool(
+        request.args.get("has_children", default=True)
     )
 
     try:
@@ -87,6 +91,7 @@ def children(node_uri):
             graph=current_app.graph,
             dep=include_deprecation,
             ex_parents=include_extra_parents,
+            children_flag=include_has_children,
             order=True,
         )
 
@@ -172,35 +177,45 @@ def invalid_info():
     )
 
 
-@main.route("/search/id/<path:node_uri>", methods=["GET"])
-def search_by_id(node_uri):
+@main.route("/search/<string:field>/<path:search_key>", methods=["GET"])
+def search(field, search_key):
     """
-    Searches the graph by a node ID (URI) and returns matching nodes.
+    Searches the graph by either a node ID (URI) or a label based on the dynamic field in the URL.
 
     Args:
-        node_uri (str): The URI of the node to search for.
+        field (str): Specifies whether the search is by 'id' (URI) or 'label'.
+        search_key (str): The search term, which can be either the URI or label of the node.
 
     Query Parameters:
         dep (bool): Whether to include deprecated nodes. Default is False.
         limit (int): Maximum number of results to return. Default is 5, max is 25.
 
     Returns:
-        JSON: The search results by node ID.
+        JSON: The search results by either node ID (URI) or label.
     """
+    # Convert the 'field' to uppercase to make it case-insensitive
+    field = field.upper()
+    allowed_fields = ["ID", "LABEL"]
+
     # Extract custom parameters
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
-    limit = min(int(request.args.get("limit", 5)), int(Config.MAX_SEARCH_LIMIT))
+    # Ensure limit is not negative and within max limits
+    abs_limit = abs(int(request.args.get("limit", 5)))
+    limit = min(abs_limit, int(Config.MAX_SEARCH_LIMIT))
 
     try:
         # Check if the graph is available
         if not hasattr(current_app, "graph"):
             raise AttributeError("Graph is not initialised")
 
+        if field not in allowed_fields:
+            return jsonify({"error": "Invalid field. Use 'id' or 'label'."}), 400
+
         results = controllers.search(
-            search_key=node_uri,
-            field="URI",
+            search_key=search_key,
+            field=field,
             graph=current_app.graph,
             dep=include_deprecation,
             limit=limit,
@@ -211,46 +226,4 @@ def search_by_id(node_uri):
     except Exception as e:
         return jsonify({"error": "Internal Error"}), 500
 
-    return jsonify({"search_key": node_uri, "results": results})
-
-
-@main.route("/search/label/<path:node_label>", methods=["GET"])
-def search_by_label(node_label):
-    """
-    Searches the graph by a node label and returns matching nodes.
-
-    Args:
-        node_uri (str): The label of the node to search for.
-
-    Query Parameters:
-        dep (bool): Whether to include deprecated nodes. Default is False.
-        limit (int): Maximum number of results to return. Default is 5, max is 25.
-
-    Returns:
-        JSON: The search results by node label.
-    """
-    # Extract custom parameters
-    include_deprecation = controllers.str_to_bool(
-        request.args.get("dep", default=False)
-    )
-    limit = min(int(request.args.get("limit", 5)), int(Config.MAX_SEARCH_LIMIT))
-
-    try:
-        # Check if the graph is available
-        if not hasattr(current_app, "graph"):
-            raise AttributeError("Graph is not initialised")
-
-        results = controllers.search(
-            search_key=node_label,
-            field="LABEL",
-            graph=current_app.graph,
-            dep=include_deprecation,
-            limit=limit,
-        )
-
-    except AttributeError as e:
-        return jsonify({"error": str(e)}), 500
-    except Exception as e:
-        return jsonify({"error": "Internal Error"}), 500
-
-    return jsonify({"search_key": node_label, "results": results})
+    return jsonify({"search_key": search_key, "results": results})
