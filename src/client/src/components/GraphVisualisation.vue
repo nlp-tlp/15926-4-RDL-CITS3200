@@ -1,23 +1,23 @@
 <template>
   <div id="app">
-    <!-- Button to capture screen -->
+    <!-- Capture Screen Button -->
     <button @click="captureScreen">Capture Screen</button>
 
-    <!-- Modal for preview -->
+    <!-- Preview Modal -->
     <div v-if="isPreviewVisible" class="modal">
       <div class="modal-content">
         <span class="close" @click="closePreview">&times;</span>
         <h3>Screenshot Preview</h3>
         <img :src="screenshotDataUrl" alt="Screenshot Preview" class="screenshot-preview" />
 
-        <!-- Dropdown for file type selection -->
+        <!-- Dropdown for file type (maybe change to toggle switch?) -->
         <select v-model="selectedFileType">
           <option value="png">PNG</option>
           <option value="jpeg">JPEG</option>
-          <option value="svg">SVG (Not Working)</option>
+          <option value="svg">SVG</option>
         </select>
 
-        <!-- Save button -->
+        <!-- Save button on Modal -->
         <button2 @click="saveScreenshot">Save</button2>
       </div>
     </div>
@@ -58,24 +58,62 @@ const captureScreen = () => {
   }
 }
 
+// Function to inline all styles into the SVG 
+//(Styles from our d3 graph have to be put inline to export as a SVG)
+const inlineStyles = (element: HTMLElement) => {
+  const styleSheets = Array.from(document.styleSheets)
+
+  styleSheets.forEach((styleSheet) => {
+    try {
+      const cssRules = Array.from(styleSheet.cssRules)
+
+      cssRules.forEach((rule) => {
+        if (rule instanceof CSSStyleRule) {
+          const matchingElements = element.querySelectorAll(rule.selectorText)
+          matchingElements.forEach((el: any) => {
+            for (let style of rule.style) {
+              el.style.setProperty(style, rule.style.getPropertyValue(style))
+            }
+          })
+        }
+      })
+    } catch (e) {
+      console.warn('Cannot access rules from stylesheet: ', styleSheet.href)
+    }
+  }) }
+
 // Function to save the screenshot based on the selected file type
 const saveScreenshot = () => {
-  const canvas = document.createElement('canvas')
-  const img = new Image()
-  img.src = screenshotDataUrl.value
+  if (selectedFileType.value === 'svg') {
+  const svgElement = svgRef.value
+  if (!svgElement) return
 
-  img.onload = () => {
-    canvas.width = img.width
-    canvas.height = img.height
-    const ctx = canvas.getContext('2d')
-    ctx?.drawImage(img, 0, 0)
+  inlineStyles(svgElement)
 
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const fileName = `screenshot.${selectedFileType.value}`
-        saveAs(blob, fileName) // Save the image
-      }
-    }, `image/${selectedFileType.value}`)
+  const serializer = new XMLSerializer()
+  const svgString = serializer.serializeToString(svgElement)
+
+  const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+  saveAs(blob, 'graph.svg')
+  } else {
+    // (PNG, JPEG)
+    const canvas = document.createElement('canvas');
+    const img = new Image();
+    img.src = screenshotDataUrl.value;
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const fileName = `screenshot.${selectedFileType.value}`;
+          saveAs(blob, fileName);
+        }
+      }, `image/${selectedFileType.value}`);
+    };
   }
 }
 
@@ -262,6 +300,7 @@ onMounted(() => {
   const endTime = performance.now()
   console.log(`Rendering took ${endTime - startTime} ms`)
 })
+
 </script>
 
 <style scoped>
