@@ -748,7 +748,7 @@ def build_parent_hierarchy(
             graph=graph,
             dep=dep,
             ex_parents=ex_parents,
-            children_flag=children_flag,
+            children_flag=False,
             parent_flag=parent_flag,
             order=order,
         )
