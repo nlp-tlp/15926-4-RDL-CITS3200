@@ -14,11 +14,11 @@
         <select v-model="selectedFileType">
           <option value="png">PNG</option>
           <option value="jpeg">JPEG</option>
-          <option value="svg">SVG</option>
+          <option value="svg">SVG (Not Working)</option>
         </select>
 
         <!-- Save button -->
-        <button @click="saveScreenshot">Save</button>
+        <button2 @click="saveScreenshot">Save</button2>
       </div>
     </div>
     <div id="captureArea">
@@ -288,7 +288,7 @@ onMounted(() => {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 1000px;
+  width: 60%;
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -314,6 +314,19 @@ onMounted(() => {
 
 /* Button Styles */
 button {
+  width: 100px;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-nav-background);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+}
+
+button2 {
   width: 100px;
   padding: 0.5rem 1rem;
   background-color: var(--color-nav-background);
