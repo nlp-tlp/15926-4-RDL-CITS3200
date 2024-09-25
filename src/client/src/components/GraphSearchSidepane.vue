@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -13,10 +13,85 @@ const props = withDefaults(
   }
 )
 
-const isLeftExpanded = ref(props.initialExpanded)
+interface SearchResult {
+  id?: string
+  label?: string
+  dep?: string | null // If you need the 'dep' property as well
+}
 
+// Reactive properties
+const searchTerm = ref('') // The search term entered by the user
+const searchOption = ref('id') // The dropdown option selected by the user
+const results = ref<SearchResult[]>([]) // Store search results
+const isSearching = ref(false) // Track API call state
+const isLeftExpanded = ref(props.initialExpanded)
+const showResults = ref(true) // Control whether search results are displayed
+const errorMessage = ref('')
+
+// API base URL (NEEDS MODIFICATION FOR PRODUCTION)
+const apiUrl = 'http://localhost:5000'
+
+// Function to toggle the left nav
 function toggleLeftNav(): void {
   isLeftExpanded.value = !isLeftExpanded.value
+}
+
+// Function to debounce the search query -- ONLY QUERY AFTER USER STOPS TYPING
+let debounceTimeout: number
+function debounceSearch(fn: () => void, delay: number = 350) {
+  clearTimeout(debounceTimeout)
+  debounceTimeout = setTimeout(fn, delay)
+}
+
+// Watch the search term and trigger the search function on changes
+watch(searchTerm, (newSearchTerm) => {
+  // If the length of the search term is less than 1, clear results and do not display
+  if (newSearchTerm.length < 1) {
+    results.value = [] // Clear results
+    showResults.value = false // Hide search results
+  } else {
+    debounceSearch(() => search(newSearchTerm)) // Perform search
+    showResults.value = true // Show search results
+  }
+})
+
+// API search function
+async function search(query: string): Promise<void> {
+  isSearching.value = true
+  errorMessage.value = ''
+  try {
+    const endpoint = searchOption.value === 'id' ? '/search/id/' : '/search/label/'
+    const response = await fetch(`${apiUrl}${endpoint}${encodeURIComponent(query)}?limit=20`)
+    const data = await response.json()
+
+    if (data.results) {
+      results.value = data.results.map((result: any) => ({
+        id: result.id,
+        label: result.label,
+        dep: result.dep
+      }))
+    } else {
+      errorMessage.value = 'No results found.'
+    }
+  } catch (error) {
+    console.error('Error fetching search results:', error)
+    errorMessage.value = 'Failed to fetch search results. Please try again later.'
+  } finally {
+    isSearching.value = false
+  }
+}
+
+// Handle result click
+function clickResult(result: SearchResult): void {
+  if (
+    (searchOption.value === 'id' && result.id === searchTerm.value) ||
+    (searchOption.value === 'rdf' && result.label === searchTerm.value)
+  ) {
+    showResults.value = false // Hide search results if the clicked result is already in searchTerm
+  } else {
+    searchTerm.value = searchOption.value === 'id' ? result.id || '' : result.label || ''
+    showResults.value = false // Hide search results after setting the search term
+  }
 }
 </script>
 
@@ -60,12 +135,38 @@ export default {
                   d="M23 21l-5.5-5.5a9.5 9.5 0 1 0-1.4 1.4L21 22.4a1 1 0 0 0 1.4-1.4zM10 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"
                 />
               </svg>
-              <input class="search-bar" type="text" placeholder="Search..." />
+              <input v-model="searchTerm" class="search-bar" type="text" placeholder="Search..." />
             </div>
-            <select class="dropdown">
+            <select v-model="searchOption" class="dropdown">
               <option value="id">ID/URI</option>
               <option value="rdf">RDF Label</option>
             </select>
+          </div>
+
+          <div v-if="errorMessage">
+            <p class="error">{{ errorMessage }}</p>
+          </div>
+
+          <!-- Scrollable search results -->
+          <div v-if="showResults && results.length > 0" class="search-results">
+            <ul>
+              <li
+                v-for="(result, index) in results"
+                :key="index"
+                class="result-item"
+                @click="clickResult(result)"
+              >
+                <!-- Display based on search type -->
+                <span v-if="searchOption === 'id'">{{ result.id }}</span>
+                <span v-else>{{ result.label }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div v-if="isSearching" class="loading-spinner">Searching...</div>
+
+          <div v-if="results.length === 0 && !isSearching && searchTerm" class="no-results">
+            No results found
           </div>
 
           <div v-if="isLeftExpanded" class="toggles-and-levels">
@@ -301,5 +402,57 @@ export default {
   transition:
     background-color 0.3s,
     border-color 0.3s;
+}
+
+/* Scrollable search results */
+.search-results {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: var(--color-nav-background);
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid white;
+  border-radius: 8px;
+  position: absolute;
+  top: 11.5rem;
+  left: -1rem;
+  width: calc(95%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  margin-left: 22px;
+  scrollbar-width: none;
+}
+
+.search-results::-webkit-scrollbar {
+  display: none;
+}
+
+.search-results ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-results .result-item {
+  padding: 0.5rem;
+  color: white;
+  cursor: pointer;
+  margin-left: -20px;
+}
+
+.search-results .result-item:hover {
+  background-color: var(--color-nav-background-dark);
+}
+
+.loading-spinner {
+  text-align: center;
+  color: white;
+  margin-top: 1rem;
+}
+
+.no-results {
+  text-align: center;
+  color: white;
+  margin-top: 1rem;
 }
 </style>
