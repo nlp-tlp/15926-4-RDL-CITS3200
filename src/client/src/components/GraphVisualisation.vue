@@ -58,7 +58,7 @@ const captureScreen = () => {
   }
 }
 
-// Function to inline all styles into the SVG 
+// Function to inline all styles into the SVG
 //(Styles from our d3 graph have to be put inline to export as a SVG)
 const inlineStyles = (element: HTMLElement) => {
   const styleSheets = Array.from(document.styleSheets)
@@ -80,40 +80,41 @@ const inlineStyles = (element: HTMLElement) => {
     } catch (e) {
       console.warn('Cannot access rules from stylesheet: ', styleSheet.href)
     }
-  }) }
+  })
+}
 
 // Function to save the screenshot based on the selected file type
 const saveScreenshot = () => {
   if (selectedFileType.value === 'svg') {
-  const svgElement = svgRef.value
-  if (!svgElement) return
+    const svgElement = svgRef.value
+    if (!svgElement) return
 
-  inlineStyles(svgElement)
+    inlineStyles(svgElement)
 
-  const serializer = new XMLSerializer()
-  const svgString = serializer.serializeToString(svgElement)
+    const serializer = new XMLSerializer()
+    const svgString = serializer.serializeToString(svgElement)
 
-  const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-  saveAs(blob, 'graph.svg')
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+    saveAs(blob, 'graph.svg')
   } else {
     // (PNG, JPEG)
-    const canvas = document.createElement('canvas');
-    const img = new Image();
-    img.src = screenshotDataUrl.value;
+    const canvas = document.createElement('canvas')
+    const img = new Image()
+    img.src = screenshotDataUrl.value
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0);
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      ctx?.drawImage(img, 0, 0)
 
       canvas.toBlob((blob) => {
         if (blob) {
-          const fileName = `screenshot.${selectedFileType.value}`;
-          saveAs(blob, fileName);
+          const fileName = `screenshot.${selectedFileType.value}`
+          saveAs(blob, fileName)
         }
-      }, `image/${selectedFileType.value}`);
-    };
+      }, `image/${selectedFileType.value}`)
+    }
   }
 }
 
@@ -300,7 +301,6 @@ onMounted(() => {
   const endTime = performance.now()
   console.log(`Rendering took ${endTime - startTime} ms`)
 })
-
 </script>
 
 <style scoped>
