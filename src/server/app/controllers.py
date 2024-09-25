@@ -588,6 +588,7 @@ def get_local_hierarchy_to_root(
     children_flag: bool = True,
     parent_flag: bool = False,
     order: bool = True,
+    include_children: bool = True,
 ) -> list[dict[str, any]]:
     """
     Get the local hierarchy of a node from the root all the way to the selected node,
@@ -601,6 +602,7 @@ def get_local_hierarchy_to_root(
         children_flag (bool, optional): Whether to include a flag indicating if the node has children (default: True).
         parent_flag (bool, optional): Whether to include a flag indicating if the node has parents (default: True).
         order (bool, optional): Whether to order children alphabetically by label (default: True).
+        include_children (bool, optional): Whether to include the direct children of the selected node (default: True).
 
     Returns:
         list[dict]: A list representing the hierarchy, with the node's children placed correctly under its parents.
@@ -610,15 +612,17 @@ def get_local_hierarchy_to_root(
 
     node_list = []
 
-    # Start by getting the children of the centre node
-    children = get_children(
-        uri=uri,
-        graph=graph,
-        dep=dep,
-        ex_parents=ex_parents,
-        children_flag=children_flag,
-        order=order,
-    )
+    # Start by getting the children of the centre node (if requested)
+    if include_children:
+        children = get_children(
+            uri=uri,
+            graph=graph,
+            dep=dep,
+            ex_parents=ex_parents,
+            children_flag=children_flag,
+            order=order,
+        )
+        centre_node["children"] = children  # Add the node's children
 
     # Add the children to the list
     for child in children:
@@ -626,9 +630,12 @@ def get_local_hierarchy_to_root(
 
     # Create the initial structure for the centre node
     centre_node = get_basic_node_info(uri=uri, graph=graph)
-    centre_node["children"] = children  # Add the node's children
     centre_node["centre"] = True  # Mark this as the centre node
     node_list.append(uri)  # Add centre node in node list
+
+    # Add the 'has_children' field
+    if children_flag:
+        centre_node["has_children"] = has_children(uri=str(uri), graph=graph, dep=dep)
 
     # Now get the parents of the centre node
     parents = get_parents(
@@ -680,7 +687,6 @@ def build_parent_hierarchy(
     node_list: list,
     dep: bool = False,
     ex_parents: bool = True,
-    children_flag: bool = False,
     parent_flag: bool = False,
     order: bool = True,
 ) -> dict:
@@ -700,7 +706,7 @@ def build_parent_hierarchy(
             graph=graph,
             dep=dep,
             ex_parents=ex_parents,
-            children_flag=children_flag,
+            children_flag=False,
             order=order,
             inclusion_list=node_list,
             ignore_id=node["id"],  # Ignore the current node to avoid duplication
@@ -714,7 +720,7 @@ def build_parent_hierarchy(
         graph=graph,
         dep=dep,
         ex_parents=ex_parents,
-        children_flag=children_flag,
+        children_flag=False,
         parent_flag=parent_flag,
         order=order,
         include_children=False,
