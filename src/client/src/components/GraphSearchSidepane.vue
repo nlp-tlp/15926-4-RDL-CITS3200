@@ -3,6 +3,9 @@ import { ref, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
+    /**
+     * Determines if the side panel is initially expanded.
+     */
     initialExpanded?: boolean
   }>(),
   {
@@ -210,9 +213,9 @@ export default {
 .left-sidepanel {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: left;
   padding-top: 0.25rem;
-  height: 100%;
+  height: calc(100vh - var(--navbar-height, 4.5rem));
   width: 250px;
   position: fixed;
   z-index: 1;
@@ -223,6 +226,7 @@ export default {
     transform 0.5s ease,
     background-color 0.5s ease;
   transform: translateX(0);
+  overflow: hidden;
 }
 
 .left-text {

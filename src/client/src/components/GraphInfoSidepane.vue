@@ -3,6 +3,9 @@ import { ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
+    /**
+     * Determines if the side panel is initially expanded.
+     */
     initialExpanded?: boolean
   }>(),
   {
@@ -18,23 +21,11 @@ function toggleRightNav(): void {
 
 // Mock RDF data for demonstration purposes
 const mockRDFData = {
-  'Class Name': 'ExampleClass',
-  Description: 'This is an example class with detailed metadata fields.',
-  Field1: 'This is another example class with detailed metadata fields.',
-  Field2: 'Value2',
-  Field3: 'Value3',
-  Field4: 'Value4',
-  Field5: 'Value5',
-  Field6: 'Value6',
-  Field7: 'Value7',
-  Field8: 'Value8',
-  Field9: 'Value9',
-  Field10: 'Value10',
-  Field12: 'Value12',
-  Field13: 'Value13',
-  Field14: 'Value14',
-  superclass: 'SuperClassExample',
-  'subclass of': 'SubClassExample'
+  Label: 'AbstractObject',
+  id: 'http://data.15926.org/dm/AbstractObject',
+  Definition: 'An <AbstractObject>; is a <Thing>; that does not exist in space-time',
+  'subclass of': 'Thing',
+  Type: ['Class', 'ISO15926-2 ENTITY TYPE']
 }
 
 // Create a reactive object to hold the RDF data
@@ -65,7 +56,7 @@ export default {
 
     <transition name="sidepanel">
       <div v-if="isRightExpanded" class="right-sidepanel">
-        <p class="right-text">Graph Information</p>
+        <p class="right-text">Node Information</p>
 
         <div class="rdf-info">
           <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
@@ -104,7 +95,7 @@ export default {
 .right-sidepanel {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: left;
   padding-top: 0.25rem;
   height: calc(100vh - var(--navbar-height, 4.5rem));
   width: 250px;
@@ -141,6 +132,7 @@ export default {
   flex: 1; /* Allow rdf-info to take up remaining space */
   margin: 1rem;
   color: white;
+  /* Allow scrolling within the rdf-info div but no scrollbars */
   overflow-y: auto;
   overflow-x: hidden;
   -ms-overflow-style: none; /* IE and Edge */
