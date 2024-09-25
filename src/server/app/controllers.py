@@ -47,13 +47,17 @@ def get_basic_node_info(uri: str, graph) -> dict[str, any]:
     """
     node_info = {"id": str(uri), "label": None, "dep": None}
 
+    uri_ref = URIRef(uri)  # Ensure uri is a ref before querying
+
     # Query for the label of the node
-    for _, _, label in graph.triples((uri, RDFS.label, None)):
+    for _, _, label in graph.triples((uri_ref, RDFS.label, None)):
         if isinstance(label, Literal):
             node_info["label"] = str(label)
 
     # Query for the deprecation date
-    for _, _, deprecation_date in graph.triples((uri, META.valDeprecationDate, None)):
+    for _, _, deprecation_date in graph.triples(
+        (uri_ref, META.valDeprecationDate, None)
+    ):
         if isinstance(deprecation_date, Literal):
             node_info["dep"] = str(deprecation_date)
 
@@ -237,6 +241,7 @@ def get_children(
     children_flag: bool = True,
     order: bool = True,
     ignore_id: str = None,
+    inclusion_list: list = None,
 ) -> list[dict[str, any]]:
     """
     Retrieves the children of a given node, with optional inclusion of deprecated nodes and extra parents.
@@ -248,6 +253,8 @@ def get_children(
         ex_parents (bool, optional): Whether to include extra parents for each child. (default: True).
         children_flag (bool, optional): Whether to include a boolean flag indicating if the child has children. (default: True).
         order (bool, optional): A flag indicating whether to order the children alphabetically (default: True).
+        ignore_id (str, optional): The URI to exclude from the results (default: None).
+        inclusion_list (list, optional): A list of URIs to include in the results (default: None).
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -264,8 +271,13 @@ def get_children(
 
     # Query the graph for triples where the given URI is an object of rdfs:subClassOf
     for child, _, parent in graph.triples((None, RDFS.subClassOf, uri_ref)):
+        # If the node is being ignored, skip it
         if str(child) == ignore_id:
-            continue  # Skip the node to be ignored
+            continue
+
+        # Include only if part of the inclusion_list (if specified)
+        if (inclusion_list) and (str(child) not in inclusion_list):
+            continue
 
         if child not in children_set:
             # Use the helper function to get child info
@@ -380,6 +392,7 @@ def get_parents(
     children_flag: bool = True,
     parent_flag: bool = True,
     order: bool = True,
+    include_children: bool = False,
 ) -> list[dict[str, any]]:
     """
     Retrieves the parents of a given node and ensures that its children are unique across all parents.
@@ -421,27 +434,29 @@ def get_parents(
         # Incriment number of parents since it has now been included as a parent
         num_parents += 1
 
-        # Ensure only the original node is the child in ONE PLACE (the ex_parents field will handle the rest)
-        if num_parents == 1:
-            parent_info["children"] = get_children(
-                uri=parent,
-                graph=graph,
-                dep=dep,
-                ex_parents=ex_parents,
-                children_flag=children_flag,
-                order=order,
-            )
+        # Obtain the children of the parents ONLY if requested
+        if include_children:
+            # Ensure only the original node is the child in ONE PLACE (the ex_parents field will handle the rest)
+            if num_parents == 1:
+                parent_info["children"] = get_children(
+                    uri=parent,
+                    graph=graph,
+                    dep=dep,
+                    ex_parents=ex_parents,
+                    children_flag=children_flag,
+                    order=order,
+                )
 
-        else:
-            parent_info["children"] = get_children(
-                uri=parent,
-                graph=graph,
-                dep=dep,
-                ex_parents=ex_parents,
-                children_flag=children_flag,
-                order=order,
-                ignore_id=uri,
-            )
+            else:
+                parent_info["children"] = get_children(
+                    uri=parent,
+                    graph=graph,
+                    dep=dep,
+                    ex_parents=ex_parents,
+                    children_flag=children_flag,
+                    order=order,
+                    ignore_id=uri,
+                )
 
         # Append the parent to the hierarchy
         hierarchy.append(parent_info)
@@ -450,8 +465,9 @@ def get_parents(
     if order:
         hierarchy.sort(key=lambda x: (x.get("label") or ""))
 
-    # Ensure no duplicate children nodes in the list (causes bugs), multiple parents are handled through the ex_parents attribute
-    hierarchy = fix_unique_nodes(hierarchy=hierarchy)
+    # Ensure no duplicate children nodes in the list (causes bugs), multiple parents are handled through the ex_parents attribute (ONLY WHEN CHILDREN ARE REQUESTED)
+    if include_children:
+        hierarchy = fix_unique_nodes(hierarchy=hierarchy)
 
     return hierarchy
 
@@ -493,7 +509,7 @@ def fix_unique_nodes(hierarchy: list[dict[str, any]]) -> list[dict[str, any]]:
     return hierarchy
 
 
-def get_local_hierarchy(
+def get_local_hierarchy_expansion(
     uri: str,
     graph,
     dep: bool = False,
@@ -503,8 +519,10 @@ def get_local_hierarchy(
     order: bool = True,
 ) -> list[dict[str, any]]:
     """
-    Get the local hierarchy of a node, placing its children within the structure
-    where the node is found as a child of its parents.
+    Get the local hierarchy of a node just above and below, placing its children within the structure
+    where the node is found as a child of its parents. Gets ALL children form parents and centre node.
+
+    Can be used to expand from using `has_parent` or `has_children` attribute.
 
     Args:
         uri (str): The URI of the node to retrieve the hierarchy for.
@@ -538,6 +556,7 @@ def get_local_hierarchy(
         children_flag=children_flag,
         parent_flag=parent_flag,
         order=order,
+        include_children=True,
     )
 
     # Insert the node's children into the hierarchy if it has children
@@ -559,6 +578,176 @@ def get_local_hierarchy(
                     return parents  # Stop further processing once we find and update the node
 
     return parents
+
+
+def get_local_hierarchy_to_root(
+    uri: str,
+    graph,
+    dep: bool = False,
+    ex_parents: bool = True,
+    children_flag: bool = True,
+    parent_flag: bool = False,
+    order: bool = True,
+) -> list[dict[str, any]]:
+    """
+    Get the local hierarchy of a node from the root all the way to the selected node,
+    only including the children and parents required to get to the node.
+
+    Args:
+        uri (str): The URI of the node to retrieve the hierarchy for.
+        graph (rdflib.Graph): The RDFLib graph to query.
+        dep (bool, optional): Whether to include deprecated nodes (default: False).
+        ex_parents (bool, optional): Whether to include extra parents (default: True).
+        children_flag (bool, optional): Whether to include a flag indicating if the node has children (default: True).
+        parent_flag (bool, optional): Whether to include a flag indicating if the node has parents (default: True).
+        order (bool, optional): Whether to order children alphabetically by label (default: True).
+
+    Returns:
+        list[dict]: A list representing the hierarchy, with the node's children placed correctly under its parents.
+    """
+    if not check_uri_exists(uri=uri, graph=graph):
+        raise ValueError(f"URI '{uri}' does not exist within the database")
+
+    node_list = []
+
+    # Start by getting the children of the centre node
+    children = get_children(
+        uri=uri,
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=children_flag,
+        order=order,
+    )
+
+    # Add the children to the list
+    for child in children:
+        node_list.append(child.get("id"))
+
+    # Create the initial structure for the centre node
+    centre_node = get_basic_node_info(uri=uri, graph=graph)
+    centre_node["children"] = children  # Add the node's children
+    centre_node["centre"] = True  # Mark this as the centre node
+    node_list.append(uri)  # Add centre node in node list
+
+    # Now get the parents of the centre node
+    parents = get_parents(
+        uri=uri,
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=children_flag,
+        parent_flag=parent_flag,
+        order=order,
+        include_children=False,  # Don't include children at the parent level yet
+    )
+
+    # If the node has no parents, return the centre node structure as it is the root
+    if not parents:
+        return centre_node
+
+    # Add the parents' IDs to the node_list
+    for parent in parents:
+        node_list.append(parent["id"])
+
+    # Select the first parent to append the structure to
+    main_parent = parents[0]
+
+    # If the node has additional parents, add them to the 'extra_parents' field
+    if ex_parents and len(parents) > 1:
+        centre_node["extra_parents"] = [{"id": parent["id"]} for parent in parents[1:]]
+
+    # Start building from the first parent up to the root
+    hierarchy = build_parent_hierarchy(
+        node=centre_node,
+        node_list=node_list,
+        parent_uri=main_parent["id"],
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=False,
+        parent_flag=parent_flag,
+        order=order,
+    )
+
+    return hierarchy
+
+
+def build_parent_hierarchy(
+    node: dict,
+    parent_uri: str,
+    graph,
+    node_list: list,
+    dep: bool = False,
+    ex_parents: bool = True,
+    children_flag: bool = False,
+    parent_flag: bool = False,
+    order: bool = True,
+) -> dict:
+    """
+    Recursively builds the parent hierarchy by appending the current node structure to the parent.
+    """
+    # Get the parents of the current parent node
+    parent_structure = get_basic_node_info(uri=parent_uri, graph=graph)
+    parent_structure["children"] = [
+        node
+    ]  # The current node becomes a child of this parent
+
+    if ex_parents:
+        # Get children that match node_list and add them to the parent's children
+        matching_children = get_children(
+            uri=parent_uri,
+            graph=graph,
+            dep=dep,
+            ex_parents=ex_parents,
+            children_flag=children_flag,
+            order=order,
+            inclusion_list=node_list,
+            ignore_id=node["id"],  # Ignore the current node to avoid duplication
+        )
+
+        # Add matching children from node_list to the parent
+        parent_structure["children"].extend(matching_children)
+
+    parents_of_parent = get_parents(
+        uri=parent_uri,
+        graph=graph,
+        dep=dep,
+        ex_parents=ex_parents,
+        children_flag=children_flag,
+        parent_flag=parent_flag,
+        order=order,
+        include_children=False,
+    )
+
+    # If there are parents, go up another level
+    if parents_of_parent:
+        main_parent = parents_of_parent[0]
+
+        # Add extra parents if there are any
+        if ex_parents and len(parents_of_parent) > 1:
+            parent_structure["extra_parents"] = [
+                {"id": p["id"]} for p in parents_of_parent[1:]
+            ]
+
+        # Add the parents' IDs to the node_list
+        for parent in parents_of_parent:
+            node_list.append(parent["id"])
+
+        # Recursively add the parent structure
+        parent_structure = build_parent_hierarchy(
+            node=parent_structure,
+            parent_uri=main_parent["id"],
+            node_list=node_list,
+            graph=graph,
+            dep=dep,
+            ex_parents=ex_parents,
+            children_flag=children_flag,
+            parent_flag=parent_flag,
+            order=order,
+        )
+
+    return parent_structure
 
 
 #  Convert a string to a boolean and accepts common representations of true/false.

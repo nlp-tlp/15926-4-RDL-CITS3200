@@ -328,7 +328,7 @@ def local_hierarchy(node_uri):
         request.args.get("has_children", default=True)
     )
     include_has_parent = controllers.str_to_bool(
-        request.args.get("has_parent", default=True)
+        request.args.get("has_parent", default=False)
     )
     order = controllers.str_to_bool(request.args.get("order", default=True))
 
@@ -338,7 +338,7 @@ def local_hierarchy(node_uri):
             raise AttributeError("Graph is not initialized")
 
         # Fetch the local hierarchy
-        hierarchy = controllers.get_local_hierarchy(
+        hierarchy = controllers.get_local_hierarchy_to_root(
             uri=node_uri,
             graph=current_app.graph,
             dep=include_deprecation,
@@ -355,4 +355,4 @@ def local_hierarchy(node_uri):
     except Exception as e:
         return jsonify({"error": "Internal Error"}), 500
 
-    return jsonify({"id": node_uri, "hierarchy": hierarchy})
+    return jsonify({"centre_id": node_uri, "hierarchy": hierarchy})
