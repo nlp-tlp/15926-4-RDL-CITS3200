@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import axios from 'axios'
 import { ref } from 'vue'
 
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
-// API endpoint
+// API URL
 const API_URL = 'http://127.0.0.1:5000'
+const childrenEndpoint = '/node/children/'
 
 // initial data for the root of the graph
 const initialData = {
@@ -27,22 +27,24 @@ async function fetchChildren(node: any) {
     return
   }
   try {
-    const response = await axios.get(`${API_URL}/node/children/${encodeURIComponent(node.id)}`)
-    if (response && response.data && Array.isArray(response.data.children)) {
+    const response = await fetch(`${API_URL}${childrenEndpoint}${encodeURIComponent(node.id)}`)
+    if (!response.ok) {
+      console.error('Server error:', response.status, await response.text())
+      return
+    }
+    const responseData = await response.json()
+    if (responseData && Array.isArray(responseData.children)) {
       // update the children of the node
-      node.children = response.data.children
+      node.children = responseData.children
       // update the data object
       data.value = { ...data.value }
     } else {
-      console.error('Invalid response:', response)
+      console.error('Invalid response:', responseData)
     }
   } catch (error: any) {
-    if (error.response) {
-      // Server responded with a status other than 2xx
-      console.error('Server error:', error.response.status, error.response.data)
-    } else if (error.request) {
-      // Request was made but no response received
-      console.error('Network error:', error.request)
+    if (error instanceof TypeError) {
+      // Network error or other fetch-related error
+      console.error('Network error:', error.message)
     } else {
       // Something else happened
       console.error('Error:', error.message)
