@@ -34,13 +34,14 @@ def check_uri_exists(uri: str, graph) -> bool:
 
 
 # Get only the node's LABEL and DEPRECATION DATE
-def get_basic_node_info(uri: str, graph, default_dep: bool = True) -> dict[str, any]:
+def get_basic_node_info(uri: str, graph, default_dep: bool = False) -> dict[str, any]:
     """
     Retrieves basic information about a node, including its label and deprecation date.
 
     Args:
         uri (str): The URI of the node to fetch information for.
         graph (rdflib.Graph): The RDFLib graph to query.
+        default_dep (bool, optional): Whether to include 'dep' in the dictionary by default. (Default is False).
 
     Returns:
         dict: A dictionary containing the node's 'id', 'label', and 'dep' (deprecation date, if any).
@@ -69,7 +70,9 @@ def get_basic_node_info(uri: str, graph, default_dep: bool = True) -> dict[str, 
 
 
 # Get all information (predicates and objects) for a given node in the RDFLib graph.
-def get_all_node_info(uri: str, graph, all_info: bool = True) -> dict[str, any]:
+def get_all_node_info(
+    uri: str, graph, all_info: bool = True, default_dep: bool = True
+) -> dict[str, any]:
     """
     Retrieves all available information about a given node in the RDFLib graph. This includes
     specific properties such as label, types, deprecation date, definition, and parent nodes
@@ -79,6 +82,7 @@ def get_all_node_info(uri: str, graph, all_info: bool = True) -> dict[str, any]:
         uri (str): The URI of the node to retrieve information for.
         graph (rdflib.Graph): The RDFLib graph to query the node's information from.
         all_info (bool, optional): A flag indicating whether to retrieve additional properties (default: True).
+        default_dep (bool, optional): Whether to include 'dep' in the dictionary by default. (Default is True).
 
     Returns:
         dict: A dictionary containing all available information about the node, including:
@@ -94,26 +98,19 @@ def get_all_node_info(uri: str, graph, all_info: bool = True) -> dict[str, any]:
         ValueError: If the provided URI does not exist within the RDFLib graph.
     """
     # Initialise dictionary based on option to include all extra properties.
-    if all_info:
-        node_info = {
-            "id": str(uri),
-            "label": None,  # Handle rdfs:label
-            "types": [],  # Handle multiple rdf:type entries
-            "dep": None,  # Handle meta/valDeprecationDate
-            "definition": None,  # Handle skos:definition
-            "parents": [],  # Handle rdfs:subClassOf
-            "properties": {},  # Handle anything else
-        }
+    node_info = {
+        "id": str(uri),
+        "label": None,  # Handle rdfs:label
+        "types": [],  # Handle multiple rdf:type entries
+        "definition": None,  # Handle skos:definition
+        "parents": [],  # Handle rdfs:subClassOf
+    }
 
-    else:
-        node_info = {
-            "id": str(uri),
-            "label": None,  # Handle rdfs:label
-            "types": [],  # Handle multiple rdf:type entries
-            "dep": None,  # Handle meta/valDeprecationDate
-            "definition": None,  # Handle skos:definition
-            "parents": [],  # Handle rdfs:subClassOf
-        }
+    if all_info:
+        node_info["properties"] = {}  # Handle anything else
+
+    if default_dep:
+        node_info["dep"] = None  # Handle meta/valDeprecationDate
 
     # Ensure node exists within the database
     if not check_uri_exists(uri=uri, graph=graph):
