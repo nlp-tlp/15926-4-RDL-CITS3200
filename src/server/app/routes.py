@@ -136,6 +136,7 @@ def parents(node_uri):
         has_children (bool, optional): Whether to include a boolean flag indicating if the parents have children. Default is True.
         has_parent (bool, optional): Whether to include a boolean flag indicating if the parent nodes have other parents. Default is True.
         order (bool, optional): Whether to order the nodes in alphabetical order. Default is True.
+        incl_children (bool, optional): Whether to include ALL children of the parent(s). Default is True.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -158,6 +159,9 @@ def parents(node_uri):
     include_has_parent = controllers.str_to_bool(
         request.args.get("has_parent", default=True)
     )
+    include_children = controllers.str_to_bool(
+        request.args.get("incl_children", default=True)
+    )
     order = controllers.str_to_bool(request.args.get("order", default=True))
 
     try:
@@ -173,6 +177,7 @@ def parents(node_uri):
             children_flag=include_has_children,
             parent_flag=include_has_parent,
             order=order,
+            include_children=include_children,
         )
 
     except ValueError as e:
