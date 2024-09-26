@@ -1,4 +1,4 @@
-def test_search_by_id(test_client, sample_graph):
+def test_search_by_id(test_client):
     """
     Test the '/search/id' route to search for a node by its URI.
     """
@@ -30,7 +30,7 @@ def test_search_by_id_no_results(test_client):
     assert len(json_data["results"]) == 0  # Ensure no results are returned
 
 
-def test_search_by_label(test_client, sample_graph):
+def test_search_by_label(test_client):
     """
     Test the '/search/label' route to search for a node by its label.
     """

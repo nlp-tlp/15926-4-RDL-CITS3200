@@ -34,7 +34,7 @@ def check_uri_exists(uri: str, graph) -> bool:
 
 
 # Get only the node's LABEL and DEPRECATION DATE
-def get_basic_node_info(uri: str, graph) -> dict[str, any]:
+def get_basic_node_info(uri: str, graph, default_dep: bool = True) -> dict[str, any]:
     """
     Retrieves basic information about a node, including its label and deprecation date.
 
@@ -45,7 +45,11 @@ def get_basic_node_info(uri: str, graph) -> dict[str, any]:
     Returns:
         dict: A dictionary containing the node's 'id', 'label', and 'dep' (deprecation date, if any).
     """
-    node_info = {"id": str(uri), "label": None, "dep": None}
+    # Default structure setup
+    if default_dep:
+        node_info = {"id": str(uri), "label": None, "dep": None}
+    else:
+        node_info = {"id": str(uri), "label": None}
 
     uri_ref = URIRef(uri)  # Ensure uri is a ref before querying
 
