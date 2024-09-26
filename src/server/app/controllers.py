@@ -621,7 +621,25 @@ def build_parent_hierarchy(
     order: bool = True,
 ) -> dict:
     """
-    Recursively builds the parent hierarchy by appending the current node structure to the parent.
+    Recursively builds the parent hierarchy by appending the current node structure to its parent.
+
+    This function recursively traverses the graph from a given node upwards to the root, building a hierarchy
+    of nodes and their relationships. It appends the current node's structure as a child to its parent,
+    and continues to go up through the graph, attaching parents until it reaches the root.
+
+    Args:
+        node (dict): The current node's structure, including children and other relevant information.
+        parent_uri (str): The URI of the parent node to which the current node will be attached.
+        graph (rdflib.Graph): The RDFLib graph that stores the relationships between nodes.
+        node_list (list): A list of node URIs that have already been processed, used to avoid duplication.
+        dep (bool, optional): Whether to include deprecated nodes in the hierarchy (default: False).
+        ex_parents (bool, optional): Whether to include additional parents (multi-parent scenario) (default: True).
+        parent_flag (bool, optional): Whether to include a flag indicating if the node has parents (default: False).
+        order (bool, optional): Whether to order children alphabetically by label (default: True).
+
+    Returns:
+        dict: A dictionary representing the hierarchical structure, with the current node attached to its parent
+              and any additional parents or children included as necessary.
     """
     # Get the parents of the current parent node
     parent_structure = get_basic_node_info(uri=parent_uri, graph=graph)
