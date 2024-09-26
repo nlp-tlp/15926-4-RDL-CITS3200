@@ -3,6 +3,7 @@ blinker==1.8.2
 click==8.1.7
 exceptiongroup==1.2.2
 Flask==3.0.3
+Flask-Cors==5.0.0
 iniconfig==2.0.0
 isodate==0.6.1
 itsdangerous==2.2.0
