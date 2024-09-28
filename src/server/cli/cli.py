@@ -1,8 +1,11 @@
+#!/usr/bin/env python3
+
 import typer
 
 from history import get_current_db, delete_db, update_current_db, get_all_databases
 from database import update_db
 from config import HISTORY_VERSION
+from serverload import reload_server_graph
 
 app = typer.Typer()  # Initialize Typer app
 
@@ -119,6 +122,8 @@ def modify_db_menu():
         new_db = dbs[update_choice]["filename"]
         update_current_db(new_db)
         typer.echo(f">> Database updated to '{new_db}'.")
+
+        reload_server_graph()
 
     elif choice == "Q":
         # Return to the previous menu

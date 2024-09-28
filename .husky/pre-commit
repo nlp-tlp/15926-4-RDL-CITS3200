@@ -15,24 +15,25 @@ black_output=$(black . 2>&1)
 black_status=$?
 
 # Run black for cli scripts
-black_output2=$(black ../cli 2>&1)
-black_status2=$?
+# black_output2=$(black ../cli 2>&1)
+# black_status2=$?
 
 # Deactivate the virtual environment
 deactivate
 
 # Check if the output from either black run contains "reformatted" or if the status code is non-zero
-if echo "$black_output" | grep -q "reformat\|reformatted" || [ $black_status -ne 0 ] || \
-   echo "$black_output2" | grep -q "reformat\|reformatted" || [ $black_status2 -ne 0 ]; then
+# if echo "$black_output" | grep -q "reformat\|reformatted" || [ $black_status -ne 0 ] || \
+#    echo "$black_output2" | grep -q "reformat\|reformatted" || [ $black_status2 -ne 0 ]; then
+if echo "$black_output" | grep -q "reformat\|reformatted" || [ $black_status -ne 0 ]; then
   echo "Black found and corrected issues:"
-  
+
   # Print output from both black runs
   echo "Black output for server directory:"
   echo "$black_output"
-  
-  echo "Black output for cli directory:"
-  echo "$black_output2"
-  
+
+  # echo "Black output for cli directory:"
+  # echo "$black_output2"
+
   echo "Please review and commit the changes."
   exit 1  # Exit with an error code to prevent the commit
 else
