@@ -1,22 +1,18 @@
 services:
-  client:
-    build: ./client
-    container_name: Client
-    ports:
-      - "${CLIENT_PORT:-5173}:5173"
-    volumes:
-      - ./client:/app
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
+    client:
+        build: ./client
+        container_name: Client
+        ports:
+            - "${CLIENT_PORT:-5173}:5173"
+        environment:
+            - NODE_ENV=production
 
-  server:
-    build: ./server
-    container_name: Server
-    ports:
-      - "${SERVER_PORT:-5000}:5000"
-    volumes:
-      - ./server:/app
-      - ./db:/db # Mount the database for access
-    environment:
-      - FLASK_ENV=${FLASK_ENV:-development}
-      - FLASK_APP=${FLASK_APP:-server.py}
+    server:
+        build: ./server
+        container_name: Server
+        ports:
+            - "${SERVER_PORT:-5000}:5000"
+        volumes:
+            - ./db:/db
+        environment:
+            - FLASK_ENV=production

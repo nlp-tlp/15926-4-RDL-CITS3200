@@ -1,4 +1,3 @@
-# Imports
 import sys
 from rdflib import Graph
 from app import create_app
@@ -12,7 +11,7 @@ flaskApp = create_app(DeploymentConfig)
 try:
     graph = Graph()
     graph = load_latest_db(graph=graph)
-    flaskApp.graph = graph  # Store the graph in the app context
+    flaskApp.graph = graph  # Store within app context
 except Exception as e:
     print(f"Error loading database from history: {e}")
-    sys.exit(1)  # Exist startup if database cant be loaded.
+    sys.exit(1)
