@@ -3,7 +3,7 @@ name: Deploy Client and Server to AWS Lightsail
 on:
   push:
     branches:
-      - '22-AWS_Lightsail_setup_and_CI/CD_pipeline'
+      - main
 
 jobs:
   build_and_deploy:
