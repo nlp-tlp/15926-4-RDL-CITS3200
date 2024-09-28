@@ -2,26 +2,27 @@
   <div class="container">
     <h1>Graph</h1>
     <GraphSearchSidepane />
-    <GraphInfoSidepane ref="infoPaneRef"/>
-
-    <GraphVisualisation @toggle-right-nav="handleToggleRightNav" :data />
+    <GraphInfoSidepane ref="infoPaneRef" :node-uri="selectedNodeUri" />
+    <GraphVisualisation @toggle-right-nav="handleToggleRightNav" :data="data" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import { ref } from 'vue'
 
 import GraphVisualisation from '@/components/GraphVisualisation.vue'
 
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 
-const infoPaneRef = ref();
+// References and state management
+const infoPaneRef = ref()
+const selectedNodeUri = ref('') // Holds the URI of the selected node
 
-function handleToggleRightNav() {
-  infoPaneRef.value.toggleRightNav();
+function handleToggleRightNav(nodeUri: string) {
+  selectedNodeUri.value = nodeUri // Set the selected node's URI
+  infoPaneRef.value.toggleRightNav() // Toggle the side panel
 }
-
 const data = {
   name: 'biggest-flare',
   children: [

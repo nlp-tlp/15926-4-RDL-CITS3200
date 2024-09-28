@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    initialExpanded?: boolean
-  }>(),
-  {
-    initialExpanded: false
+const props = defineProps({
+  nodeUri: {
+    type: String,
+    required: true
   }
-)
+})
 
-const isRightExpanded = ref(props.initialExpanded)
+const isRightExpanded = ref(false)
+const rdfData = ref(null)
+const loading = ref(false)
+const apiUrl = 'http://localhost:5000'
 
 function toggleRightNav(): void {
   isRightExpanded.value = !isRightExpanded.value
@@ -20,53 +21,31 @@ defineExpose({
   toggleRightNav
 })
 
+async function fetchNodeData(): Promise<void> {
+  loading.value = true
+  try {
+    const endpoint = `/node/info/${encodeURIComponent(props.nodeUri)}`
+    const response = await fetch(`${apiUrl}${endpoint}`)
 
-// Mock RDF data for demonstration purposes
-const mockRDFData = {
-  'Class Name': 'ExampleClass',
-  Description: 'This is an example class with detailed metadata fields.',
-  Field1: 'This is another example class with detailed metadata fields.',
-  Field2: 'Value2',
-  Field3: 'Value3',
-  Field4: 'Value4',
-  Field5: 'Value5',
-  Field6: 'Value6',
-  Field7: 'Value7',
-  Field8: 'Value8',
-  Field9: 'Value9',
-  Field10: 'Value10',
-  Field12: 'Value12',
-  Field13: 'Value13',
-  Field14: 'Value14',
-  superclass: 'SuperClassExample',
-  'subclass of': 'SubClassExample'
+    if (!response.ok) {
+      throw new Error(`Failed to fetch node data: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    rdfData.value = data
+  } catch (error) {
+    console.error('Error fetching node data:', error)
+    rdfData.value = null
+  } finally {
+    loading.value = false
+  }
 }
 
-// Create a reactive object to hold the RDF data
-const rdfData = ref(mockRDFData)
-</script>
-
-<script lang="ts">
-/**
- * GraphInfoSidepane component represents the expandable side panel containing RDF information functionality.
- *
- * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
- *
- * @example
- * <GraphInfoSidepane :initialExpanded="true" />
- * <GraphInfoSidepane initialExpanded />
- * <GraphInfoSidepane />
- */
-export default {
-  name: 'GraphInfoSidepane'
-}
+watch(() => props.nodeUri, fetchNodeData, { immediate: true })
 </script>
 
 <template>
   <div>
-
-    <!-- <GraphVisualisation @open-side-panel="toggleRightNav" /> -->
-    
     <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
       &#9776;
     </button>
@@ -76,14 +55,21 @@ export default {
         <p class="right-text">Graph Information</p>
 
         <div class="rdf-info">
-          <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
-            <strong class="rdf-field-name">{{ key }}:</strong>
-            <span class="rdf-field-value">
-              <slot :name="key" :value="value">
-                {{ value }}
-              </slot>
-            </span>
+          <!-- If data is loading, show loading state -->
+          <div v-if="loading">Loading data...</div>
+
+          <!-- If RDF data exists, display RDF information -->
+          <div v-if="rdfData && !loading">
+            <pre>{{ rdfData }}</pre>
+            <!-- For debugging -->
+            <div v-for="(value, key) in rdfData" :key="key" class="rdf-field">
+              <strong class="rdf-field-name">{{ key }}:</strong>
+              <span class="rdf-field-value">{{ formatValue(value) }}</span>
+            </div>
           </div>
+
+          <!-- If no data and not loading, show no data message -->
+          <div v-else-if="!loading && !rdfData">No data available.</div>
         </div>
       </div>
     </transition>
@@ -125,7 +111,7 @@ export default {
     transform 0.5s ease,
     background-color 0.5s ease;
   transform: translateX(0);
-  overflow: hidden; /* Ensure the side panel itself does not scroll */
+  overflow: hidden; /* Ensure the sidebar itself doesn't scroll */
 }
 
 .right-text {
@@ -151,12 +137,6 @@ export default {
   color: white;
   overflow-y: auto;
   overflow-x: hidden;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-.rdf-info::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }
 
 .rdf-field {
