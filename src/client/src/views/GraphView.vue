@@ -6,7 +6,7 @@ import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
 // API URL
-const API_URL = 'http://127.0.0.1:5000'
+const API_URL = import.meta.env.VITE_SERVER_URL
 const childrenEndpoint = '/node/children/'
 
 // initial data for the root of the graph
@@ -22,6 +22,7 @@ const initialData = {
 const data = ref(initialData)
 
 async function fetchChildren(node: any) {
+  console.log(API_URL)
   if (!node || !node.id) {
     console.error('Invalid node:', node)
     return
