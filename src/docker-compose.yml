@@ -16,3 +16,4 @@ services:
             - ./db:/db
         environment:
             - FLASK_ENV=production
+            - FLASK_APP=${FLASK_APP:-server.py}

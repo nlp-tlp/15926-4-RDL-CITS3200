@@ -11,6 +11,9 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . .
 
+# Setup CLI to be executable
+RUN chmod +x /app/cli.py
+
 # Expose port
 EXPOSE 5000
 
