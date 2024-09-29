@@ -19,15 +19,11 @@ def load_latest_db(graph):
     """
     try:
         # Check if DB files not yet initialised by CLI
-        history_exists = os.path.exists(Config.DB_HISTORY_FILE)
-        storage_exists = os.path.exists(Config.DB_STORAGE_DIR)
-
-        if history_exists + storage_exists == 1:
-            raise FileNotFoundError(
-                "Only one of history file or storage directory found."
-            )
-
-        if history_exists + storage_exists == 0:
+        if (
+            os.path.exists(Config.DB_HISTORY_FILE)
+            + os.path.exists(Config.DB_STORAGE_DIR)
+            != 2
+        ):
             print("No current database found in history. Loading an empty graph.")
             return graph
 

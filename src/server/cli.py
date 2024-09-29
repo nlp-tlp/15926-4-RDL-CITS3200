@@ -2,10 +2,9 @@
 
 import typer
 
-from history import get_current_db, delete_db, update_current_db, get_all_databases
-from database import update_db
-from config import HISTORY_VERSION
-from serverload import reload_server_graph
+from cli.history import get_current_db, delete_db, update_current_db, get_all_databases
+from cli.database import update_db
+from cli.config import HISTORY_VERSION
 
 app = typer.Typer()  # Initialize Typer app
 
@@ -123,7 +122,7 @@ def modify_db_menu():
         update_current_db(new_db)
         typer.echo(f">> Database updated to '{new_db}'.")
 
-        reload_server_graph()
+        # Reload flask app TODO
 
     elif choice == "Q":
         # Return to the previous menu

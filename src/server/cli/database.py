@@ -2,21 +2,20 @@ import time
 import os
 import csv
 import logging
-import yaml
 import psutil
 from io import StringIO
 from rdflib import Graph, Namespace, URIRef, Literal
 from SPARQLWrapper import SPARQLWrapper, CSV
-from config import (
+from cli.config import (
     DATABASE_STORAGE_DIR,
     LOG_LEVEL,
     SOURCE_QUERY,
     BATCH_SIZE,
     SOURCE_OF_TRUTH,
 )
-from tests import test_new_database
+from cli.tests import test_new_database
 
-from history import history_add_db, get_next_db_filename  # Import history functions
+from cli.history import history_add_db, get_next_db_filename  # Import history functions
 
 BASE_URI = "http://data.15926.org/iso/"
 META = Namespace("http://data.15926.org/meta/")  # Set up namespace for `/meta`
