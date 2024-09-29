@@ -36,11 +36,11 @@ jobs:
 
       - name: Transfer Docker Compose file and Docker images to Lightsail
         run: |
-          scp -i ~/.ssh/id_rsa ./src/docker-compose.yml ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
+          scp -i ~/.ssh/id_rsa ./src/docker-compose.prod.yml ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/docker-compose.yml
           scp -i ~/.ssh/id_rsa client_image.tar.gz ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
           scp -i ~/.ssh/id_rsa server_image.tar.gz ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
 
       - name: Load Docker images and run containers on Lightsail
         run: |
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker load -i /home/ubuntu/client_image.tar.gz && docker load -i /home/ubuntu/server_image.tar.gz"
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker-compose down && docker-compose up"
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker-compose restart"
