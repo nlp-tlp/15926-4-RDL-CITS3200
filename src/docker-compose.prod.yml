@@ -1,5 +1,3 @@
-version: "3.0"
-
 services:
     client:
         image: myclient
@@ -30,7 +28,7 @@ services:
             - FLASK_APP=${FLASK_APP:-server.py}
 
     traefik:
-        image: "traefik:v2.4"
+        image: "traefik:v3.1"
         container_name: Traefik
         command:
             - "--log.level=INFO"
