@@ -34,9 +34,10 @@ jobs:
           docker save myclient | gzip > client_image.tar.gz
           docker save myserver | gzip > server_image.tar.gz
 
-      - name: Transfer Docker Compose file and Docker images to Lightsail
+      - name: Transfer Docker Compose files and Docker images to Lightsail
         run: |
           scp -i ~/.ssh/id_rsa ./src/docker-compose.prod.yml ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/docker-compose.yml
+          scp -i ~/.ssh/id_rsa ./src/../src/.env.production ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu
           scp -i ~/.ssh/id_rsa client_image.tar.gz ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
           scp -i ~/.ssh/id_rsa server_image.tar.gz ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
 
