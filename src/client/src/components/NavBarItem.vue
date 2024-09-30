@@ -20,7 +20,7 @@ const props = defineProps({
   /**
    * Optional custom class for the navigation item.
    */
-   class: {
+  class: {
     type: String,
     default: ''
   }
@@ -53,13 +53,31 @@ export default {
 
 <template>
   <!-- If it's an external link -->
-  <a v-if="isExternalLink" :href="to" :class="['navbar-item', props.class, 'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border']" target="_blank" rel="noopener noreferrer">
+  <a
+    v-if="isExternalLink"
+    :href="to"
+    :class="[
+      'navbar-item',
+      props.class,
+      'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border'
+    ]"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     <slot name="icon"></slot>
     {{ label }}
   </a>
 
   <!-- If it's an internal link -->
-  <RouterLink v-else :to="to" :class="['navbar-item', props.class, 'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border']">
+  <RouterLink
+    v-else
+    :to="to"
+    :class="[
+      'navbar-item',
+      props.class,
+      'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border'
+    ]"
+  >
     <slot name="icon"></slot>
     {{ label }}
   </RouterLink>

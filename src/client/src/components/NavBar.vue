@@ -38,7 +38,12 @@ export default {
           <IconGraph class="navbar-icon mr-2 mt-1 align-middle" />
         </template>
       </NavBarItem>
-      <NavBarItem to="https://docs.iso15926vis.org/" label="Documentation" id="documentation-link" class="flex">
+      <NavBarItem
+        to="https://docs.iso15926vis.org/"
+        label="Documentation"
+        id="documentation-link"
+        class="flex"
+      >
         <template #icon>
           <IconDocumentation class="navbar-icon mr-2 mt-1 align-middle" />
         </template>

@@ -13,7 +13,7 @@ const props = defineProps({
 <script lang="ts">
 /**
  * IconGraph component represents an SVG icon for a graph.
- * 
+ *
  * @param {string} class - Optional custom class for additional styling.
  *
  * @example
