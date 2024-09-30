@@ -22,7 +22,7 @@ This project assists in navigating the hierarchical relationships of classes def
 
 ## Getting started
 
-These instructions will [install dependencies](#installing-dependencies) get a copy of the project [up and running](#running-the-project) on your local machine. This is also needed for testing and deployment.
+These instructions will [install dependencies](#installing-dependencies) get a copy of the project [up and running](#running-the-project) on your local machine.
 
 ### Installing dependencies
 
@@ -32,45 +32,17 @@ This project consists of a Vue client, Flask server, and command-line interface.
 
 Git clone the repository:
 
-``` bash
+```bash
 git clone https://github.com/nlp-tlp/15926-4-RDL-CITS3200.git
 ```
 
-#### Setup script
-
-A script is available to automatically run all the steps listed below for client and server dependencies.
-
-⚠️ The script was built for Linux systems and your system may not be compatible. If you cannot follow these instructions on your OS, you can install dependencies manually following the sections below. ⚠️
-
-The script requires Python Venv to run. If not already installed, run (on Linux):
-
-``` bash
-sudo apt update
-sudo apt install python3-venv
-```
-
-In the root directory, run:
-
-``` bash
-./setup.sh
-```
-
-If you encounter the error `-bash: ./setup.sh: /bin/bash^M: bad interpreter: No such file or directory` and you are using WSL, run `sed -i 's/\r$//' setup.sh` then rerun the script.
-
 #### Client dependency installation
 
-If you intend to run the client, download [NVM](https://github.com/nvm-sh/nvm) from the official source or using a package manager for your OS.
-
-Then, use NVM to install [NPM](https://nodejs.org/en/download/package-manager):
-
-``` bash
-nvm install 20
-nvm use 20
-```
+If you intend to run the client, download [NVM](https://github.com/nvm-sh/nvm) from the official source or using a package manager for your OS. Then, use NVM to install [NPM](https://nodejs.org/en/download/package-manager).
 
 Install NPM dependencies in the main directory for [Husky Git hooks](https://typicode.github.io/husky/) and initialise Husky:
 
-``` bash
+```bash
 npm i
 npx husky-init
 cp .husky/pre-commit.example .husky/pre-commit
@@ -78,34 +50,27 @@ cp .husky/pre-commit.example .husky/pre-commit
 
 Install NPM dependencies for the client from the main directory with:
 
-``` bash
+```bash
 npm i --prefix src/client
 ```
 
 #### Server / CLI dependency installation
 
-It is recommended that you install the server / CLI Python packages in a virtual environment. Any will do, but the following are instructions for activating venv:
+It is recommended that you install the server / CLI Python packages in a virtual environment. Install the dependencies from requirements.txt:
 
-``` bash
-python3 -m venv src/server/venv
-source src/server/venv/bin/activate
-```
-
-If you intend to run the server / CLI, install the dependencies from requirements.txt:
-
-``` bash
+```bash
 pip install -r src/server/requirements.txt
 ```
 
 ### Running the project
 
-The following instructions can be used to run the Vue client, Flask server, and command-line interface locally.
+The following instructions can be used to run the Vue client, Flask server, and command-line interface locally for development.
 
 #### Client
 
 To access the Vue web interface, run from the root directory:
 
-``` bash
+```bash
 cd src/client
 npm run dev
 ```
@@ -114,32 +79,21 @@ npm run dev
 
 To run the Flask server, activate your virtual environment and run from the root directory:
 
-``` bash
+```bash
 cd src/server
 flask --app "server.py" run
 ```
 
-**WARNING: Before the server can be run, the CLI tool needs to be run accordingly to ensure a database exists.**
-
 #### CLI
 
-To generate a database file on initial setup:
+To run the CLI for the Flask server:
 
-``` bash
-source src/server/venv/bin/activate  # Activate virtual environment for correct packages
-cd src/cli
-python3 cli.py --update
+```bash
+cd src/server
+./cli.py
 ```
 
-To modify the database in use the provided menu in the CLI tool:
-
-``` bash
-source src/server/venv/bin/activate  # Activate virtual environment for correct packages
-cd src/cli
-python3 cli.py
-```
-
-Follow the directions given in the menu to modify the database and view other parameters.
+Follow the directions given in the CLI menu to modify the database and view other parameters.
 
 ## Development
 
@@ -151,9 +105,9 @@ Testing frameworks have been set up for project functionality.
 
 #### Server tests
 
-Tests for the Flask server are written with Pytest. It is recommended that you activate your virtual environment first (e.g. venv), then run in the root directory:
+Tests for the Flask server and CLI are written with Pytest. It is recommended that you activate your virtual environment first (e.g. venv), then run in the root directory:
 
-``` bash
+```bash
 cd src/server
 pytest
 ```
@@ -164,17 +118,13 @@ Tests for the Vue client are written with Vitest for unit tests, and Playwright 
 
 Run in the root directory (unit / e2e depending on what is wanted):
 
-``` bash
+```bash
 cd src/client
 npm run test:unit
 npm run test:e2e
 ```
 
 Vitest also offers the capability to continuously test and provide immediate feedback as changes are polled through Vite. If you would like this behaviour, change the script in `src/client/package.json` from `"test": "vitest run"` to `"test": "vitest"`. Note that these commands cannot be run as terminal commands.
-
-#### CLI tests
-
-🚧 CLI testing setup is currently under development. 🚧
 
 ### Adding dependencies
 
@@ -186,13 +136,13 @@ Packages are added through NPM in the client directory.
 
 For any dependencies that should be there in the production environment, run:
 
-``` bash
+```bash
 npm i <package_name> --save
 ```
 
 For any dependencies needed for development but not prod (e.g. type checking with ESLint), run:
 
-``` bash
+```bash
 npm i <package_name> --save-dev
 ```
 
@@ -200,7 +150,7 @@ npm i <package_name> --save-dev
 
 Packages should be added through `pip` in your virtual environment:
 
-``` bash
+```bash
 pip install <package_name>
 pip freeze > requirements.txt
 ```
@@ -215,12 +165,20 @@ Note that changes to main files (dependencies, settings, etc.) require the conta
 
 From the root directory, run:
 
-``` bash
+```bash
 cd src
 docker compose up --build
 ```
 
 ⚠️ If using WSL, the docker desktop app must be [installed and configured for WSL](https://docs.docker.com/desktop/wsl/). ⚠️
+
+#### Running the CLI
+
+To access the CLI inside of the docker container, run :
+
+```bash
+docker exec -it Server /app/cli.py
+```
 
 ## Credits
 
