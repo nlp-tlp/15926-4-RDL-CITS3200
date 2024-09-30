@@ -52,7 +52,6 @@ export default {
 </script>
 
 <template>
-  <!-- If it's an external link -->
   <a
     v-if="isExternalLink"
     :href="to"
@@ -68,7 +67,6 @@ export default {
     {{ label }}
   </a>
 
-  <!-- If it's an internal link -->
   <RouterLink
     v-else
     :to="to"
