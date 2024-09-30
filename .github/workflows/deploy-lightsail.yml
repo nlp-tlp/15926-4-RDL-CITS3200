@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up production environment
         run: |
-          echo "\nVITE_SERVER_URL=http://${{ secrets.LIGHTSAIL_HOST }}:80" >> ./src/.env.production
+          echo -e "\nVITE_SERVER_URL=http://${{ secrets.LIGHTSAIL_HOST }}:80" >> ./src/.env.production
 
       - name: Build Docker images
         run: |
