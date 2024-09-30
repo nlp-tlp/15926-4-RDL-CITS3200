@@ -1,8 +1,10 @@
 # Imports
 from . import controllers
 from flask import jsonify, request, current_app
-from app.blueprints import main
+from rdflib import Graph
+from app.blueprints import main, ctrl
 from app.config import Config
+from app.models import load_selected_db
 
 
 @main.route("/ping")
@@ -227,3 +229,20 @@ def search(field, search_key):
         return jsonify({"error": "Internal Error"}), 500
 
     return jsonify({"search_key": search_key, "results": results})
+
+
+@ctrl.route("/ctrl/reload", methods=["GET"])
+def reload_graph():
+    """
+    Route to reload the RDFLib graph with the currently selected database file.
+
+    Returns:
+        JSON: Success message if the graph is reloaded successfully.
+    """
+    try:
+        new_graph = Graph()
+        current_app.graph = load_selected_db(graph=new_graph)
+        return jsonify({"status": "success", "message": "Graph successfully reloaded."})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

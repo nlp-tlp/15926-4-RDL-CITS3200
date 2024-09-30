@@ -4,9 +4,9 @@ import os
 from app.config import Config
 
 
-def load_latest_db(graph):
+def load_selected_db(graph):
     """
-    Loads the latest Turtle database file into the RDFLib graph based on the history file.
+    Loads the selected Turtle database file into the RDFLib graph based on the history file.
 
     Args:
         graph (rdflib.Graph): The RDFLib graph object to load the Turtle data into.
@@ -30,13 +30,13 @@ def load_latest_db(graph):
         # DB files found
         with open(Config.DB_HISTORY_FILE, "r") as f:
             history_data = json.load(f)
-        latest_db_file = history_data.get("current_db", None)
+        current_db_file = history_data.get("current_db", None)
 
-        if not latest_db_file:
+        if not current_db_file:
             print("No current database found in history. Loading an empty graph.")
             return graph
 
-        graph.parse(f"{Config.DB_STORAGE_DIR}/{latest_db_file}", format="turtle")
+        graph.parse(f"{Config.DB_STORAGE_DIR}/{current_db_file}", format="turtle")
         return graph
 
     except Exception:

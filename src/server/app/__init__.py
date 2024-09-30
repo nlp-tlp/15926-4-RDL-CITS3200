@@ -24,9 +24,10 @@ def create_app(config):
     # Enable CORS
     CORS(flaskApp)
 
-    from app.blueprints import main
+    from app.blueprints import main, ctrl
 
     # Register main blueprint
     flaskApp.register_blueprint(main)
+    flaskApp.register_blueprint(ctrl)
 
     return flaskApp
