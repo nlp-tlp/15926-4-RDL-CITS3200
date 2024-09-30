@@ -429,7 +429,7 @@ def get_parents(
         if not dep and parent_info.get("dep"):
             continue
 
-        # Add the 'has_children' field
+        # Add the 'has_parents' field
         if parent_flag:
             parent_info["has_parents"] = has_parents(str(parent), graph, dep)
 
