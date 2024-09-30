@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <!-- Capture Screen Button -->
-    <button @click="captureScreen">Capture Screen</button>
+    <button class="capture-button" @click="captureScreen">Capture Screen</button>
+
+    <div v-if="isLoading" class="spinner"></div>
 
     <!-- Preview Modal -->
     <div v-if="isPreviewVisible" class="modal">
@@ -18,7 +20,7 @@
         </select>
 
         <!-- Save button on Modal -->
-        <button2 @click="saveScreenshot">Save</button2>
+        <button @click="saveScreenshot">Save</button>
       </div>
     </div>
     <div id="captureArea">
@@ -43,19 +45,26 @@ const props = defineProps({
 const selectedFileType = ref('png') // Selected file type for export
 const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
 const screenshotDataUrl = ref('') // Store the data URL of the screenshot
+const isLoading = ref(false)
 
 // Function to capture the screen and show the preview modal
 const captureScreen = () => {
-  const captureArea = document.getElementById('captureArea')
+  isLoading.value = true
+  setTimeout(() => {
+    const captureArea = document.getElementById('captureArea')
 
-  if (captureArea) {
-    html2canvas(captureArea, {
-      scale: 2 // Increase scale for better quality
-    }).then((canvas) => {
-      screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
-      isPreviewVisible.value = true // Show the preview modal
-    })
-  }
+    if (captureArea) {
+      html2canvas(captureArea, {
+        scale: 2, // Increase scale for better quality
+        logging: false, // Disable logging to reduce overhead
+        useCORS: true // Enable cross-origin if required for resources
+      }).then((canvas) => {
+        screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
+        isPreviewVisible.value = true // Show the preview modal
+        isLoading.value = false
+      })
+    }
+  }, 0)
 }
 
 // Function to inline all styles into the SVG
@@ -360,19 +369,12 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.capture-button {
   position: fixed;
   right: 20px;
   bottom: 20px;
-}
-
-button2 {
-  width: 100px;
-  padding: 0.5rem 1rem;
-  background-color: var(--color-nav-background);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
 button:hover {
@@ -384,5 +386,27 @@ select {
   padding: 0.3rem;
   width: 100%;
   border-radius: 5px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
