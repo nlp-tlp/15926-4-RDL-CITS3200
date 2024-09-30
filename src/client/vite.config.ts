@@ -8,12 +8,15 @@ export default defineConfig({
   plugins: [vue(), vueJsx()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  css: {
+    postcss: './postcss.config.js',  // Ensure Vite uses your PostCSS config
   },
   test: {
     environment: 'jsdom',
     globals: true,
     css: true
-  }
+  },
 })
