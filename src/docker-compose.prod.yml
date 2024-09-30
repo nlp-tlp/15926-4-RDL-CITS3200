@@ -4,7 +4,7 @@ services:
         container_name: Client
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.client.rule=Host(`localhost`) && PathPrefix(`/`)"
+            - "traefik.http.routers.client.rule=PathPrefix(`/`)"
             - "traefik.http.services.client.loadbalancer.server.port=5173"
         ports:
             - "${CLIENT_PORT:-5173}:5173"
@@ -20,7 +20,7 @@ services:
             - db-data:/app/db
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.server.rule=Host(`localhost`) && PathPrefix(`/node`) || PathPrefix(`/graph`)"
+            - "traefik.http.routers.server.rule=PathPrefix(`/node`) || PathPrefix(`/graph`)"
             - "traefik.http.services.server.loadbalancer.server.port=5000"
         environment:
             - FLASK_ENV=production

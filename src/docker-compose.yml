@@ -8,8 +8,9 @@ services:
             - "traefik.http.services.client.loadbalancer.server.port=5173"
         ports:
             - "${CLIENT_PORT:-5173}:5173"
-        env_file:
-            - .env.production
+        environment:
+            - NODE_ENV=production
+            - VITE_SERVER_URL=${VITE_SERVER_URL:-http://localhost:80}
 
     server:
         build: ./server
