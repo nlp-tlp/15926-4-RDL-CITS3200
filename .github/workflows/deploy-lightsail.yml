@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up production environment
         run: |
-          echo "VITE_SERVER_URL=http://${{ secrets.LIGHTSAIL_HOST }}:80" >> ./src/.env.production
+          echo "\nVITE_SERVER_URL=http://${{ secrets.LIGHTSAIL_HOST }}:80" >> ./src/.env.production
 
       - name: Build Docker images
         run: |
@@ -45,4 +45,4 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker compose down && docker load -i /home/ubuntu/client_image.tar.gz && docker load -i /home/ubuntu/server_image.tar.gz"
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker image prune -f"
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker compose up"
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker compose up -d"
