@@ -1,6 +1,20 @@
+<script setup lang="ts">
+const props = defineProps({
+  /**
+   * Optional class for the SVG icon.
+   */
+  class: {
+    type: String,
+    default: ''
+  }
+})
+</script>
+
 <script lang="ts">
 /**
  * IconGraph component represents an SVG icon for a graph.
+ * 
+ * @param {string} class - Optional custom class for additional styling.
  *
  * @example
  * <IconGraph />
@@ -12,6 +26,7 @@ export default {
 
 <template>
   <svg
+    :class="props.class"
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="20"

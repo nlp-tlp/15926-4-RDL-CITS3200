@@ -16,6 +16,13 @@ const props = defineProps({
   label: {
     type: String,
     required: true
+  },
+  /**
+   * Optional custom class for the navigation item.
+   */
+   class: {
+    type: String,
+    default: ''
   }
 })
 
@@ -28,6 +35,7 @@ const isExternalLink = computed(() => props.to.startsWith('http'))
  *
  * @param {string} to - The route path or URL for the navigation item.
  * @param {string} label - The label text displayed for the navigation item.
+ * @param {string} class - Optional custom class for additional styling.
  *
  * @slot `icon` - Optional slot for an icon to display with the navigation item.
  *
@@ -45,28 +53,19 @@ export default {
 
 <template>
   <!-- If it's an external link -->
-  <a v-if="isExternalLink" :href="to" class="navbar-item" target="_blank" rel="noopener noreferrer">
+  <a v-if="isExternalLink" :href="to" :class="['navbar-item', props.class, 'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border']" target="_blank" rel="noopener noreferrer">
     <slot name="icon"></slot>
     {{ label }}
   </a>
 
   <!-- If it's an internal link -->
-  <RouterLink v-else :to="to" class="navbar-item">
+  <RouterLink v-else :to="to" :class="['navbar-item', props.class, 'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border']">
     <slot name="icon"></slot>
     {{ label }}
   </RouterLink>
 </template>
 
 <style scoped>
-.navbar-item {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  text-align: center;
-  padding: 0 1rem;
-  border-left: 2px solid var(--color-border);
-  color: var(--color-nav-text);
-}
 .navbar-item:first-of-type {
   border: 0;
 }

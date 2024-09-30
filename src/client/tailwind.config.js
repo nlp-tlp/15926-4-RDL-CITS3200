@@ -27,6 +27,9 @@ export default {
       margin: {
         'section-gap-half': 'calc(var(--section-gap) / 2)',
       },
+      boxShadow: {
+        'nav-custom': '0 1px 4px var(--color-nav-background)', // Custom shadow for NavBar
+      }
     },
   },
   plugins: [],
