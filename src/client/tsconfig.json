@@ -1,15 +1,19 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/client/src/*"]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "module": "NodeNext",
+    "noEmit": true,
+    "lib": ["ES2015", "DOM"],
+    "target": "ES2015"  // Target ES2015 or later to ensure support for async/await
+  },
   "files": [],
   "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    }
-  ],
-  "compilerOptions": {
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
-  }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.app.json" }
+  ]
 }

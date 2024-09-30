@@ -3,10 +3,16 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const props = defineProps({
+  /**
+   * The route path or URL for the navigation item.
+   */
   to: {
     type: String,
     required: true
   },
+  /**
+   * The label text displayed for the navigation item.
+   */
   label: {
     type: String,
     required: true
@@ -23,7 +29,7 @@ const isExternalLink = computed(() => props.to.startsWith('http'))
  * @param {string} to - The route path or URL for the navigation item.
  * @param {string} label - The label text displayed for the navigation item.
  *
- * @slot icon - (OPTIONAL) The icon to display for the navigation item.
+ * @slot `icon` - Optional slot for an icon to display with the navigation item.
  *
  * @example
  * <NavBarItem to="/home" label="Home">

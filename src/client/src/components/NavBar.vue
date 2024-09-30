@@ -9,7 +9,7 @@ import NavBarItem from './NavBarItem.vue'
  * NavBar component represents the navigation bar for the application.
  *
  * This component includes the title of the application and a set of navigation items.
- * Each navigation item is represented by the NavBarItem component.
+ * Each navigation item is represented by the {@link NavBarItem} component.
  *
  * @example
  * <NavBar />
@@ -50,6 +50,7 @@ export default {
 <style scoped>
 #navbar {
   width: 100%;
+  height: 4.5rem;
   font-size: 1.1rem;
   /* Ensures NavBar items are on NavBar */
   display: flex;
