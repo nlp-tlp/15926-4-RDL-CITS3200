@@ -126,8 +126,6 @@ def modify_db_menu():
         reload_graph()
         typer.echo(f">> Database updated to '{new_db}'.")
 
-        # Reload flask app TODO
-
     elif choice == "Q":
         # Return to the previous menu
         typer.echo("Returning...")

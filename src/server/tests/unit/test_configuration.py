@@ -1,5 +1,3 @@
-import os
-from rdflib import URIRef
 from app.controllers import get_root_node
 from app.config import Config
 
