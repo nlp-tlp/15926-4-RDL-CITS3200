@@ -127,10 +127,11 @@ def delete_db(filename):
         json.dump(history_data, f, indent=4)
 
     # Delete the actual file from the storage directory
-    if os.path.exists(DATABASE_STORAGE_DIR):
-        os.remove(DATABASE_STORAGE_DIR)
-        typer.echo(f">> Database '{DATABASE_STORAGE_DIR}' deleted successfully.")
+    db_file = os.path.join(DATABASE_STORAGE_DIR, filename)
+    if os.path.exists(db_file):
+        os.remove(db_file)
+        typer.echo(f">> Database '{db_file}' deleted successfully.")
     else:
         typer.echo(
-            f"Error: File '{DATABASE_STORAGE_DIR}' does not exist or has already been deleted."
+            f"Error: File '{db_file}' does not exist or has already been deleted."
         )
