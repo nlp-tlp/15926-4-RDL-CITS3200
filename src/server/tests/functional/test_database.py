@@ -106,9 +106,9 @@ def test_get_children_with_deprecation(test_client):
 
 def test_get_root_node_info(test_client):
     """
-    Test the root node information from the '/graph/root' endpoint.
+    Test the root node information from the '/node/root' endpoint.
     """
-    response = test_client.get("/graph/root")
+    response = test_client.get("/node/root")
 
     # Parse the JSON response
     data = response.get_json()

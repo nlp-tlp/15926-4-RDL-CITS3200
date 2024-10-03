@@ -15,9 +15,9 @@ def test_health_check(test_client):
 
 def test_graph_root_route(test_client):
     """
-    Test the /graph/root route to ensure it returns the correct root node information.
+    Test the /node/root route to ensure it returns the correct root node information.
     """
-    response = test_client.get("/graph/root")
+    response = test_client.get("/node/root")
     json_data = response.get_json()
 
     # Assert correct response for the root node

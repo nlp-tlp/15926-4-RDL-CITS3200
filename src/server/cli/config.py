@@ -18,3 +18,4 @@ SOURCE_QUERY = """
     FILTER(?g IN (<http://data.15926.org/rdl>, <http://data.15926.org/dm>, <http://data.15926.org/coco>, <http://data.15926.org/lci>))
   }
   """
+SERVER_PORT = 5000
