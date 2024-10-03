@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+      - "22-AWS_Lightsail_setup_and_CI/CD_pipeline"
 
 jobs:
   build_and_deploy:
