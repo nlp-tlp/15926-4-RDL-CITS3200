@@ -2,45 +2,21 @@ services:
     client:
         build: ./client
         container_name: Client
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.client.rule=Host(`localhost`) && PathPrefix(`/`)"
-            - "traefik.http.services.client.loadbalancer.server.port=5173"
         ports:
-            - "${CLIENT_PORT:-5173}:5173"
-        environment:
-            - NODE_ENV=production
-            - VITE_SERVER_URL=${VITE_SERVER_URL:-http://localhost:80}
+            - "80:80" # nginx will expose port 80 to serve both the client and API
+        env_file:
+            - .env
 
     server:
         build: ./server
         container_name: Server
-        ports:
+        expose: # Not available publicly
             - "${SERVER_PORT:-5000}:5000"
         volumes:
             - db-data:/app/db
-        labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.server.rule=Host(`localhost`) && PathPrefix(`/node`) || PathPrefix(`/graph`) || PathPrefix(`/search`)"
-            - "traefik.http.services.server.loadbalancer.server.port=5000"
         environment:
             - FLASK_ENV=production
             - FLASK_APP=${FLASK_APP:-server.py}
-
-    traefik:
-        image: "traefik:v2.4"
-        container_name: Traefik
-        command:
-            - "--log.level=INFO"
-            - "--api.insecure=false"
-            - "--providers.docker=true"
-            - "--providers.docker.exposedbydefault=false"
-            - "--entryPoints.web.address=:80"
-        ports:
-            - "80:80" # HTTP
-            - "8080:8080" # Traefik Dashboard
-        volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:
     db-data: # Yes nothing below this line
