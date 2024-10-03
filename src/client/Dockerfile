@@ -17,5 +17,7 @@ RUN npm run build
 # Expose port
 EXPOSE 5173
 
+RUN npm install -g serve
+
 # Development run
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["serve", "-s", "dist", "-l", "5173"]
