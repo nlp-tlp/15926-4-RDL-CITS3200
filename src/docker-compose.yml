@@ -6,8 +6,6 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.client.rule=PathPrefix(`/`)"
             - "traefik.http.services.client.loadbalancer.server.port=5173"
-        ports:
-            - "5173:5173"
         env_file:
             - .env
 
