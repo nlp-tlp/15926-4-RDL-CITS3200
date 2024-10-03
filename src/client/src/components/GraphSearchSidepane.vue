@@ -27,7 +27,7 @@ const isLeftExpanded = ref(props.initialExpanded)
 const showResults = ref(true) // Control whether search results are displayed
 const errorMessage = ref('')
 
-const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1'
+const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
 // Function to toggle the left nav
 function toggleLeftNav(): void {

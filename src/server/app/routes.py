@@ -18,7 +18,7 @@ def ping():
     return jsonify({"status": "success", "message": "Pong!"}), 200
 
 
-@main.route("/node/root")
+@main.route("/graph/root")
 def root():
     """
     Route to fetch the root node information from the graph.

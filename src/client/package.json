@@ -18,7 +18,7 @@
     "prepare": "husky",
     "test:unit": "vitest run --root tests/unit",
     "test:e2e": "npx playwright test --config playwright.config.ts",
-    "start": "vite preview"
+    "start": "vite"
   },
   "dependencies": {
     "d3": "^7.9.0",

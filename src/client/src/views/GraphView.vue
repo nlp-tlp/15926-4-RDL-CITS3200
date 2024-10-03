@@ -5,7 +5,7 @@ import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
-const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1'
+const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
 
 // initial data for the root of the graph
