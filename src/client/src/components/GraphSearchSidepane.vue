@@ -27,6 +27,9 @@ const isSearching = ref(false) // Track API call state
 const isLeftExpanded = ref(props.initialExpanded)
 const showResults = ref(true) // Control whether search results are displayed
 const errorMessage = ref('')
+const showLabels = ref(true) // Control whether labels are displayed in the graph
+const emit = defineEmits(['toggleLabels']) // Defining emit event
+
 
 // API base URL (NEEDS MODIFICATION FOR PRODUCTION)
 const apiUrl = 'http://localhost:5000'
@@ -92,6 +95,11 @@ function clickResult(result: SearchResult): void {
     searchTerm.value = searchOption.value === 'id' ? result.id || '' : result.label || ''
     showResults.value = false // Hide search results after setting the search term
   }
+}
+
+// Triggers "toggleLabels" event when "Submit" is clicked
+function handleSubmit() {
+  emit('toggleLabels', showLabels.value)
 }
 </script>
 
@@ -171,7 +179,7 @@ export default {
 
           <div v-if="isLeftExpanded" class="toggles-and-levels">
             <label class="toggle-label"> <input type="checkbox" /> Show Deprecated </label>
-            <label class="toggle-label"> <input type="checkbox" /> View Labels in Graph </label>
+            <label class="toggle-label"> <input type="checkbox" v-model="showLabels" /> View Labels in Graph </label>
 
             <div v-if="isLeftExpanded" class="levels-inputs">
               <div class="input-group">
@@ -184,7 +192,7 @@ export default {
               </div>
             </div>
           </div>
-          <button class="search-btn">Submit</button>
+          <button class="search-btn" @click="handleSubmit">Submit</button>
         </div>
       </div>
     </transition>

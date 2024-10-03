@@ -51,13 +51,21 @@ async function fetchChildren(node: any) {
     }
   }
 }
+
+// reactive property
+const showLabelsInGraph = ref(true)
+
+function handleToggleLabels (value: boolean) {
+  showLabelsInGraph.value = value
+}
+
 </script>
 
 <template>
   <div class="container">
-    <GraphSearchSidepane />
+    <GraphSearchSidepane @toggle-labels="handleToggleLabels" />
     <GraphInfoSidepane />
-    <GraphVisualisation :data="data" :fetch-children="fetchChildren" />
+    <GraphVisualisation :data="data" :fetch-children="fetchChildren" :show-labels="showLabelsInGraph" />
   </div>
 </template>
 
