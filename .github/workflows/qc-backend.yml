@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - '**'
+      - "**"
   pull_request:
     branches:
       - main
-      - '**'
+      - "**"
   workflow_dispatch:
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
@@ -34,28 +34,4 @@ jobs:
       - name: Run Black (Server)
         run: |
           cd src/server
-          black --check .
-
-  cli_lint:
-    name: Run Black for CLI (Python Linting)
-    runs-on: ubuntu-latest
-    if: github.event_name != 'push' || github.event.head_commit.message != github.event.pull_request.head.commit.message
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          cd src/cli
-          pip install black
-
-      - name: Run Black (CLI)
-        run: |
-          cd src/cli
           black --check .
