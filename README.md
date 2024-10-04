@@ -121,6 +121,7 @@ Run in the root directory (unit / e2e depending on what is wanted):
 ```bash
 cd src/client
 npm run test:unit
+npx playwright install
 npm run test:e2e
 ```
 
