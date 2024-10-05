@@ -52,18 +52,14 @@ async function fetchChildren(node: any) {
   }
 }
 
-
 const nodeInfoDisplay = {
   label: 'Thing',
   definition: 'Thing is anything',
   dep: 'null',
   id: 'http://data.15926.org/dm/Thing',
   parents: '[]',
-  properties: {"http://data.15926.org/meta/valEffectiveDate": [
-      "2023-01-15Z"
-    ]},
-  types: ["http://data.15926.org/rdl/RDS2226571",
-    "http://www.w3.org/2002/07/owl#Class"]
+  properties: { 'http://data.15926.org/meta/valEffectiveDate': ['2023-01-15Z'] },
+  types: ['http://data.15926.org/rdl/RDS2226571', 'http://www.w3.org/2002/07/owl#Class']
 }
 
 // const nodeinfo = ref(null)

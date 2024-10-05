@@ -239,6 +239,18 @@ function renderNodes(nodes: any) {
     .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
     // set the cursor style based on the presence of children
     .style('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
+    .on('mouseover', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+       .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
+      })
+      .on('click', (event: any, d: any) => {
+      event.stopPropagation(); // Stop event from bubbling to the text click event
+      toggleCollapse(d); // Only collapse/expand the node when the circle is clicked
+      });
 
   nodeEnter
     .append('text')
@@ -246,7 +258,22 @@ function renderNodes(nodes: any) {
     // set the text position based on the expanded state - left if expanded, right if collapsed
     .attr('x', (d: any) => (d.data.expanded ? -10 : 10))
     .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
+    .style('cursor', () => ('pointer'))
     .text((d: any) => d.data.label)
+    .on('mouseover', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+        .style('font-weight', 'bold');
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+       .style('fill', '')
+        .style('font-weight', 'normal');
+      })
+      .on('click', (event: any, d: any) => {
+        event.stopPropagation();
+        // emit('toggle-right-nav', d);
+      });
 
   // merge the enter and update selections
   const nodeUpdate = nodeEnter.merge(node)

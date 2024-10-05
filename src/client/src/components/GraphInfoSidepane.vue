@@ -35,7 +35,6 @@ defineExpose({
   toggleRightNav
 })
 
-
 // Create a reactive object to hold the RDF data
 const rdfData = ref(props.nodeInfoDisplay)
 </script>
