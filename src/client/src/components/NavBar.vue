@@ -22,7 +22,7 @@ export default {
 <template>
   <nav
     id="navbar"
-    class="w-full bg-nav-background py-4 px-8 flex justify-center fixed top-0 left-0 z-50 text-[1rem] shadow-nav-custom md:py-4 md:px-4 md:text-[1.1rem]"
+    class="w-full bg-nav-background py-4 px-8 flex justify-center fixed top-0 left-0 z-50 text-[1rem] shadow-nav-custom md:py-5 md:px-4 md:text-[1.1rem]"
   >
     <p
       id="navbar-title"
