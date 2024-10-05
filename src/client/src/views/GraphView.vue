@@ -58,10 +58,10 @@ async function fetchChildren(node: any) {
 }
 
 // Toggles "showDeprecated" and re-fetches the node's children.
-function handleShowDeprecatedToggle (value: boolean) {
+function handleShowDeprecatedToggle(value: boolean) {
   showDeprecated.value = value
   if (data.value && data.value.id) {
-    fetchChildren(data.value);
+    fetchChildren(data.value)
   }
 }
 
@@ -69,17 +69,23 @@ function handleShowDeprecatedToggle (value: boolean) {
 const showLabelsInGraph = ref(true)
 
 // Toggles whether labels are displayed in the graph.
-function handleToggleLabels (value: boolean) {
+function handleToggleLabels(value: boolean) {
   showLabelsInGraph.value = value
 }
-
 </script>
 
 <template>
   <div class="container">
-    <GraphSearchSidepane @toggle-labels="handleToggleLabels" @toggle-deprecated="handleShowDeprecatedToggle" />
+    <GraphSearchSidepane
+      @toggle-labels="handleToggleLabels"
+      @toggle-deprecated="handleShowDeprecatedToggle"
+    />
     <GraphInfoSidepane />
-    <GraphVisualisation :data="data" :fetch-children="fetchChildren" :show-labels="showLabelsInGraph" />
+    <GraphVisualisation
+      :data="data"
+      :fetch-children="fetchChildren"
+      :show-labels="showLabelsInGraph"
+    />
   </div>
 </template>
 

@@ -30,7 +30,6 @@ const showLabels = ref(true) // Control whether labels are displayed in the grap
 const showDeprecated = ref(false) // Control whether deprecated nodes are displayed
 const emit = defineEmits(['toggleLabels', 'toggleDeprecated']) // Defining emit events
 
-
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
 // Function to toggle the left nav
@@ -178,8 +177,12 @@ export default {
           </div>
 
           <div v-if="isLeftExpanded" class="toggles-and-levels">
-            <label class="toggle-label"> <input type="checkbox" v-model="showDeprecated" /> Show Deprecated </label>
-            <label class="toggle-label"> <input type="checkbox" v-model="showLabels" /> View Labels in Graph </label>
+            <label class="toggle-label">
+              <input type="checkbox" v-model="showDeprecated" /> Show Deprecated
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" v-model="showLabels" /> View Labels in Graph
+            </label>
 
             <div v-if="isLeftExpanded" class="levels-inputs">
               <div class="input-group">

@@ -263,8 +263,7 @@ function renderNodes(nodes: any) {
   nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
 
   // update visibility of labels based on showLabels prop
-  nodeUpdate.select('text')
-    .style('display', props.showLabels ? 'block' : 'none')
+  nodeUpdate.select('text').style('display', props.showLabels ? 'block' : 'none')
 
   // remove the nodes that are no longer needed
   node.exit().remove()
