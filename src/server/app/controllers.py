@@ -345,10 +345,11 @@ def search(search_key, field, graph, dep=False, limit=5, min_similarity=75):
         uris = list(uri_map.keys())
 
         # Find similar matches using a list of the uris
+        # Use custom scorer to put more emphasis on numbers in the id
         matches = process.extract(
             search_key_lower,
             list(uris),
-            scorer=fuzz.WRatio,
+            scorer=custom_number_sensitive_scorer,
             limit=limit,
             score_cutoff=min_similarity,
         )
@@ -363,6 +364,24 @@ def search(search_key, field, graph, dep=False, limit=5, min_similarity=75):
             results.append(node_info)
 
     return results
+
+
+def custom_number_sensitive_scorer(search_key, candidate, **kwargs):
+    """
+    Custom scorer that gives more weight to numeric parts of the string
+    by combining WRatio and partial_ratio for exact numeric matching.
+    Accepts arbitrary keyword arguments to handle RapidFuzz's internal kwargs.
+    """
+    # Apply WRatio for general matching
+    w_ratio_score = fuzz.WRatio(search_key, candidate)
+
+    # Apply partial_ratio to boost exact matches of substrings, especially numbers
+    partial_score = fuzz.partial_ratio(search_key, candidate)
+
+    # Emphasize numbers using partial_ratio, then combine with WRatio
+    combined_score = (w_ratio_score * 0.6) + (partial_score * 0.4)
+
+    return combined_score
 
 
 #  Convert a string to a boolean and accepts common representations of true/false.
