@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    /**
-     * Determines if the side panel is initially expanded.
-     */
-    initialExpanded?: boolean
-  }>(),
-  {
-    initialExpanded: false
+// interface NodeInfo {
+//   label: 'Thing'
+//   definition: 'Thing is anything'
+//   id: 'http://data.15926.org/dm/Thing'
+//   dep: 'null'
+// }
+
+// const nodeInfo: Ref<NodeInfo | null> = ref(null)
+
+const props = defineProps({
+  // nodeinfo: {
+  //   type: Object as () => NodeInfo | null,
+  //   default: null
+  // },
+  initialExpanded: {
+    type: Boolean,
+    default: false
+  },
+  nodeInfoDisplay: {
+    type: Object,
+    required: true
   }
-)
+})
 
 const isRightExpanded = ref(props.initialExpanded)
 
@@ -24,17 +36,8 @@ defineExpose({
 })
 
 
-// Mock RDF data for demonstration purposes
-const mockRDFData = {
-  Label: 'AbstractObject',
-  id: 'http://data.15926.org/dm/AbstractObject',
-  Definition: 'An <AbstractObject>; is a <Thing>; that does not exist in space-time',
-  'subclass of': 'Thing',
-  Type: ['Class', 'ISO15926-2 ENTITY TYPE']
-}
-
 // Create a reactive object to hold the RDF data
-const rdfData = ref(mockRDFData)
+const rdfData = ref(props.nodeInfoDisplay)
 </script>
 
 <script lang="ts">
@@ -55,9 +58,8 @@ export default {
 
 <template>
   <div>
-
     <!-- <GraphVisualisation @open-side-panel="toggleRightNav" /> -->
-    
+
     <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
       &#9776;
     </button>
