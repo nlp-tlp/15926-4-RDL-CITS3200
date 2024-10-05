@@ -30,6 +30,9 @@ const data = ref({})
 // global
 data.value = initialGlobalData
 
+// local
+// data.value = initialLocalData
+
 async function fetchChildren(node: any) {
   if (!node || !node.id) {
     console.error('Invalid node:', node)
@@ -71,6 +74,41 @@ async function fetchChildren(node: any) {
   }
 }
 
+async function getHierarchy(node: any) {
+  console.log('NODE', node)
+  if (!node || !node.id) {
+    console.error('Invalid node:', node)
+    return
+  }
+  try {
+    const response = await fetch(`${API_URL}${hierarchyEndpoint}${encodeURIComponent(node.id)}`)
+    if (!response.ok) {
+      console.error('Server error:', response.status, await response.text())
+      return
+    }
+    const responseData = await response.json()
+
+    if (responseData.centre_id === node.id) {
+      // update the centre flag of the node
+      node.centre = true
+      // reset the data object
+      data.value = responseData.hierarchy
+    } else {
+      console.error('Invalid response:', responseData)
+    }
+
+    // console.log(data.value)
+  } catch (error: any) {
+    if (error instanceof TypeError) {
+      // Network error or other fetch-related error
+      console.error('Network error:', error.message)
+    } else {
+      // Something else happened
+      console.error('Error:', error.message)
+    }
+  }
+}
+
 // Reference to the SVG element
 const svgRef = ref<SVGSVGElement | null>(null)
 
@@ -93,15 +131,17 @@ let root: any
 // onMounted hook - initialise the graph and render it
 onMounted(() => {
   initialiseGraph()
+  // renderLocalGraph()
   renderGraph()
 })
 
 // Watch for changes in the data object and re-render the graph
 watch(
-  () => data.value,
+  () => data,
   (newData) => {
     if (newData) {
       renderGraph()
+      // renderLocalGraph()
     }
   }
 )
@@ -124,7 +164,7 @@ function initialiseGraph() {
     .append('marker')
     .attr('id', 'arrow')
     .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 22)
+    .attr('refX', 19.5)
     .attr('refY', 0)
     .attr('markerWidth', 6)
     .attr('markerHeight', 6)
@@ -132,7 +172,7 @@ function initialiseGraph() {
     .attr('markerUnits', 'strokeWidth')
     .append('path')
     .attr('d', 'M0,-5L10,0L0,5')
-    .attr('fill', '#444')
+    .attr('fill', 'black')
 
   // add arrow marker for extra links
   svg
@@ -140,7 +180,7 @@ function initialiseGraph() {
     .append('marker')
     .attr('id', 'arrow-extra')
     .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 22)
+    .attr('refX', 19.5)
     .attr('refY', 0)
     .attr('markerWidth', 6)
     .attr('markerHeight', 6)
@@ -166,8 +206,23 @@ function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
   svg.attr('transform', combinedTransform.toString())
 }
 
+function renderLocalGraph() {
+  // Check if the data object is available
+  if (!data.value) {
+    return
+  }
+  console.log('Data:', data.value)
+  // getHierarchy(data)
+  console.log('Data:', data.value)
+
+  // Create a hierarchy from the data object
+  // root = d3.hierarchy(data)
+  // update the graph based on the new data in the props
+  // update(root)
+}
+
 /**
- * Render the graph with the data object from the props.
+ * Render the graph with the data object
  */
 function renderGraph() {
   // Check if the data object is available
@@ -176,7 +231,7 @@ function renderGraph() {
   }
 
   // Create a hierarchy from the data object
-  root = d3.hierarchy(data.value)
+  root = d3.hierarchy(data)
   // update the graph based on the new data in the props
   update(root)
 }
@@ -267,10 +322,10 @@ async function toggleCollapse(node: any) {
  */
 function renderNodes(nodes: any) {
   // Select all nodes and bind the data
-  const nodeSelection = svg.selectAll('g.node').data(nodes, (d: any) => d.data.id)
+  const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id)
 
   // on enter, append the node group and add the circle and text elements
-  const nodeEnter: any = nodeSelection
+  const nodeEnter: any = node
     .enter()
     .append('g')
     .attr('class', 'node')
@@ -281,11 +336,9 @@ function renderNodes(nodes: any) {
     .append('circle')
     .attr('r', nodeRadius)
     // set the fill color based on the presence of children
-    .attr('fill', (d: any) => (d.data.has_children ? '#69b3a2' : '#999'))
+    .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
     // set the cursor style based on the presence of children
-    .attr('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
-    .attr('stroke', '#444')
-    .attr('stroke-width', 2)
+    .style('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
 
   nodeEnter
     .append('text')
@@ -296,13 +349,13 @@ function renderNodes(nodes: any) {
     .text((d: any) => d.data.label)
 
   // merge the enter and update selections
-  const nodeUpdate = nodeEnter.merge(nodeSelection)
+  const nodeUpdate = nodeEnter.merge(node)
 
   // update the node positions
   nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
 
   // remove the nodes that are no longer needed
-  nodeSelection.exit().remove()
+  node.exit().remove()
 }
 
 /**
