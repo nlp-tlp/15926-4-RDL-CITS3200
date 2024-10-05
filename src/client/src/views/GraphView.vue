@@ -20,7 +20,6 @@ const initialData = {
 // make the data reactive
 const data = ref(initialData)
 
-// reactive property for "Show Deprecated" functionality
 const showDeprecated = ref(false)
 
 async function fetchChildren(node: any) {
@@ -65,7 +64,6 @@ function handleShowDeprecatedToggle(value: boolean) {
   }
 }
 
-// reactive property for "View Labels in Graph"
 const showLabelsInGraph = ref(true)
 
 // Toggles whether labels are displayed in the graph.
