@@ -1,20 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// interface NodeInfo {
-//   label: 'Thing'
-//   definition: 'Thing is anything'
-//   id: 'http://data.15926.org/dm/Thing'
-//   dep: 'null'
-// }
-
-// const nodeInfo: Ref<NodeInfo | null> = ref(null)
-
 const props = defineProps({
-  // nodeinfo: {
-  //   type: Object as () => NodeInfo | null,
-  //   default: null
-  // },
   initialExpanded: {
     type: Boolean,
     default: false
@@ -22,12 +9,16 @@ const props = defineProps({
   nodeInfoDisplay: {
     type: Object,
     required: true
-  }
+  },
 })
 
 const isRightExpanded = ref(props.initialExpanded)
 
 function toggleRightNav(): void {
+  if(!isRightExpanded.value) { isRightExpanded.value = !isRightExpanded.value }
+}
+
+function toggleRightNavButton(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
 
@@ -57,9 +48,7 @@ export default {
 
 <template>
   <div>
-    <!-- <GraphVisualisation @open-side-panel="toggleRightNav" /> -->
-
-    <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
+    <button class="right-btn" @click="toggleRightNavButton" :class="{ 'expanded-btn': isRightExpanded }">
       &#9776;
     </button>
 

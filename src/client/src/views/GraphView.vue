@@ -52,17 +52,16 @@ async function fetchChildren(node: any) {
   }
 }
 
-const nodeInfoDisplay = {
-  label: 'Thing',
-  definition: 'Thing is anything',
-  dep: 'null',
-  id: 'http://data.15926.org/dm/Thing',
-  parents: '[]',
-  properties: { 'http://data.15926.org/meta/valEffectiveDate': ['2023-01-15Z'] },
-  types: ['http://data.15926.org/rdl/RDS2226571', 'http://www.w3.org/2002/07/owl#Class']
+const theNodeInfoDisplay = {
+  Label: '',
+  Definition: '',
+  Dep: '',
+  ID: '',
+  Parents: '',
+  Properties: '',
+  Types: ''
 }
-
-// const nodeinfo = ref(null)
+const nodeInfoDisplay = ref(theNodeInfoDisplay)
 const infoTag = '/node/info/'
 
 async function fetchNodeInfo(nodeId: string) {
@@ -73,19 +72,14 @@ async function fetchNodeInfo(nodeId: string) {
       return null
     }
     const nodeInfo = await response.json()
-    console.log('Definition is:', nodeInfo.definition)
-    console.log('id is:', nodeInfo.id)
-    console.log('dep is:', nodeInfo.dep)
+    nodeInfoDisplay.value.Label = nodeInfo.label
+    nodeInfoDisplay.value.Definition = nodeInfo.definition
+    nodeInfoDisplay.value.Dep = nodeInfo.dep
+    nodeInfoDisplay.value.ID = nodeInfo.id
+    nodeInfoDisplay.value.Parents = nodeInfo.parents
+    nodeInfoDisplay.value.Properties = nodeInfo.properties
+    nodeInfoDisplay.value.Types = nodeInfo.types
 
-    nodeInfoDisplay.label = nodeInfo.label
-    nodeInfoDisplay.definition = nodeInfo.definition
-    nodeInfoDisplay.dep = nodeInfo.dep
-    nodeInfoDisplay.id = nodeInfo.id
-    nodeInfoDisplay.parents = nodeInfo.parents
-    nodeInfoDisplay.properties = nodeInfo.properties
-    nodeInfoDisplay.types = nodeInfo.types
-
-    // Ensure the data has the correct structure before returning it
     return {
       nodeInfoDisplay
     }
@@ -95,19 +89,27 @@ async function fetchNodeInfo(nodeId: string) {
   }
 }
 
-function handleNodeClicked(nodeUri: string) {
-  fetchNodeInfo(nodeUri)
+async function handleLabelClicked(nodeUri: string) {
+  await fetchNodeInfo(nodeUri)
+  infoPaneRef.value.toggleRightNav();
 }
+
+const infoPaneRef = ref();
+
 </script>
 
 <template>
   <div class="container">
     <GraphSearchSidepane />
-    <GraphInfoSidepane :node-info-display="nodeInfoDisplay" />
+    <GraphInfoSidepane 
+    ref="infoPaneRef"
+    :node-info-display="nodeInfoDisplay"
+    />
     <GraphVisualisation
       :data="data"
       :fetch-children="fetchChildren"
-      @node-clicked="handleNodeClicked"
+      @label-clicked="handleLabelClicked"
+
     />
   </div>
 </template>

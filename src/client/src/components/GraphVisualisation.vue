@@ -165,17 +165,11 @@ function hidePreviousCollapsedNodes(nodes: any) {
   })
 }
 
-const emit = defineEmits(['node-clicked'])
-
 /**
  * Toggle the collapse of a node.
  * @param node The node to be toggled.
  */
 async function toggleCollapse(node: any) {
-  function handleNodeClick(node: any) {
-    emit('node-clicked', node.data.id)
-  }
-  handleNodeClick(node) // Check this over
 
   // Check if the node has children
   if (node.data.has_children) {
@@ -240,17 +234,17 @@ function renderNodes(nodes: any) {
     // set the cursor style based on the presence of children
     .style('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
     .on('mouseover', (event: MouseEvent) => {
-        d3.select(event.currentTarget as SVGTextElement)
-        .style('fill', 'lightblue')
-      })
-      .on('mouseout', (event: MouseEvent) => {
-        d3.select(event.currentTarget as SVGTextElement)
-       .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
-      })
-      .on('click', (event: any, d: any) => {
-      event.stopPropagation(); // Stop event from bubbling to the text click event
-      toggleCollapse(d); // Only collapse/expand the node when the circle is clicked
-      });
+      d3.select(event.currentTarget as SVGTextElement).style('fill', 'lightblue')
+    })
+    .on('mouseout', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement).style('fill', (d: any) =>
+        d.data.has_children ? 'lightsteelblue' : '#999'
+      )
+    })
+    .on('click', (event: any, d: any) => {
+      event.stopPropagation() // Prevents bubbling
+      toggleCollapse(d)
+    })
 
   nodeEnter
     .append('text')
@@ -258,22 +252,22 @@ function renderNodes(nodes: any) {
     // set the text position based on the expanded state - left if expanded, right if collapsed
     .attr('x', (d: any) => (d.data.expanded ? -10 : 10))
     .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
-    .style('cursor', () => ('pointer'))
+    .style('cursor', () => 'pointer')
     .text((d: any) => d.data.label)
     .on('mouseover', (event: MouseEvent) => {
-        d3.select(event.currentTarget as SVGTextElement)
+      d3.select(event.currentTarget as SVGTextElement)
         .style('fill', 'lightblue')
-        .style('font-weight', 'bold');
-      })
-      .on('mouseout', (event: MouseEvent) => {
-        d3.select(event.currentTarget as SVGTextElement)
-       .style('fill', '')
-        .style('font-weight', 'normal');
-      })
-      .on('click', (event: any, d: any) => {
-        event.stopPropagation();
-        // emit('toggle-right-nav', d);
-      });
+        .style('font-weight', 'bold')
+    })
+    .on('mouseout', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', '')
+        .style('font-weight', 'normal')
+    })
+    .on('click', (event: any, d: any) => {
+      event.stopPropagation()
+      handleLabelClick(d)
+    })
 
   // merge the enter and update selections
   const nodeUpdate = nodeEnter.merge(node)
@@ -284,6 +278,12 @@ function renderNodes(nodes: any) {
   // remove the nodes that are no longer needed
   node.exit().remove()
 }
+
+const emit = defineEmits(['label-clicked'])
+
+function handleLabelClick(node: any) {
+  emit('label-clicked', node.data.id)
+ }
 
 /**
  * Render the links of the graph.
