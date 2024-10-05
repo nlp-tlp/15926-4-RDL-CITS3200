@@ -28,7 +28,8 @@ const isLeftExpanded = ref(props.initialExpanded)
 const showResults = ref(true) // Control whether search results are displayed
 const errorMessage = ref('')
 const showLabels = ref(true) // Control whether labels are displayed in the graph
-const emit = defineEmits(['toggleLabels']) // Defining emit event
+const showDeprecated = ref(false) // Control whether deprecated nodes are displayed
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated']) // Defining emit events
 
 
 // API base URL (NEEDS MODIFICATION FOR PRODUCTION)
@@ -97,9 +98,10 @@ function clickResult(result: SearchResult): void {
   }
 }
 
-// Triggers "toggleLabels" event when "Submit" is clicked
+// Triggers "toggleLabels" event and "toggleDeprecated" event when "Submit" is clicked
 function handleSubmit() {
   emit('toggleLabels', showLabels.value)
+  emit('toggleDeprecated', showDeprecated.value)
 }
 </script>
 
@@ -178,7 +180,7 @@ export default {
           </div>
 
           <div v-if="isLeftExpanded" class="toggles-and-levels">
-            <label class="toggle-label"> <input type="checkbox" /> Show Deprecated </label>
+            <label class="toggle-label"> <input type="checkbox" v-model="showDeprecated" /> Show Deprecated </label>
             <label class="toggle-label"> <input type="checkbox" v-model="showLabels" /> View Labels in Graph </label>
 
             <div v-if="isLeftExpanded" class="levels-inputs">
