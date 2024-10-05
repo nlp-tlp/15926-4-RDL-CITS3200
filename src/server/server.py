@@ -15,4 +15,7 @@ try:
     flaskApp.graph = graph  # Store the graph in the app context
 except Exception as e:
     print(f"Error loading database from history: {e}")
+    print(
+        "Ensure a database file exists and that the history file is valid. Consult instructions."
+    )
     sys.exit(1)  # Exist startup if database cant be loaded.

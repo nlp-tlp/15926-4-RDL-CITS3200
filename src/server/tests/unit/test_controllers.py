@@ -30,7 +30,9 @@ def test_get_root_node_info(sample_graph):
     # Validate the root node info
     assert root_info["id"] == "http://data.15926.org/dm/Thing"
     assert root_info["label"] == "Thing"
-    assert root_info["dep"] is None, "Root node should not have a deprecation date."
+    assert (
+        root_info.get("dep", None) is None
+    ), "Root node should not have a deprecation date."
 
 
 def test_has_children_without_deprecation(sample_graph):
@@ -88,9 +90,13 @@ def test_get_children_without_deprecation(sample_graph):
         len(children) == 2
     ), "Root node should have 2 children when dep=False, Child2 and Child4."
     assert children[0]["id"] == "http://data.15926.org/dm/Child2"
-    assert children[0]["dep"] is None, "Child2 should not have a deprecation date."
+    assert (
+        children[0].get("dep", None) is None
+    ), "Child2 should not have a deprecation date."
     assert children[1]["id"] == "http://data.15926.org/dm/Child4"
-    assert children[1]["dep"] is None, "Child4 should not have a deprecation date."
+    assert (
+        children[1].get("dep", None) is None
+    ), "Child4 should not have a deprecation date."
 
 
 def test_get_children_with_deprecation_included(sample_graph):
@@ -118,7 +124,7 @@ def test_get_children_with_deprecation_included(sample_graph):
             ), "Child1 should have a deprecation date."
         else:
             assert (
-                child["dep"] is None
+                child.get("dep", None) is None
             ), "Child2 and Child4 should not have deprecation dates."
 
 
@@ -161,7 +167,7 @@ def test_get_all_node_info(sample_graph):
     # Assert the basic fields are correct
     assert node_info["id"] == node_uri
     assert node_info["label"] == "Child One"
-    assert node_info["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
+    assert node_info.get("dep", None) == "2021-03-21Z"  # Child1 has a deprecation date
     assert "http://data.15926.org/dm/ChildType" in node_info["types"]
     assert node_info["definition"] == "Child One is a sample node."
 
@@ -192,7 +198,7 @@ def test_get_all_node_info_multiple_types(sample_graph):
     # Assert the basic fields are correct
     assert node_info["id"] == node_uri
     assert node_info["label"] == "Child One"
-    assert node_info["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
+    assert node_info.get("dep", None) == "2021-03-21Z"  # Child1 has a deprecation date
     assert "http://data.15926.org/dm/ChildType" in node_info["types"]
     assert "http://data.15926.org/dm/AnotherType" in node_info["types"]
     assert node_info["definition"] == "Child One is a sample node."

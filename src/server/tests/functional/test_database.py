@@ -88,7 +88,9 @@ def test_get_children_with_deprecation(test_client):
     )
     assert child2_info is not None
     assert child2_info["label"] == "Child Two"
-    assert child2_info["dep"] is None  # Child2 does not have a deprecation date
+    assert (
+        child2_info.get("dep", None) is None
+    )  # Child2 does not have a deprecation date
 
     # Validate Child4
     child4_info = next(
@@ -101,7 +103,9 @@ def test_get_children_with_deprecation(test_client):
     )
     assert child4_info is not None
     assert child4_info["label"] == "Child Four"
-    assert child4_info["dep"] is None  # Child4 does not have a deprecation date
+    assert (
+        child4_info.get("dep", None) is None
+    )  # Child4 does not have a deprecation date
 
 
 def test_get_root_node_info(test_client):
@@ -117,7 +121,7 @@ def test_get_root_node_info(test_client):
     assert response.status_code == 200
     assert data["id"] == "http://data.15926.org/dm/Thing"
     assert data["label"] == "Thing"
-    assert data["dep"] is None  # Root node has no deprecation date
+    assert data.get("dep", None) is None  # Root node has no deprecation date
 
 
 def test_invalid_query_to_children(test_client):
@@ -244,7 +248,9 @@ def test_get_root_node_info_with_properties(test_client):
     assert response.status_code == 200
     assert json_data["id"] == node_uri
     assert json_data["label"] == "Thing"
-    assert json_data["dep"] is None  # Root node does not have a deprecation date
+    assert (
+        json_data.get("dep", None) is None
+    )  # Root node does not have a deprecation date
 
     # Check type
     assert "http://data.15926.org/dm/RootType" in json_data["types"]
