@@ -29,7 +29,7 @@ export default {
       @click="$router.push('/')"
       class="text-[1.2rem] md:text-[1.1rem] font-bold mr-auto text-nav-title hover:cursor-pointer"
     >
-      iso15926vis
+      Iso15926Visualiser
     </p>
     <div id="navbar-items" class="flex">
       <NavBarItem to="/" label="Home" id="home-link" class="hidden md:flex" />
