@@ -1,8 +1,11 @@
+#!/usr/bin/env python3
+
 import typer
 
-from history import get_current_db, delete_db, update_current_db, get_all_databases
-from database import update_db
-from config import HISTORY_VERSION
+from cli.history import get_current_db, delete_db, update_current_db, get_all_databases
+from cli.database import update_db
+from cli.config import HISTORY_VERSION
+from cli.reload import reload_graph
 
 app = typer.Typer()  # Initialize Typer app
 
@@ -22,6 +25,7 @@ def main(update: bool = False):
     if update:
         typer.echo("Updating the database...")
         update_db()
+        reload_graph()
 
     else:
         db_name, _ = get_current_db()
@@ -64,6 +68,7 @@ def menu():
         elif choice == "U":
             typer.echo("Updating the database...")
             update_db()
+            reload_graph()
             typer.echo("Database updated successfully!")
 
         elif choice == "M":
@@ -96,7 +101,7 @@ def modify_db_menu():
     typer.echo("Q = Return to previous menu")
 
     # Get user input for action
-    choice = input("\nPlease enter your choice (D/U/Q): ").strip().upper()
+    choice = input("\nPlease enter your choice (D/C/Q): ").strip().upper()
 
     if choice == "D":
         # Delete a database
@@ -118,6 +123,7 @@ def modify_db_menu():
 
         new_db = dbs[update_choice]["filename"]
         update_current_db(new_db)
+        reload_graph()
         typer.echo(f">> Database updated to '{new_db}'.")
 
     elif choice == "Q":

@@ -19,7 +19,6 @@ interface SearchResult {
   dep?: string | null // If you need the 'dep' property as well
 }
 
-// Reactive properties
 const searchTerm = ref('') // The search term entered by the user
 const searchOption = ref('id') // The dropdown option selected by the user
 const results = ref<SearchResult[]>([]) // Store search results
@@ -32,8 +31,7 @@ const showDeprecated = ref(false) // Control whether deprecated nodes are displa
 const emit = defineEmits(['toggleLabels', 'toggleDeprecated']) // Defining emit events
 
 
-// API base URL (NEEDS MODIFICATION FOR PRODUCTION)
-const apiUrl = 'http://localhost:5000'
+const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
 // Function to toggle the left nav
 function toggleLeftNav(): void {
@@ -42,7 +40,7 @@ function toggleLeftNav(): void {
 
 // Function to debounce the search query -- ONLY QUERY AFTER USER STOPS TYPING
 let debounceTimeout: number
-function debounceSearch(fn: () => void, delay: number = 350) {
+function debounceSearch(fn: () => void, delay: number = 450) {
   clearTimeout(debounceTimeout)
   debounceTimeout = setTimeout(fn, delay)
 }
@@ -65,7 +63,7 @@ async function search(query: string): Promise<void> {
   errorMessage.value = ''
   try {
     const endpoint = searchOption.value === 'id' ? '/search/id/' : '/search/label/'
-    const response = await fetch(`${apiUrl}${endpoint}${encodeURIComponent(query)}?limit=20`)
+    const response = await fetch(`${API_URL}${endpoint}${encodeURIComponent(query)}?limit=25`)
     const data = await response.json()
 
     if (data.results) {

@@ -5,8 +5,7 @@ import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
-// API URL
-const API_URL = 'http://127.0.0.1:5000'
+const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
 
 // initial data for the root of the graph
@@ -25,6 +24,7 @@ const data = ref(initialData)
 const showDeprecated = ref(false)
 
 async function fetchChildren(node: any) {
+  console.log(API_URL)
   if (!node || !node.id) {
     console.error('Invalid node:', node)
     return

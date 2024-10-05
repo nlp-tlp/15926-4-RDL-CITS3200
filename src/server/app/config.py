@@ -11,13 +11,13 @@ class Config:
     ROOT_NODE_URI = "http://data.15926.org/dm/Thing"
 
     # Storage location of the database HISTORY file (SHOULD BE RELATIVE)
-    DB_HISTORY_FILE = os.path.join(basedir, "../../db/history.json")
+    DB_HISTORY_FILE = os.path.join(basedir, "../db/history.json")
 
     # Storage location of the database files (SHOULD BE RELATIVE)
-    DB_STORAGE_DIR = os.path.join(basedir, "../../db/storage")
+    DB_STORAGE_DIR = os.path.join(basedir, "../db/storage")
 
     # Maximum possible number of items returned by the search api end points
-    MAX_SEARCH_LIMIT = 25
+    MAX_SEARCH_LIMIT = 50
 
 
 class DeploymentConfig(Config):
