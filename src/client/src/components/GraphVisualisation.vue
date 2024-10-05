@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
+<<<<<<< HEAD
 import { onMounted, ref, watch } from 'vue'
+=======
+import {onMounted, ref } from 'vue'
+>>>>>>> d1526059406af600b3d4f981baacb4b62023f004
 
 const props = defineProps({
   /**
@@ -19,8 +23,15 @@ const props = defineProps({
   }
 })
 
+<<<<<<< HEAD
 // Reference to the SVG element
 const svgRef = ref<SVGSVGElement | null>(null)
+=======
+const emit = defineEmits(['toggle-right-nav'])
+
+
+const svgRef = ref(null)
+>>>>>>> d1526059406af600b3d4f981baacb4b62023f004
 
 // Graph dimensions
 const width: number = window.innerWidth
@@ -62,7 +73,11 @@ function initialiseGraph() {
     .select(svgRef.value as SVGSVGElement)
     .attr('width', width)
     .attr('height', height)
+<<<<<<< HEAD
     .call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
+=======
+    .call(d3.zoom().scaleExtent([0.1, 10]).on('zoom', zoomed) as any)
+>>>>>>> d1526059406af600b3d4f981baacb4b62023f004
     .append('g')
     .attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())
 
@@ -151,6 +166,7 @@ function update(source: any) {
   hidePreviousCollapsedNodes(nodes)
 }
 
+<<<<<<< HEAD
 /**
  * Hide the nodes that were previously collapsed.
  * @param nodes The nodes to be checked.
@@ -159,6 +175,138 @@ function hidePreviousCollapsedNodes(nodes: any) {
   nodes.forEach((d: any) => {
     // Check if the node was previously collapsed but the children are currently visible
     if (d.data.expanded === false && d.children) {
+=======
+    const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id || (d.id = d.data.name))
+
+    // Enter any new nodes at the parent's previous position.
+    const nodeEnter: any = node
+      .enter()
+      .append('g')
+      .attr('class', 'node')
+      .on('click', (event, d) => toggleCollapse(d))
+
+    // Add Circle for the nodes
+    nodeEnter
+      .append('circle')
+      .attr('r', 5)
+      .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+      .style('cursor', (d: any) => (d.children || d._children ? 'pointer' : 'default'))
+      .on('mouseover', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+       .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+      })
+      .on('click', (event: any, d: any) => {
+      event.stopPropagation(); // Stop event from bubbling to the text click event
+      toggleCollapse(d); // Only collapse/expand the node when the circle is clicked
+      });
+
+    // Add labels for the nodes
+    nodeEnter
+      .append('text')
+      .attr('dy', '.35em')
+      .attr('x', (d: any) => (d.children || d._children ? -10 : 10))
+      .style('text-anchor', (d: any) => (d.children || d._children ? 'end' : 'start'))
+      .style('cursor', () => ('pointer'))
+      .text((d: any) => d.data.name)
+      .on('mouseover', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+        .style('font-weight', 'bold');
+      })
+      .on('mouseout', (event: MouseEvent) => {
+        d3.select(event.currentTarget as SVGTextElement)
+       .style('fill', '')
+        .style('font-weight', 'normal');
+      })
+      .on('click', (event: any, d: any) => {
+        event.stopPropagation();
+        emit('toggle-right-nav', d);
+      });
+
+    // Update the node positions
+    const nodeUpdate = nodeEnter.merge(node)
+
+    nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+
+    // Update the node attributes and style
+    nodeUpdate
+      .select('circle')
+      .attr('r', 5)
+      .style('fill', (d: any) => (d._children ? 'lightsteelblue' : '#999'))
+
+    // Remove any exiting nodes
+    const nodeExit = node.exit().remove()
+
+    nodeExit.select('circle').attr('r', 0)
+
+    nodeExit.select('text').style('fill-opacity', 0)
+
+    // ********** Links section **********
+
+    const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
+
+    // Enter new links at the parent's previous position.
+    const linkEnter = link
+      .enter()
+      .insert('path', 'g')
+      .attr('class', 'link')
+      .attr('stroke', 'black')
+      .attr('fill', 'none')
+      .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
+
+    // Update links
+    const linkUpdate = linkEnter.merge(link)
+
+    linkUpdate.attr('d', diagonal)
+
+    // Remove exiting links
+    link
+      .exit()
+      .attr('d', () => {
+        const o = { x: source.x, y: source.y }
+        return diagonal({ source: o, target: o })
+      })
+      .remove()
+
+    const extraLinks: any = []
+    nodes.forEach((d: any) => {
+      if (d.data.extra_parents) {
+        d.data.extra_parents.forEach((parent: any) => {
+          const parentNode = nodes.find((node: any) => node.data.name === parent.name)
+          if (parentNode) {
+            extraLinks.push({ source: parentNode, target: d })
+          }
+        })
+      }
+    })
+
+    const extraLink = svg.selectAll('path.extra-link').data(extraLinks)
+
+    extraLink
+      .enter()
+      .insert('path', 'g')
+      .attr('class', 'extra-link')
+      .attr('stroke', 'red')
+      .attr('fill', 'none')
+      .attr('marker-end', 'url(#arrow)') // Added attribute for arrow head
+      .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
+
+    extraLink
+      .merge(extraLink)
+      .attr('d', (d: any) => diagonal({ source: d.source, target: d.target }))
+
+    //Remove any exiting extra links
+    extraLink.exit().remove()
+  }
+
+  // Toggle children on click.
+  function toggleCollapse(d: any) {
+    if (d.children) {
+>>>>>>> d1526059406af600b3d4f981baacb4b62023f004
       d._children = d.children
       d.children = null
     }
