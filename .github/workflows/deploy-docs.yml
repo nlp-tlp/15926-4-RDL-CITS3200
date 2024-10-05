@@ -2,11 +2,10 @@ name: Deploy Documentation to GitHub Pages
 
 on:
   push:
-    branches: 
+    branches:
       - "main"
-  pull_request:
-    branches: 
-      - "main"
+    paths:
+      - docs/**
   workflow_dispatch:
 
 jobs:
@@ -23,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       # Install dependencies
       - name: Install dependencies
@@ -59,4 +58,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v2
         with:
-          artifact_name: documentation-pages  # Ensure same artifact is used (MATCH NAMES)
+          artifact_name: documentation-pages # Ensure same artifact is used (MATCH NAMES)
