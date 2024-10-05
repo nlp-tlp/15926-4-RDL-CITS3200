@@ -9,13 +9,15 @@ const props = defineProps({
   nodeInfoDisplay: {
     type: Object,
     required: true
-  },
+  }
 })
 
 const isRightExpanded = ref(props.initialExpanded)
 
 function toggleRightNav(): void {
-  if(!isRightExpanded.value) { isRightExpanded.value = !isRightExpanded.value }
+  if (!isRightExpanded.value) {
+    isRightExpanded.value = !isRightExpanded.value
+  }
 }
 
 function toggleRightNavButton(): void {
@@ -48,7 +50,11 @@ export default {
 
 <template>
   <div>
-    <button class="right-btn" @click="toggleRightNavButton" :class="{ 'expanded-btn': isRightExpanded }">
+    <button
+      class="right-btn"
+      @click="toggleRightNavButton"
+      :class="{ 'expanded-btn': isRightExpanded }"
+    >
       &#9776;
     </button>
 

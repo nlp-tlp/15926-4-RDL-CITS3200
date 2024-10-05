@@ -170,7 +170,6 @@ function hidePreviousCollapsedNodes(nodes: any) {
  * @param node The node to be toggled.
  */
 async function toggleCollapse(node: any) {
-
   // Check if the node has children
   if (node.data.has_children) {
     // Check if the children have not been fetched
@@ -283,7 +282,7 @@ const emit = defineEmits(['label-clicked'])
 
 function handleLabelClick(node: any) {
   emit('label-clicked', node.data.id)
- }
+}
 
 /**
  * Render the links of the graph.

@@ -91,25 +91,20 @@ async function fetchNodeInfo(nodeId: string) {
 
 async function handleLabelClicked(nodeUri: string) {
   await fetchNodeInfo(nodeUri)
-  infoPaneRef.value.toggleRightNav();
+  infoPaneRef.value.toggleRightNav()
 }
 
-const infoPaneRef = ref();
-
+const infoPaneRef = ref()
 </script>
 
 <template>
   <div class="container">
     <GraphSearchSidepane />
-    <GraphInfoSidepane 
-    ref="infoPaneRef"
-    :node-info-display="nodeInfoDisplay"
-    />
+    <GraphInfoSidepane ref="infoPaneRef" :node-info-display="nodeInfoDisplay" />
     <GraphVisualisation
       :data="data"
       :fetch-children="fetchChildren"
       @label-clicked="handleLabelClicked"
-
     />
   </div>
 </template>
