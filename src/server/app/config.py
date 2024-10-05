@@ -17,7 +17,7 @@ class Config:
     DB_STORAGE_DIR = os.path.join(basedir, "../db/storage")
 
     # Maximum possible number of items returned by the search api end points
-    MAX_SEARCH_LIMIT = 25
+    MAX_SEARCH_LIMIT = 50
 
 
 class DeploymentConfig(Config):

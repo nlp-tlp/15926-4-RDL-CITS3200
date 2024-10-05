@@ -191,6 +191,7 @@ def search(field, search_key):
     Query Parameters:
         dep (bool): Whether to include deprecated nodes. Default is False.
         limit (int): Maximum number of results to return. Default is 5, max is 25.
+        similarity (int): Minimum similarity score of results to return. Default is 75(%)
 
     Returns:
         JSON: The search results by either node ID (URI) or label.
@@ -207,6 +208,8 @@ def search(field, search_key):
     abs_limit = abs(int(request.args.get("limit", 5)))
     limit = min(abs_limit, int(Config.MAX_SEARCH_LIMIT))
 
+    similarity = abs(int(request.args.get("similarity", 75)))
+
     try:
         # Check if the graph is available
         if not hasattr(current_app, "graph"):
@@ -216,11 +219,12 @@ def search(field, search_key):
             return jsonify({"error": "Invalid field. Use 'id' or 'label'."}), 400
 
         results = controllers.search(
-            search_key=search_key,
+            search_key=str(search_key),
             field=field,
             graph=current_app.graph,
             dep=include_deprecation,
             limit=limit,
+            min_similarity=similarity,
         )
 
     except AttributeError as e:

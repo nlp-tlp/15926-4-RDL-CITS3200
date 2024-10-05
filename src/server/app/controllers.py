@@ -1,5 +1,6 @@
 from app.config import Config
 from rdflib import URIRef, Literal, RDF, RDFS, Namespace
+from rapidfuzz import process, fuzz
 
 # Define the namespace for meta and SKOS
 META = Namespace("http://data.15926.org/meta/")
@@ -277,9 +278,10 @@ def get_children(
     return children_list
 
 
-def search(search_key, field, graph, dep=False, limit=5):
+def search(search_key, field, graph, dep=False, limit=5, min_similarity=75):
     """
     Search the RDFLib graph for nodes by URI or label, with optional filtering for deprecated nodes.
+    Return results within the limit and ranked by relavence to the search key.
 
     Args:
         search_key (str): The search term (either part of a URI or part of a label).
@@ -287,58 +289,78 @@ def search(search_key, field, graph, dep=False, limit=5):
         graph (rdflib.Graph): The RDFLib graph to query.
         dep (bool, optional): Whether to include deprecated nodes. Defaults to False.
         limit (int, optional): Maximum number of results to return. Defaults to 5.
+        min_similarity (int, optional): Minimum similarity score of results to return. Default to 75(%).
 
     Returns:
         list: A list of unique dictionaries containing node information.
     """
-
+    # Initialise results array
     results = []
-    unique_subjects = set()  # Set to track unique subjects
+
+    # Ensure case insensitivity by lowering the search key
     search_key_lower = search_key.lower()
-    count = 0
+
+    # NOTE: The search ranking must be performed with case insensitivity, however the information must
+    # be obtained using the original case sensitive URI, so the original must be stored as well.
 
     # Check if the field is "LABEL"
     if field.upper() == "LABEL":
-        # Search by label (rdfs:label) for partial match
-        for subject, predicate, obj in graph.triples((None, RDFS.label, None)):
-            if isinstance(obj, Literal) and search_key_lower in str(obj).lower():
-                if subject in unique_subjects:
-                    continue  # Skip if subject is already added
 
-                # Get basic node info
-                node_info = get_basic_node_info(subject, graph)
+        labels = set()  # Ensure unique labels to prevent duplication
+        uri_label_map = {}  # Map labels to their URIs
 
-                # Skip if we don't want deprecated nodes
-                if not dep and node_info.get("dep"):
-                    continue
+        for uri, _, label in graph.triples((None, RDFS.label, None)):
+            if isinstance(label, Literal):
+                label = str(label).lower()  # Ensure case insensitivity
+                labels.add(label)
+                uri_label_map[label] = uri  # Store original URI with lowercase label
 
-                results.append(node_info)
-                unique_subjects.add(subject)  # Track this subject
-                count += 1
+        # Find similar matches based on the label
+        matches = process.extract(
+            search_key_lower,
+            list(labels),
+            scorer=fuzz.WRatio,
+            limit=limit,
+            score_cutoff=min_similarity,
+        )
 
-                if count >= limit:
-                    break
+        for label, _, _ in matches:
+            uri = uri_label_map[label]
 
-    # Otherwise default to "URI"
+            # Get basic node info
+            node_info = get_basic_node_info(uri=uri, graph=graph)
+
+            # Skip if we don't want deprecated nodes
+            if not dep and node_info.get("dep"):
+                continue
+
+            results.append(node_info)
+
+    # Default or explicit "URI" search (substring match)
     else:
-        # Default or explicit "URI" search (substring match)
-        for subject in graph.subjects():
-            if search_key_lower in str(subject).lower():
-                if subject in unique_subjects:
-                    continue  # Skip if subject is already added
+        # Get all URIs in the graph, preserving original URIs in a map for case insensitivity
+        uri_map = {str(uri).lower(): uri for uri in graph.subjects()}
 
-                node_info = get_basic_node_info(subject, graph)
+        # Perform case-insensitive search on lowercase URIs
+        uris = list(uri_map.keys())
 
-                # Skip if we don't want deprecated nodes
-                if not dep and node_info.get("dep"):
-                    continue
+        # Find similar matches using a list of the uris
+        matches = process.extract(
+            search_key_lower,
+            list(uris),
+            scorer=fuzz.WRatio,
+            limit=limit,
+            score_cutoff=min_similarity,
+        )
 
-                results.append(node_info)
-                unique_subjects.add(subject)  # Track this subject
-                count += 1
+        for uri_lower, _, _ in matches:
+            original_uri = uri_map[uri_lower]  # Retrieve original case-sensitive URI
+            node_info = get_basic_node_info(uri=original_uri, graph=graph)
 
-                if count >= limit:
-                    break
+            if not dep and node_info.get("dep"):
+                continue
+
+            results.append(node_info)
 
     return results
 
