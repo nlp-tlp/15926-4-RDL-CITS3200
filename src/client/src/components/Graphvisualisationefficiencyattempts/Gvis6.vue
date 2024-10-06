@@ -2,7 +2,7 @@
 import * as d3 from 'd3'
 import { onMounted, reactive, ref, watch } from 'vue'
 
-import { fetchChildren, getHierarchy } from './apiFunctions'
+import { fetchChildren, getHierarchy } from '../apiFunctions'
 
 // SEPARATE OUT FUNCTIONS, USE DIFF REF DATA FOR GLOBAL AND LOCAL VIEWS, DO I NEED REF IF ONLY UPDATING ON CLICK?
 // IM DOUBLE UPDATING CAUSE TOGGLE COLLAPSE UPDATES THE DATA OBJECT AND CALLS UPDATE AND THEN THE WATCHER UPDATES THE GRAPH
@@ -321,6 +321,233 @@ function renderExtraLinks(nodes: any) {
 
   // console.log('Rendered extra links')
 }
+
+// /**
+//  * Render the graph with the data object from the props.
+//  */
+// function renderGraph() {
+//   // Check if the data object is available
+//   if (!data.value) {
+//     return
+//   }
+
+//   // Create a hierarchy from the data object
+//   root = d3.hierarchy(data.value)
+//   // update the graph based on the new data in the props
+//   update(root)
+// }
+
+// async function renderLocalGraph() {
+//   // Check if the data object is available
+//   if (!data.value) {
+//     return
+//   }
+
+//   const node = await getHierarchy(data.value)
+//   console.log('Node:', node)
+//   if (node) {
+//     // Create a hierarchy from the data object
+//     root = d3.hierarchy(node.hierarchy)
+//     console.log('Root:', root)
+//     // update the graph based on the new data in the props
+//     update(root)
+//   }
+
+//   // Create a hierarchy from the data object
+//   // root = d3.hierarchy(data)
+//   // update the graph based on the new data in the props
+//   // update(root)
+// }
+
+// /**
+//  * Update the graph with the new data.
+//  * @param source The source node.
+//  */
+// function update(source: any) {
+//   // Create a tree layout with the node distance
+//   const treeLayout = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+//   const treeData = treeLayout(root as unknown as d3.HierarchyNode<unknown>)
+
+//   // Get the nodes and links
+//   const nodes = treeData.descendants()
+//   const links = treeData.links()
+
+//   // Render the nodes, links, and extra links
+//   renderNodes(nodes)
+//   renderLinks(links)
+//   renderExtraLinks(nodes)
+
+//   // re collapse the nodes that were previously collapsed for consistency
+//   hidePreviousCollapsedNodes(nodes)
+// }
+
+// /**
+//  * Hide the nodes that were previously collapsed.
+//  * @param nodes The nodes to be checked.
+//  */
+// function hidePreviousCollapsedNodes(nodes: any) {
+//   nodes.forEach((d: any) => {
+//     // Check if the node was previously collapsed but the children are currently visible
+//     if (d.data.expanded === false && d.children) {
+//       d._children = d.children
+//       d.children = null
+//     }
+//   })
+// }
+
+// /**
+//  * Toggle the collapse of a node.
+//  * @param node The node to be toggled.
+//  */
+// async function toggleCollapse(node: any) {
+//   // Check if the node has children
+//   if (node.data.has_children) {
+//     // Check if the children have not been fetched
+//     if (!node.children && !node._children) {
+//       // Fetch the children of the node
+//       await fetchChildren(node.data)
+
+//       // Expand the node
+//       node.children = node._children
+//       node._children = null
+//       node.data.expanded = true
+//       console.log('Expanded node:', node.data.label)
+//     } else {
+//       // if the children are hidden
+//       if (node._children) {
+//         // Expand the node
+//         node.children = node._children
+//         node._children = null
+//         node.data.expanded = true
+//         console.log('Expanded node:', node.data.label)
+//       }
+//       // if the children are visible
+//       else if (node.children) {
+//         // Collapse the node
+//         node._children = node.children
+//         node.children = null
+//         node.data.expanded = false
+//         console.log('Collapsed node:', node.data.label)
+//       }
+//     }
+//   } else {
+//     // if the node has no children
+//     console.log('Node has no children:', node.data.label)
+//     return
+//   }
+//   // Trigger the update to re-render the graph with the changes
+//   update(node)
+// }
+
+// /**
+//  * Render the nodes of the graph.
+//  * @param nodes The nodes to be rendered.
+//  */
+// function renderNodes(nodes: any) {
+//   // Select all nodes and bind the data
+//   const nodeSelection = svg.selectAll('g.node').data(nodes, (d: any) => d.data.id)
+
+//   // on enter, append the node group and add the circle and text elements
+//   const nodeEnter: any = nodeSelection
+//     .enter()
+//     .append('g')
+//     .attr('class', 'node')
+//     // on click, toggle the collapse of the node
+//     .on('click', (event: Event, d: any) => toggleCollapse(d))
+
+//   nodeEnter
+//     .append('circle')
+//     .attr('r', nodeRadius)
+//     // set the fill color based on the presence of children
+//     .attr('fill', (d: any) => (d.data.has_children ? '#69b3a2' : '#999'))
+//     // set the cursor style based on the presence of children
+//     .attr('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
+//     .attr('stroke', '#444')
+//     .attr('stroke-width', 2)
+
+//   nodeEnter
+//     .append('text')
+//     .attr('dy', '.35em')
+//     // set the text position based on the expanded state - left if expanded, right if collapsed
+//     .attr('x', (d: any) => (d.data.expanded ? -10 : 10))
+//     .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
+//     .text((d: any) => d.data.label)
+
+//   // merge the enter and update selections
+//   const nodeUpdate = nodeEnter.merge(nodeSelection)
+
+//   // update the node positions
+//   nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+
+//   // remove the nodes that are no longer needed
+//   nodeSelection.exit().remove()
+// }
+
+// /**
+//  * Render the links of the graph.
+//  * @param links The links to be rendered.
+//  */
+// function renderLinks(links: any, colour: string = '#999') {
+//   // Select all links and bind the data
+//   const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
+
+//   // on enter, insert the path element and set the attributes
+//   const linkEnter = link
+//     .enter()
+//     .insert('path', 'g')
+//     .attr('class', 'link')
+//     .attr('stroke', colour)
+//     .attr('fill', 'none')
+//     .attr('marker-end', 'url(#arrow)')
+
+//   // merge the enter and update selections
+//   const linkUpdate = linkEnter.merge(link)
+
+//   linkUpdate.attr('d', diagonal)
+
+//   link.exit().remove()
+// }
+
+// /**
+//  * Render the extra links of the graph.
+//  * @param nodes The nodes to be used for the extra links.
+//  */
+// function renderExtraLinks(nodes: any, colour: string = 'red') {
+//   // Create an array to store the extra links
+//   const extraLinks: any = []
+//   // Iterate over the nodes to find the extra links
+//   nodes.forEach((d: any) => {
+//     if (d.data.extra_parents) {
+//       d.data.extra_parents.forEach((parent: any) => {
+//         const parentNode = nodes.find((node: any) => node.data.id === parent.id)
+//         if (parentNode) {
+//           extraLinks.push({ source: parentNode, target: d })
+//         }
+//       })
+//     }
+//   })
+
+//   // Select all extra links and bind the data
+//   const extraLink: any = svg.selectAll('path.extra-link').data(extraLinks, (d: any) => d.target.id)
+
+//   // on enter, insert the path element and set the attributes
+//   const extraLinkEnter = extraLink
+//     .enter()
+//     .insert('path', 'g')
+//     .attr('class', 'extra-link')
+//     .attr('stroke', colour)
+//     .attr('fill', 'none')
+//     .attr('marker-end', 'url(#arrow-extra)')
+//     .attr('stroke-dasharray', '5,5')
+
+//   // merge the enter and update selections
+//   const extraLinkUpdate = extraLinkEnter.merge(extraLink)
+
+//   // update the extra link positions to use the diagonal function
+//   extraLinkUpdate.attr('d', diagonal)
+
+//   extraLink.exit().remove()
+// }
 
 /**
  * Create a diagonal path generator.
