@@ -3,23 +3,14 @@ import * as d3 from 'd3'
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
-  /**
-   * The reactive data object to be visualised; with some initial data.
-   */
   data: {
     type: Object,
     required: true
   },
-  /**
-   * Function to fetch the children of a node from the server.
-   */
   fetchChildren: {
     type: Function,
     required: true
   },
-  /**
-   * Indicates whether to show labels in the graph.
-   */
   showLabels: {
     type: Boolean,
     default: true
