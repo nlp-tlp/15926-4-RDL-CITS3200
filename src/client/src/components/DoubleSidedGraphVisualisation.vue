@@ -3,23 +3,22 @@ import * as d3 from 'd3'
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
-  /**
-   * The reactive data object to be visualised; with some initial data.
-   */
-  data: {
+  childrensData: {
     type: Object,
     required: true
   },
-  /**
-   * Function to fetch the children of a node from the server.
-   */
+  parentsData: {
+    type: Object,
+    required: true
+  },
   fetchChildren: {
     type: Function,
     required: true
   },
-  /**
-   * Indicates whether to show labels in the graph.
-   */
+  fetchParents: {
+    type: Function,
+    required: true
+  },
   showLabels: {
     type: Boolean,
     default: true
@@ -43,19 +42,30 @@ const zoomScale: [number, number] = [0.25, 5]
 
 // D3 variables
 let svg: any
-let root: any
+let childrensRoot: any
+let parentsRoot: any
 
 onMounted(() => {
   initialiseGraph()
-  renderGraph()
-  toggleCollapse(root)
+  renderChildrensGraph()
+  renderParentsGraph()
+  toggleChildCollapse(childrensRoot)
+  toggleParentCollapse(parentsRoot)
 })
 
 watch(
-  () => props.data,
+  () => props.childrensData,
   (newData) => {
     if (newData) {
-      renderGraph()
+      renderChildrensGraph()
+    }
+  }
+)
+watch(
+  () => props.parentsData,
+  (newData) => {
+    if (newData) {
+      renderParentsGraph()
     }
   }
 )
@@ -63,7 +73,8 @@ watch(
 watch(
   () => props.showLabels,
   () => {
-    renderGraph()
+    renderChildrensGraph()
+    renderParentsGraph()
   }
 )
 
@@ -130,35 +141,62 @@ function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
 /**
  * Render the graph with the data object from the props.
  */
-function renderGraph() {
+function renderChildrensGraph() {
   // Check if the data object is available
-  if (!props.data) {
+  if (!props.childrensData) {
     return
   }
 
   // Create a hierarchy from the data object
-  root = d3.hierarchy(props.data)
+  childrensRoot = d3.hierarchy(props.childrensData)
   // update the graph based on the new data in the props
-  update(root)
+  updateChildrens(childrensRoot)
+}
+
+function renderParentsGraph() {
+  if (!props.parentsData) {
+    return
+  }
+
+  parentsRoot = d3.hierarchy(props.parentsData)
+  updateParents(parentsRoot)
 }
 
 /**
  * Update the graph with the new data.
  * @param source The source node.
  */
-function update(source: any) {
+function updateChildrens(source: any) {
   // Create a tree layout with the node distance
   const treeLayout = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
-  const treeData = treeLayout(root as unknown as d3.HierarchyNode<unknown>)
+  const treeData = treeLayout(childrensRoot as unknown as d3.HierarchyNode<unknown>)
 
   // Get the nodes and links
   const nodes = treeData.descendants()
   const links = treeData.links()
 
   // Render the nodes, links, and extra links
-  renderNodes(nodes)
-  renderLinks(links)
-  renderExtraLinks(nodes)
+  renderChildNodes(nodes)
+  renderChildLinks(links)
+  renderExtraChildLinks(nodes)
+
+  // re collapse the nodes that were previously collapsed for consistency
+  hidePreviousCollapsedNodes(nodes)
+}
+
+function updateParents(source: any) {
+  // Create a tree layout with the node distance
+  const treeLayout = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+  const treeData = treeLayout(parentsRoot as unknown as d3.HierarchyNode<unknown>)
+
+  // Get the nodes and links
+  const nodes = treeData.descendants()
+  const links = treeData.links()
+
+  // Render the nodes, links, and extra links
+  renderParentNodes(nodes)
+  renderParentLinks(links)
+  renderExtraParentLinks(nodes)
 
   // re collapse the nodes that were previously collapsed for consistency
   hidePreviousCollapsedNodes(nodes)
@@ -182,7 +220,7 @@ function hidePreviousCollapsedNodes(nodes: any) {
  * Toggle the collapse of a node.
  * @param node The node to be toggled.
  */
-async function toggleCollapse(node: any) {
+async function toggleChildCollapse(node: any) {
   // Check if the node has children
   if (node.data.has_children) {
     // Check if the children have not been fetched
@@ -219,24 +257,64 @@ async function toggleCollapse(node: any) {
     return
   }
   // Trigger the update to re-render the graph with the changes
-  update(node)
+  updateChildrens(node)
+}
+
+async function toggleParentCollapse(node: any) {
+  // Check if the node has children
+  if (node.data.has_children) {
+    // Check if the children have not been fetched
+    if (!node.children && !node._children) {
+      // Fetch the children of the node
+      await props.fetchParents(node.data)
+
+      // Expand the node
+      node.children = node._children
+      node._children = null
+      node.data.expanded = true
+      console.log('Expanded node:', node.data.label)
+    } else {
+      // if the children are hidden
+      if (node._children) {
+        // Expand the node
+        node.children = node._children
+        node._children = null
+        node.data.expanded = true
+        console.log('Expanded node:', node.data.label)
+      }
+      // if the children are visible
+      else if (node.children) {
+        // Collapse the node
+        node._children = node.children
+        node.children = null
+        node.data.expanded = false
+        console.log('Collapsed node:', node.data.label)
+      }
+    }
+  } else {
+    // if the node has no children
+    console.log('Node has no children:', node.data.label)
+    return
+  }
+  // Trigger the update to re-render the graph with the changes
+  updateParents(node)
 }
 
 /**
  * Render the nodes of the graph.
  * @param nodes The nodes to be rendered.
  */
-function renderNodes(nodes: any) {
+function renderChildNodes(nodes: any) {
   // Select all nodes and bind the data
-  const node = svg.selectAll('g.node').data(nodes, (d: any) => d.id)
+  const node = svg.selectAll('g.node-child').data(nodes, (d: any) => d.id)
 
   // on enter, append the node group and add the circle and text elements
   const nodeEnter: any = node
     .enter()
     .append('g')
-    .attr('class', 'node')
+    .attr('class', 'node-child')
     // on click, toggle the collapse of the node
-    .on('click', (event: Event, d: any) => toggleCollapse(d))
+    .on('click', (event: Event, d: any) => toggleChildCollapse(d))
 
   nodeEnter
     .append('circle')
@@ -267,19 +345,60 @@ function renderNodes(nodes: any) {
   node.exit().remove()
 }
 
+function renderParentNodes(nodes: any) {
+  // Select all nodes and bind the data
+  const node = svg.selectAll('g.node-parent').data(nodes, (d: any) => d.id)
+
+  // on enter, append the node group and add the circle and text elements
+  const nodeEnter: any = node
+    .enter()
+    .append('g')
+    .attr('class', 'node-parent')
+    // on click, toggle the collapse of the node
+    .on('click', (event: Event, d: any) => toggleParentCollapse(d))
+
+  nodeEnter
+    .append('circle')
+    .attr('r', nodeRadius)
+    // set the fill color based on the presence of children
+    .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
+    // set the cursor style based on the presence of children
+    .style('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
+
+  nodeEnter
+    .append('text')
+    .attr('dy', '.35em')
+    // set the text position based on the expanded state - left if expanded, right if collapsed
+    .attr('x', (d: any) => (d.data.expanded ? 10 : -10))
+    .style('text-anchor', (d: any) => (d.data.expanded ? 'start' : 'end'))
+    .text((d: any) => d.data.label)
+
+  // merge the enter and update selections
+  const nodeUpdate = nodeEnter.merge(node)
+
+  // update the node positions
+  nodeUpdate.attr('transform', (d: any) => `translate(${-d.y},${d.x})`)
+
+  // update visibility of labels based on showLabels prop
+  nodeUpdate.select('text').style('display', props.showLabels ? 'block' : 'none')
+
+  // remove the nodes that are no longer needed
+  node.exit().remove()
+}
+
 /**
  * Render the links of the graph.
  * @param links The links to be rendered.
  */
-function renderLinks(links: any, colour: string = '#999') {
+function renderChildLinks(links: any, colour: string = '#999') {
   // Select all links and bind the data
-  const link: any = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
+  const link: any = svg.selectAll('path.link-children').data(links, (d: any) => d.target.id)
 
   // on enter, insert the path element and set the attributes
   const linkEnter = link
     .enter()
     .insert('path', 'g')
-    .attr('class', 'link')
+    .attr('class', 'link-children')
     .attr('stroke', colour)
     .attr('fill', 'none')
     .attr('marker-end', 'url(#arrow)')
@@ -287,7 +406,28 @@ function renderLinks(links: any, colour: string = '#999') {
   // merge the enter and update selections
   const linkUpdate = linkEnter.merge(link)
 
-  linkUpdate.attr('d', diagonal)
+  linkUpdate.attr('d', diagonalChildren)
+
+  link.exit().remove()
+}
+
+function renderParentLinks(links: any, colour: string = '#999') {
+  // Select all links and bind the data
+  const link: any = svg.selectAll('path.link-parents').data(links, (d: any) => d.target.id)
+
+  // on enter, insert the path element and set the attributes
+  const linkEnter = link
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'link-parents')
+    .attr('stroke', colour)
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow)')
+
+  // merge the enter and update selections
+  const linkUpdate = linkEnter.merge(link)
+
+  linkUpdate.attr('d', diagonalParents)
 
   link.exit().remove()
 }
@@ -296,7 +436,7 @@ function renderLinks(links: any, colour: string = '#999') {
  * Render the extra links of the graph.
  * @param nodes The nodes to be used for the extra links.
  */
-function renderExtraLinks(nodes: any, colour: string = 'red') {
+function renderExtraChildLinks(nodes: any, colour: string = 'red') {
   // Create an array to store the extra links
   const extraLinks: any = []
   // Iterate over the nodes to find the extra links
@@ -312,13 +452,15 @@ function renderExtraLinks(nodes: any, colour: string = 'red') {
   })
 
   // Select all extra links and bind the data
-  const extraLink: any = svg.selectAll('path.extra-link').data(extraLinks, (d: any) => d.target.id)
+  const extraLink: any = svg
+    .selectAll('path.extra-link-children')
+    .data(extraLinks, (d: any) => d.target.id)
 
   // on enter, insert the path element and set the attributes
   const extraLinkEnter = extraLink
     .enter()
     .insert('path', 'g')
-    .attr('class', 'extra-link')
+    .attr('class', 'extra-link-children')
     .attr('stroke', colour)
     .attr('fill', 'none')
     .attr('marker-end', 'url(#arrow-extra)')
@@ -328,7 +470,46 @@ function renderExtraLinks(nodes: any, colour: string = 'red') {
   const extraLinkUpdate = extraLinkEnter.merge(extraLink)
 
   // update the extra link positions to use the diagonal function
-  extraLinkUpdate.attr('d', diagonal)
+  extraLinkUpdate.attr('d', diagonalChildren)
+
+  extraLink.exit().remove()
+}
+
+function renderExtraParentLinks(nodes: any, colour: string = 'red') {
+  // Create an array to store the extra links
+  const extraLinks: any = []
+  // Iterate over the nodes to find the extra links
+  nodes.forEach((d: any) => {
+    if (d.data.extra_parents) {
+      d.data.extra_parents.forEach((parent: any) => {
+        const parentNode = nodes.find((node: any) => node.data.id === parent.id)
+        if (parentNode) {
+          extraLinks.push({ source: parentNode, target: d })
+        }
+      })
+    }
+  })
+
+  // Select all extra links and bind the data
+  const extraLink: any = svg
+    .selectAll('path.extra-link-parents')
+    .data(extraLinks, (d: any) => d.target.id)
+
+  // on enter, insert the path element and set the attributes
+  const extraLinkEnter = extraLink
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'extra-link-parents')
+    .attr('stroke', colour)
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow-extra)')
+    .attr('stroke-dasharray', '5,5')
+
+  // merge the enter and update selections
+  const extraLinkUpdate = extraLinkEnter.merge(extraLink)
+
+  // update the extra link positions to use the diagonal function
+  extraLinkUpdate.attr('d', diagonalParents)
 
   extraLink.exit().remove()
 }
@@ -336,9 +517,14 @@ function renderExtraLinks(nodes: any, colour: string = 'red') {
 /**
  * Create a diagonal path generator.
  */
-const diagonal: any = d3
+const diagonalChildren: any = d3
   .linkHorizontal()
   .x((d: any) => d.y)
+  .y((d: any) => d.x)
+
+const diagonalParents: any = d3
+  .linkHorizontal()
+  .x((d: any) => -d.y)
   .y((d: any) => d.x)
 </script>
 
@@ -361,11 +547,5 @@ export default {
 </script>
 
 <template>
-  <svg ref="svgRef" id="svgRef2"></svg>
+  <svg ref="svgRef"></svg>
 </template>
-
-<style scoped>
-#svgRef2 {
-  position: absolute;
-}
-</style>

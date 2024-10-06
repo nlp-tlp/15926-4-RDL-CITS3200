@@ -5,9 +5,21 @@
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
     <GraphInfoSidepane />
-    <GraphVisualisation
-      :data="data"
+    <!-- <GraphVisualisation
+      :data="childrensData"
       :fetch-children="fetchChildren"
+      :show-labels="showLabelsInGraph"
+    />
+    <ReverseGraphVisualisation
+      :data="parentsData"
+      :fetch-children="fetchParents"
+      :show-labels="showLabelsInGraph"
+    /> -->
+    <DoubleSidedGraphVisualisation
+      :childrens-data="childrensData"
+      :parents-data="parentsData"
+      :fetch-children="fetchChildren"
+      :fetch-parents="fetchParents"
       :show-labels="showLabelsInGraph"
     />
   </div>
@@ -16,29 +28,38 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
-import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
-import GraphVisualisation from '../components/GraphVisualisation.vue'
+import DoubleSidedGraphVisualisation from '@/components/DoubleSidedGraphVisualisation.vue'
+import GraphInfoSidepane from '@/components/GraphInfoSidepane.vue'
+import GraphSearchSidepane from '@/components/GraphSearchSidepane.vue'
+import GraphVisualisation from '@/components/GraphVisualisation.vue'
+import ReverseGraphVisualisation from '@/components/ReverseGraphVisualisation.vue'
 
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
+const parentsEndpoint = '/node/children/' // TODO change to /node/parents/
 
 // initial data for the root of the graph
-const initialData = {
+const initialChildrenData = {
   id: 'http://data.15926.org/dm/Thing',
   label: 'Thing',
   has_children: true,
   deprecation: null,
-  // Thing starts with expanded set to true so as not to re-call the expansion (in toggleCollapse) once the children are fetched
+  expanded: true
+}
+const initialParentsData = {
+  id: 'http://data.15926.org/dm/Thing',
+  label: 'Thing',
+  has_children: true,
+  deprecation: null,
   expanded: true
 }
 // make the data reactive
-const data = ref(initialData)
+const childrensData = ref(initialChildrenData)
+const parentsData = ref(initialParentsData)
 
 const showDeprecated = ref(false)
 
 async function fetchChildren(node: any) {
-  console.log(API_URL)
   if (!node || !node.id) {
     console.error('Invalid node:', node)
     return
@@ -53,29 +74,49 @@ async function fetchChildren(node: any) {
     }
     const responseData = await response.json()
     if (responseData && Array.isArray(responseData.children)) {
-      // update the children of the node
       node.children = responseData.children
-      // update the data object
-      data.value = { ...data.value }
+      childrensData.value = { ...childrensData.value }
     } else {
       console.error('Invalid response:', responseData)
     }
   } catch (error: any) {
-    if (error instanceof TypeError) {
-      // Network error or other fetch-related error
-      console.error('Network error:', error.message)
-    } else {
-      // Something else happened
-      console.error('Error:', error.message)
+    console.error('Error:', error.message)
+  }
+}
+
+async function fetchParents(node: any) {
+  if (!node || !node.id) {
+    console.error('Invalid node:', node)
+    return
+  }
+  try {
+    const dep = String(showDeprecated.value)
+    const url = `${API_URL}${parentsEndpoint}${encodeURIComponent(node.id)}?dep=${dep}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      console.error('Server error:', response.status, await response.text())
+      return
     }
+    const responseData = await response.json()
+    if (responseData && Array.isArray(responseData.children)) {
+      node.children = responseData.children // still marked as children for rendering purposes
+      parentsData.value = { ...parentsData.value }
+    } else {
+      console.error('Invalid response:', responseData)
+    }
+  } catch (error: any) {
+    console.error('Error:', error.message)
   }
 }
 
 // Toggles "showDeprecated" and re-fetches the node's children.
 function handleShowDeprecatedToggle(value: boolean) {
   showDeprecated.value = value
-  if (data.value && data.value.id) {
-    fetchChildren(data.value)
+  if (childrensData.value && childrensData.value.id) {
+    fetchChildren(childrensData.value)
+  }
+  if (parentsData.value && parentsData.value.id) {
+    fetchParents(parentsData.value)
   }
 }
 
@@ -93,4 +134,12 @@ function handleToggleLabels(value: boolean) {
   flex-direction: column;
   align-items: center;
 }
+
+/* #graph1 {
+  z-index: 1;
+}
+
+#graph2 {
+  z-index: 0;
+} */
 </style>

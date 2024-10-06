@@ -39,6 +39,7 @@ let root: any
 onMounted(() => {
   initialiseGraph()
   renderGraph()
+  toggleCollapse(root)
 })
 
 watch(
@@ -343,13 +344,19 @@ const diagonal: any = d3
  * @param {Function} fetchChildren - Function to fetch the children of a node from the server.
  *
  * @example
- * <GraphVisualisation :data="data" :fetch-children="fetchChildren" />
+ * <reverseGraphVisualisation :data="data" :fetch-children="fetchChildren" />
  */
 export default {
-  name: 'GraphVisualisation'
+  name: 'ReverseGraphVisualisation'
 }
 </script>
 
 <template>
-  <svg ref="svgRef"></svg>
+  <svg ref="svgRef" id="svgRef1"></svg>
 </template>
+
+<style scoped>
+#svgRef1 {
+  position: absolute;
+}
+</style>
