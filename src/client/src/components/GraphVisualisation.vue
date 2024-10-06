@@ -17,7 +17,7 @@ const globalRootNode = {
 // initial data for the node that is selected for the local view
 const localSearchedNode = {
   centre_id: 'http://data.15926.org/rdl/RDS2220023',
-  has_children: true // include this in returned data from server
+  has_children: true
 }
 
 let globalHierarchyData = reactive(globalRootNode)
@@ -165,7 +165,10 @@ function renderNodes(nodes: any) {
     .append('g')
     .attr('class', 'node')
     // on click, toggle the collapse of the node
-    .on('click', (event: Event, d: any) => toggleCollapse(d))
+    .on('click', (event: Event, d: any) => {
+      event.stopPropagation()
+      toggleCollapse(d)
+    })
 
   // append circle to the node
   nodeEnter
@@ -217,7 +220,7 @@ async function toggleCollapse(node: any) {
   if (!node.data.children) {
     // Fetch the children of the node
     let newNodeData = await fetchChildren(node.data)
-    updateGlobalHierarchyData(node.data.id, newNodeData)
+    updateGlobalHierarchyData(node, newNodeData)
   } else {
     // Toggle the expanded state
     node.data.expanded = !node.data.expanded
@@ -227,20 +230,20 @@ async function toggleCollapse(node: any) {
 }
 
 // find the node in globalHierarchyData and update it
-function updateGlobalHierarchyData(nodeId: string, newNodeData: any) {
-  function updateNode(node: any): boolean {
-    if (node.id === nodeId) {
-      node.children = newNodeData.children.map((child: any) => ({
+function updateGlobalHierarchyData(node: any, newNodeData: any) {
+  function updateNode(currentNode: any): boolean {
+    if (currentNode === node.data) {
+      currentNode.children = newNodeData.children.map((child: any) => ({
         ...child,
         expanded: false,
         children: null
       }))
-      node.expanded = true
+      currentNode.expanded = true
       return true
     }
 
-    if (node.children) {
-      for (let child of node.children) {
+    if (currentNode.children) {
+      for (let child of currentNode.children) {
         if (updateNode(child)) {
           return true
         }
