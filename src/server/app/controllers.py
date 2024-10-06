@@ -549,21 +549,21 @@ def get_local_hierarchy_to_root(
     node_list.append(uri)  # Add centre node in node list
 
     # Start by getting the children of the centre node (if requested)
-    if include_children:
-        children = get_children(
-            uri=uri,
-            graph=graph,
-            dep=dep,
-            ex_parents=ex_parents,
-            children_flag=children_flag,
-            order=order,
-            ignore_id=uri,  # Prevent the node to be a child of itself
-        )
-        centre_node["children"] = children  # Add the node's children
+    # if include_children:
+    #     children = get_children(
+    #         uri=uri,
+    #         graph=graph,
+    #         dep=dep,
+    #         ex_parents=ex_parents,
+    #         children_flag=children_flag,
+    #         order=order,
+    #         ignore_id=uri,  # Prevent the node to be a child of itself
+    #     )
+    #     centre_node["children"] = children  # Add the node's children
 
-    # Add the children to the list
-    for child in children:
-        node_list.append(child.get("id"))
+    # # Add the children to the list
+    # for child in children:
+    #     node_list.append(child.get("id"))
 
     # Add the 'has_children' field
     if children_flag:
