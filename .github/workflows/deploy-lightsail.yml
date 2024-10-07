@@ -50,9 +50,9 @@ jobs:
           echo "${{ secrets.SSL_CA_BUNDLE }}" > ca-bundle.crt
 
           # Transfer these files to the server
-          scp -i ~/.ssh/id_rsa private.key ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/
-          scp -i ~/.ssh/id_rsa certificate.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/
-          scp -i ~/.ssh/id_rsa ca-bundle.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/
+          scp -i ~/.ssh/id_rsa private.key ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/private.key
+          scp -i ~/.ssh/id_rsa certificate.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/certificate.crt
+          scp -i ~/.ssh/id_rsa ca-bundle.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/ca-bundle.crt
 
       - name: Load Docker images and run containers on Lightsail
         run: |
