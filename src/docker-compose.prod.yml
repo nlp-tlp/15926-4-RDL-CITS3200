@@ -5,7 +5,8 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.client.rule=PathPrefix(`/`)"
-            - "traefik.http.services.client.loadbalancer.server.port=5173"
+            - "traefik.http.routers.client.entrypoints=websecure"
+            - "traefik.http.routers.client.tls.certresolver=myresolver"
         ports:
             - "${CLIENT_PORT:-5173}:5173"
         env_file:
@@ -21,7 +22,8 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.server.rule=PathPrefix(`/node`) || PathPrefix(`/search`)"
-            - "traefik.http.services.server.loadbalancer.server.port=5000"
+            - "traefik.http.routers.server.entrypoints=websecure"
+            - "traefik.http.routers.server.tls.certresolver=myresolver"
         environment:
             - FLASK_ENV=production
             - FLASK_APP=${FLASK_APP:-server.py}
@@ -35,11 +37,18 @@ services:
             - "--providers.docker=true"
             - "--providers.docker.exposedbydefault=false"
             - "--entryPoints.web.address=:80"
+            - "--entryPoints.websecure.address=:443"
+            - "--entryPoints.websecure.http.tls=true"
+            - "--entryPoints.websecure.http.tls.certificates.certFile=/certs/certificate.crt"
+            - "--entryPoints.websecure.http.tls.certificates.keyFile=/certs/private.key"
+            - "--entryPoints.websecure.http.tls.certificates.caFiles=/certs/ca-bundle.crt"
         ports:
             - "80:80" # HTTP
+            - "443:443" # HTTPS
             - "8080:8080" # Traefik Dashboard
         volumes:
             - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            - "/home/ubuntu/certs:/certs" # SSL certificate directory
 
 volumes:
     db-data: # Yes nothing below this line
