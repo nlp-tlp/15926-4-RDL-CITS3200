@@ -6,8 +6,3 @@ tls:
       keyFile: "/certs/private.key"
       stores:
         - default
-  stores:
-    default:
-      defaultCertificate:
-        certFile: "/certs/certificate.crt"
-        keyFile: "/certs/private.key"
