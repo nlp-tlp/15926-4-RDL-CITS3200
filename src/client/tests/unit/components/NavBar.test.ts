@@ -16,7 +16,7 @@ describe('NavBar.vue', () => {
 
   it('renders the site title', () => {
     const title = wrapper.find('#navbar-title')
-    expect(title.text()).toBe('iso15926vis')
+    expect(title.text()).toBe('Iso15926Visualiser')
   })
 
   it('renders three nav items labelled home, graph and documentation', () => {
