@@ -53,6 +53,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "mkdir -p /home/ubuntu/certs"
 
           # Transfer these files to the server
+          scp -i ~/.ssh/id_rsa ./src/../src/tls.yml ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/tls.yml
           scp -i ~/.ssh/id_rsa private.key ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/private.key
           scp -i ~/.ssh/id_rsa certificate.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/certificate.crt
           scp -i ~/.ssh/id_rsa ca-bundle.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/ca-bundle.crt
