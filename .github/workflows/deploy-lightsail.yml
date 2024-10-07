@@ -49,6 +49,9 @@ jobs:
           echo "${{ secrets.SSL_CERTIFICATE }}" > certificate.crt
           echo "${{ secrets.SSL_CA_BUNDLE }}" > ca-bundle.crt
 
+          # Ensure the /home/ubuntu/certs/ directory exists on the server
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "mkdir -p /home/ubuntu/certs"
+
           # Transfer these files to the server
           scp -i ~/.ssh/id_rsa private.key ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/private.key
           scp -i ~/.ssh/id_rsa certificate.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/certificate.crt
