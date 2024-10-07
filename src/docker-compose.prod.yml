@@ -6,6 +6,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.client.rule=PathPrefix(`/`)"
             - "traefik.http.routers.client.entrypoints=websecure"
+            - "traefik.http.services.client.loadbalancer.server.port=5173"  # Forward to Nginx on 5173
         ports:
             - "${CLIENT_PORT:-5173}:5173"
         env_file:
@@ -22,6 +23,7 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.server.rule=PathPrefix(`/node`) || PathPrefix(`/search`)"
             - "traefik.http.routers.server.entrypoints=websecure"
+            - "traefik.http.services.client.loadbalancer.server.port=5000"  # Forward to Nginx on 5173
         environment:
             - FLASK_ENV=production
             - FLASK_APP=${FLASK_APP:-server.py}
