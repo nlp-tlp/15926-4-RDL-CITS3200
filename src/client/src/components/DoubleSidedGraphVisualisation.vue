@@ -328,8 +328,11 @@ function renderChildNodes(nodes: any) {
     .append('text')
     .attr('dy', '.35em')
     // set the text position based on the expanded state - left if expanded, right if collapsed
-    .attr('x', (d: any) => (d.data.expanded ? -10 : 10))
-    .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
+    .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -12 : 12))
+    .attr('y', (d: any, i: number) => (i === 0 ? -20 : 0)) // Adjust the y position for the root node
+    .style('text-anchor', (d: any, i: number) =>
+      i === 0 ? 'middle' : d.data.expanded ? 'end' : 'start'
+    )
     .text((d: any) => d.data.label)
 
   // merge the enter and update selections
@@ -369,8 +372,11 @@ function renderParentNodes(nodes: any) {
     .append('text')
     .attr('dy', '.35em')
     // set the text position based on the expanded state - left if expanded, right if collapsed
-    .attr('x', (d: any) => (d.data.expanded ? 10 : -10))
-    .style('text-anchor', (d: any) => (d.data.expanded ? 'start' : 'end'))
+    .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -12 : 12))
+    .attr('y', (d: any, i: number) => (i === 0 ? -20 : 0)) // Adjust the y position for the root node
+    .style('text-anchor', (d: any, i: number) =>
+      i === 0 ? 'middle' : d.data.expanded ? 'end' : 'start'
+    )
     .text((d: any) => d.data.label)
 
   // merge the enter and update selections

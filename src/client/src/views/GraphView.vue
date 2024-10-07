@@ -5,16 +5,6 @@
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
     <GraphInfoSidepane />
-    <!-- <GraphVisualisation
-      :data="childrensData"
-      :fetch-children="fetchChildren"
-      :show-labels="showLabelsInGraph"
-    />
-    <ReverseGraphVisualisation
-      :data="parentsData"
-      :fetch-children="fetchParents"
-      :show-labels="showLabelsInGraph"
-    /> -->
     <DoubleSidedGraphVisualisation
       :childrens-data="childrensData"
       :parents-data="parentsData"
@@ -28,34 +18,26 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import DoubleSidedGraphVisualisation from '@/components/DoubleSidedGraphVisualisation.vue'
-import GraphInfoSidepane from '@/components/GraphInfoSidepane.vue'
-import GraphSearchSidepane from '@/components/GraphSearchSidepane.vue'
-import GraphVisualisation from '@/components/GraphVisualisation.vue'
-import ReverseGraphVisualisation from '@/components/ReverseGraphVisualisation.vue'
+import DoubleSidedGraphVisualisation from '../components/DoubleSidedGraphVisualisation.vue'
+import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
+import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
-const parentsEndpoint = '/node/children/' // TODO change to /node/parents/
+const parentsEndpoint = '/node/parents/' // TODO change to /node/parents/
 
 // initial data for the root of the graph
-const initialChildrenData = {
-  id: 'http://data.15926.org/dm/Thing',
-  label: 'Thing',
+const selectedNodeData = {
+  id: 'http://data.15926.org/rdl/RDS458774',
+  label: 'SEAMLESS ARTEFACT',
   has_children: true,
   deprecation: null,
   expanded: true
 }
-const initialParentsData = {
-  id: 'http://data.15926.org/dm/Thing',
-  label: 'Thing',
-  has_children: true,
-  deprecation: null,
-  expanded: true
-}
+
 // make the data reactive
-const childrensData = ref(initialChildrenData)
-const parentsData = ref(initialParentsData)
+const childrensData = ref(selectedNodeData)
+const parentsData = ref(selectedNodeData)
 
 const showDeprecated = ref(false)
 
