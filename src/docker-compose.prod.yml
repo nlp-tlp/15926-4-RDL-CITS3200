@@ -36,10 +36,13 @@ services:
             - "--providers.docker.exposedbydefault=false"
             - "--entryPoints.web.address=:80"
             - "--entryPoints.websecure.address=:443"
-            - "--entryPoints.websecure.http.tls=true"
-            - "--entryPoints.websecure.http.tls.certificates.certFile=/certs/certificate.crt"
-            - "--entryPoints.websecure.http.tls.certificates.keyFile=/certs/private.key"
-            - "--entryPoints.websecure.http.tls.certificates.caFiles=/certs/ca-bundle.crt"
+        labels:
+            - "traefik.http.routers.traefik-secure.tls=true"
+            - "traefik.http.routers.traefik-secure.tls.domains[0].main=iso15926vis.org"
+            - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.iso15926vis.org"
+            - "traefik.http.routers.client.tls.certificates[0].certFile=/certs/certificate.crt"
+            - "traefik.http.routers.client.tls.certificates[0].keyFile=/certs/private.key"
+            - "traefik.http.routers.client.tls.certificates[0].caFiles[0]=/certs/ca-bundle.crt"
         ports:
             - "80:80" # HTTP
             - "443:443" # HTTPS
