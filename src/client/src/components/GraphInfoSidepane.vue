@@ -113,6 +113,7 @@ export default {
     background-color 0.5s ease;
   transform: translateX(0);
   overflow: hidden; /* Ensure the side panel itself does not scroll */
+  white-space: normal;
 }
 
 .right-text {
@@ -159,7 +160,8 @@ export default {
 .rdf-field-value {
   display: block;
   margin-left: 1rem;
-  white-space: normal;
+  white-space: pre-line;
   word-wrap: break-word;
+  word-break: break-all;
 }
 </style>

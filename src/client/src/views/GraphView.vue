@@ -62,7 +62,6 @@ const theNodeInfoDisplay = {
   Dep: '',
   ID: '',
   Parents: '',
-  Properties: '',
   Types: ''
 }
 const nodeInfoDisplay = ref(theNodeInfoDisplay)
@@ -80,9 +79,15 @@ async function fetchNodeInfo(nodeId: string) {
     nodeInfoDisplay.value.Definition = nodeInfo.definition
     nodeInfoDisplay.value.Dep = nodeInfo.dep
     nodeInfoDisplay.value.ID = nodeInfo.id
-    nodeInfoDisplay.value.Parents = nodeInfo.parents
-    nodeInfoDisplay.value.Properties = nodeInfo.properties
-    nodeInfoDisplay.value.Types = nodeInfo.types
+    nodeInfoDisplay.value.Parents = ''
+    for (let i = 0; i < nodeInfo.parents.length; i++) {
+      nodeInfoDisplay.value.Parents += '• ' + nodeInfo.parents[i] + '\n'
+    }
+    nodeInfoDisplay.value.Types = ''
+    console.log(nodeInfo.types)
+    for (let i = 0; i < nodeInfo.types.length; i++) {
+      nodeInfoDisplay.value.Types += '• ' + nodeInfo.types[i] + '\n'
+    }
 
     return {
       nodeInfoDisplay
