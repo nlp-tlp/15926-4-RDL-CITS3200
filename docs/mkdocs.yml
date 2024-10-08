@@ -1,20 +1,34 @@
-site_name: ISO 15926-4 Visualiser
-
+site_name: Iso15926Visualiser Documentation
+copyright: System Health Lab
+repo_url: https://github.com/nlp-tlp/15926-4-RDL-CITS3200
 
 theme:
-  name: material
-  features:
-    - navigation.tabs
-
+    logo: nlp-tlp-192x192.png
+    favicon: favicon-32x32.png
+    name: material
+    palette:
+        - media: "(prefers-color-scheme: light)"
+          primary: indigo
+          scheme: default
+          toggle:
+          icon: material/toggle-switch-off-outline
+          name: Switch to dark mode
+        - media: "(prefers-color-scheme: dark)"
+          primary: indigo
+          scheme: slate
+          toggle:
+          icon: material/toggle-switch
+          name: Switch to light mode
+    features:
+        - navigation.tabs
 
 nav:
-  - Overview: index.md
-  - Developer:
-      - Introduction: developer/index.md
-  - Maintainer: 
-      - Introduction: maintainer/index.md
-  - Administrator: 
-      - Introduction: administrator/index.md
-  - Changelog: 
-      - Introduction: changelog/index.md
-
+    - Overview: index.md
+    - Developer:
+          - Introduction: developer/index.md
+    - Maintainer:
+          - Introduction: maintainer/index.md
+    - Administrator:
+          - Introduction: administrator/index.md
+    - Changelog:
+          - Introduction: changelog/index.md
