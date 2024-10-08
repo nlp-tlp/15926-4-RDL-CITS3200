@@ -4,8 +4,9 @@ services:
         container_name: Client
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+            - "traefik.http.routers.client.rule=Host(`iso15926vis.org`) || PathPrefix(`/`)"
             - "traefik.http.routers.client.entrypoints=websecure"
+            - "traefik.http.routers.client.tls=true"
             - "traefik.http.services.client.loadbalancer.server.port=5173"  # Forward to Nginx on 5173
         ports:
             - "${CLIENT_PORT:-5173}:5173"
@@ -23,13 +24,14 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.server.rule=PathPrefix(`/node`) || PathPrefix(`/search`)"
             - "traefik.http.routers.server.entrypoints=websecure"
+            - "traefik.http.routers.server.tls=true"
             - "traefik.http.services.client.loadbalancer.server.port=5000"  # Forward to Nginx on 5173
         environment:
             - FLASK_ENV=production
             - FLASK_APP=${FLASK_APP:-server.py}
 
     traefik:
-        image: "traefik:v3.1"
+        image: "traefik:v2.11"
         container_name: Traefik
         command:
             - "--log.level=INFO"
@@ -39,10 +41,8 @@ services:
             - "--entryPoints.web.address=:80"
             - "--entryPoints.websecure.address=:443"
             - "--entryPoints.websecure.http.tls=true"  # Enable TLS for websecure
-            - "--providers.file.filename=/certs/tls.yml"  # Use the TLS file provider
-        labels:
-            - "traefik.http.routers.traefik-secure.tls.domains[0].main=iso15926vis.org"
-            - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.iso15926vis.org"
+            - "--providers.file.directory=/certs/"
+            - "--providers.file.watch=true"
         ports:
             - "80:80" # HTTP
             - "443:443" # HTTPS
