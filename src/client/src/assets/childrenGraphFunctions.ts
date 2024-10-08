@@ -48,14 +48,14 @@ function updateChildrenGraph(data: any, root:any, svg: any, includeDeprecated: b
 // render the nodes of the graph - uses nodes array
 function renderChildrenNodes(nodes: any, root: any, svg: any, childrenHierarchyData: any, includeDeprecated: boolean) {
   // Select all nodes and bind the data
-  const nodeSelection = svg.selectAll('g.node').data(nodes, (d: any) => d.data.id)
+  const nodeSelection = svg.selectAll('g.node-children').data(nodes, (d: any) => d.data.id)
   // console.log('Nodes:', nodes)
 
   // Enter new nodes
   const nodeEnter = nodeSelection
     .enter()
     .append('g')
-    .attr('class', 'node')
+    .attr('class', 'node-children')
     // on click, toggle the collapse of the node
     .on('click', (event: Event, d: any) => {
       event.stopPropagation()
@@ -72,6 +72,10 @@ function renderChildrenNodes(nodes: any, root: any, svg: any, childrenHierarchyD
       if (d.data.dep) {
         return '#fc1455'
       } else {
+        // if is root node
+        if (d.data.id === childrenHierarchyData.id) {
+          return '#FFCF00'
+        }
         return d.data.has_children ? '#69b3a2' : '#999'
       }
     })
@@ -119,7 +123,9 @@ function renderChildrenNodes(nodes: any, root: any, svg: any, childrenHierarchyD
 
 // toggle the collapse/expansion of a node
 async function toggleChildrenCollapse(node: any, root: any, svg: any, childrenHierarchyData: any, includeDeprecated: boolean) {
+
   console.log('depr', includeDeprecated)
+
   if (!node.data.has_children) {
     console.log('Node has no children:', node.data.label)
     return
@@ -130,6 +136,10 @@ async function toggleChildrenCollapse(node: any, root: any, svg: any, childrenHi
     const newNodeData = await fetchChildren(node.data, includeDeprecated)
     updateChildrenHierarchyData(node, newNodeData, childrenHierarchyData)
   } else {
+    // if root node, do not collapse
+    if (node.data.id === childrenHierarchyData.id) {
+      return
+    }
     // Toggle the expanded state
     node.data.expanded = !node.data.expanded
   }
@@ -183,13 +193,13 @@ function renderChildrenExtraLinks(nodes: any, svg: any) {
     })
   
     // Select all extra links and bind the data
-    const extraLink: any = svg.selectAll('path.extra-link').data(extraLinks, (d: any) => d.target.id)
+    const extraLink: any = svg.selectAll('path.extra-link-children').data(extraLinks, (d: any) => d.target.id)
   
     // on enter, insert the path element and set the attributes
     const extraLinkEnter = extraLink
       .enter()
       .insert('path', 'g')
-      .attr('class', 'extra-link')
+      .attr('class', 'extra-link-children')
       .attr('stroke', 'red')
       .attr('stroke-width', 1)
       .attr('fill', 'none')
@@ -210,13 +220,13 @@ function renderChildrenExtraLinks(nodes: any, svg: any) {
 // render the links of the graph
 function renderChildrenLinks(links: any, svg: any) {
     // Select all links and bind the data
-    const link = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
+    const link = svg.selectAll('path.link-children').data(links, (d: any) => d.target.id)
   
     // on enter, insert the path element and set the attributes
     const linkEnter = link
       .enter()
       .insert('path', 'g')
-      .attr('class', 'link')
+      .attr('class', 'link-children')
       .attr('stroke', '#999')
       .attr('stroke-width', 1)
       .attr('fill', 'none')
@@ -263,16 +273,6 @@ function customDiagonal(d: any, offset = 13) {
     C ${midX},${sourceY} ${midX},${targetY} ${adjustedTargetX},${targetY}
   `;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 export { drawChildrenGraph }

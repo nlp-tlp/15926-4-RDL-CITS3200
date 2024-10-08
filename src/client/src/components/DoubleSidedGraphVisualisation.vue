@@ -15,12 +15,12 @@ const props = defineProps({
 
 // initial data for the root of the global view
 const selectedNodeDataChildren = {
-  // id: 'http://data.15926.org/rdl/RDS2220023',
-  // label: 'WROUGHT',
-  // has_children: true,
-  id: 'http://data.15926.org/dm/Thing',
-  label: 'Thing',
+  id: 'http://data.15926.org/rdl/RDS458774',
+  label: 'SEAMLESS ARTEFACT',
   has_children: true,
+  // id: 'http://data.15926.org/dm/Thing',
+  // label: 'Thing',
+  // has_children: true,
 }
 const selectedNodeDataParents = {
   id: 'http://data.15926.org/rdl/RDS458774',
@@ -44,7 +44,7 @@ const height: number = window.innerHeight
 
 // Graph layout
 
-const initialGraphX: number = (width / 7) * 1
+const initialGraphX: number = (width / 7) * 3.5
 const initialGraphY: number = (height / 7) * 3
 const zoomScale: [number, number] = [0.25, 5]
 
@@ -56,7 +56,7 @@ let parentsRoot: any
 // onMounted hook - initialise the graph and render it
 onMounted(() => {
   initialiseGraph()
-  // drawChildrenGraph(childrenHierarchyData, childrenRoot, svg, props.includeDeprecated)
+  drawChildrenGraph(childrenHierarchyData, childrenRoot, svg, props.includeDeprecated)
   drawParentsGraph(parentHierarchyData, parentsRoot, svg, props.includeDeprecated)
   
 })

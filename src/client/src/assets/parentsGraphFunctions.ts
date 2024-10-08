@@ -27,7 +27,7 @@ function drawParentsGraph(data: any, root: any, svg: any, includeDeprecated: boo
   // Render the nodes and links
   renderParentsNodes(nodes, root, svg, data, includeDeprecated)
   renderParentsLinks(links, svg)
-  renderParentsExtraLinks(nodes, svg)
+  renderExtraParentLinks(nodes, svg)
 }
 
 // update
@@ -42,20 +42,20 @@ function updateParentsGraph(data: any, root:any, svg: any, includeDeprecated: bo
 
   renderParentsNodes(nodes, root, svg, data, includeDeprecated)
   renderParentsLinks(links, svg)
-  renderParentsExtraLinks(nodes, svg)
+  renderExtraParentLinks(nodes, svg)
 }
 
 // render the nodes of the graph - uses nodes array
 function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData: any, includeDeprecated: boolean) {
   // Select all nodes and bind the data
-  const nodeSelection = svg.selectAll('g.node').data(nodes, (d: any) => d.data.id)
+  const nodeSelection = svg.selectAll('g.node-parents').data(nodes, (d: any) => d.data.id)
   // console.log('Nodes:', nodes)
 
   // Enter new nodes
   const nodeEnter = nodeSelection
     .enter()
     .append('g')
-    .attr('class', 'node')
+    .attr('class', 'node-parents')
     // on click, toggle the collapse of the node
     .on('click', (event: Event, d: any) => {
       event.stopPropagation()
@@ -72,7 +72,11 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
       if (d.data.dep) {
         return '#fc1455'
       } else {
-        return d.data.has_parents ? '#69b3a2' : '#999'
+        // if is root node
+        if (d.data.id === parentHierarchyData.id) {
+          return '#FFCF00'
+        }
+        return d.data.has_parents ? 'lightsteelblue' : '#999'
       }
     })
     // set the cursor style based on the presence of parents
@@ -94,7 +98,7 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
 
   // Update the node positions and visibility
   nodeUpdate
-    .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+    .attr('transform', (d: any) => `translate(${-d.y},${-d.x})`) // Invert both x and y coordinates
     .style('display', (d: any) => (d.parent && !d.parent.data.expanded ? 'none' : null))
 
   // Update the text position based on the expanded state
@@ -102,7 +106,7 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
     .select('text')
 
     // x: root at 0 and parents otherwise based on expanded state
-    .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -15 : 10))
+    .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -10 : 15))
     // y: root at -20 and parents not changed
     .attr('y', (d: any, i: number) => (i === 0 ? -20 : 0))
     // text-anchor: root at middle and parents based on expanded state
@@ -116,7 +120,6 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
   nodeSelection.exit().remove()
 }
 
-
 // toggle the collapse/expansion of a node
 async function toggleParentsCollapse(node: any, root: any, svg: any, parentHierarchyData: any, includeDeprecated: boolean) {
   if (!node.data.has_parents) {
@@ -129,6 +132,10 @@ async function toggleParentsCollapse(node: any, root: any, svg: any, parentHiera
     const newNodeData = await fetchParents(node.data, includeDeprecated)
     updateParentsHierarchyData(node, newNodeData, parentHierarchyData)
   } else {
+    // if root node, do not collapse
+    if (node.data.id === parentHierarchyData.id) {
+      return
+    }
     // Toggle the expanded state
     node.data.expanded = !node.data.expanded
   }
@@ -163,83 +170,79 @@ function updateParentsHierarchyData(node: any, newNodeData: any, parentHierarchy
   updateNode(parentHierarchyData)
 }
 
-
-
 // render the extra links of the graph
-function renderParentsExtraLinks(nodes: any, svg: any) {
-    // Create an array to store the extra links
-    const extraLinks: any = []
-    // Iterate over the nodes to find the extra links
-    nodes.forEach((d: any) => {
-      if (d.data.extra_parents) {
-        d.data.extra_parents.forEach((parent: any) => {
-          const parentNode = nodes.find((node: any) => node.data.id === parent.id)
-          if (parentNode) {
-            extraLinks.push({ source: parentNode, target: d })
-          }
-        })
-      }
-    })
-  
-    // Select all extra links and bind the data
-    const extraLink: any = svg.selectAll('path.extra-link').data(extraLinks, (d: any) => d.target.id)
-  
-    // on enter, insert the path element and set the attributes
-    const extraLinkEnter = extraLink
-      .enter()
-      .insert('path', 'g')
-      .attr('class', 'extra-link')
-      .attr('stroke', 'red')
-      .attr('stroke-width', 1)
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrow-extra)')
-      .attr('stroke-dasharray', '5,5')
-  
-    // merge the enter and update selections
-    const extraLinkUpdate = extraLinkEnter.merge(extraLink)
-  
-    // update the extra link positions to use the diagonal function
-    extraLinkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
-  
-    // remove the extra links that are no longer needed
-    extraLink.exit().remove()
-  }
+function renderExtraParentLinks(nodes: any, svg: any) {
+  // Create an array to store the extra links
+  const extraLinks: any = []
+  // Iterate over the nodes to find the extra links
+  nodes.forEach((d: any) => {
+    if (d.data.extra_parents) {
+      d.data.extra_parents.forEach((parent: any) => {
+        const parentNode = nodes.find((node: any) => node.data.id === parent.id)
+        if (parentNode) {
+          extraLinks.push({ source: parentNode, target: d })
+        }
+      })
+    }
+  })
 
+  // Select all extra links and bind the data
+  const extraLink: any = svg.selectAll('path.extra-link-parents').data(extraLinks, (d: any) => d.target.id)
+
+  // on enter, insert the path element and set the attributes
+  const extraLinkEnter = extraLink
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'extra-link-parents')
+    .attr('stroke', 'red')
+    .attr('stroke-width', 1)
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow-extra)')
+    .attr('stroke-dasharray', '5,5')
+
+  // merge the enter and update selections
+  const extraLinkUpdate = extraLinkEnter.merge(extraLink)
+
+  // update the extra link positions to use the diagonal function
+  extraLinkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
+
+  // remove the extra links that are no longer needed
+  extraLink.exit().remove()
+}
 
 // render the links of the graph
 function renderParentsLinks(links: any, svg: any) {
-    // Select all links and bind the data
-    const link = svg.selectAll('path.link').data(links, (d: any) => d.target.id)
-  
-    // on enter, insert the path element and set the attributes
-    const linkEnter = link
-      .enter()
-      .insert('path', 'g')
-      .attr('class', 'link')
-      .attr('stroke', '#999')
-      .attr('stroke-width', 1)
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrow)')
-  
-    // merge the enter and update selections
-    const linkUpdate = linkEnter.merge(link)
-  
-    // update the link positions
-    linkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
-  
-    // remove the links that are no longer needed
-    link.exit().remove()
-  }
-  
+  // Select all links and bind the data
+  const link = svg.selectAll('path.link-parents').data(links, (d: any) => d.target.id)
+
+  // on enter, insert the path element and set the attributes
+  const linkEnter = link
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'link-parents')
+    .attr('stroke', '#999')
+    .attr('stroke-width', 1)
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow)')
+
+  // merge the enter and update selections
+  const linkUpdate = linkEnter.merge(link)
+
+  // update the link positions
+  linkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
+
+  // remove the links that are no longer needed
+  link.exit().remove()
+}
 
 /**
  * Create a diagonal path generator.
  */
 function customDiagonal(d: any, offset = 13) {
-  const sourceX = d.source.y;
-  const sourceY = d.source.x;
-  const targetX = d.target.y;
-  const targetY = d.target.x;
+  const sourceX = -d.source.y; // Invert both x and y coordinates
+  const sourceY = -d.source.x; // Invert both x and y coordinates
+  const targetX = -d.target.y; // Invert both x and y coordinates
+  const targetY = -d.target.x; // Invert both x and y coordinates
 
   // Determine if it's a forward or backward link
   const isForward = targetX > sourceX;
@@ -262,8 +265,5 @@ function customDiagonal(d: any, offset = 13) {
     C ${midX},${sourceY} ${midX},${targetY} ${adjustedTargetX},${targetY}
   `;
 }
-
-
-
 
 export { drawParentsGraph }
