@@ -17,6 +17,7 @@ interface SearchResult {
   dep?: string | null // If you need the 'dep' property as well
 }
 
+
 // Reactive properties
 const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsExpandLeftEd']) // Defining emit events and leftsidepanel expand
 const isExpandLeftEd = computed(() => props.isExpandLeftEd)
@@ -29,8 +30,8 @@ const errorMessage = ref('')
 const showLabels = ref(true) // Control whether labels are displayed in the graph
 const showDeprecated = ref(false) // Control whether deprecated nodes are displayed
 
-// API base URL (NEEDS MODIFICATION FOR PRODUCTION)
-const apiUrl = 'http://localhost:5000'
+
+const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
 // Function to toggle the left nav
 function toggleLeftNav(): void {
@@ -39,7 +40,7 @@ function toggleLeftNav(): void {
 
 // Function to debounce the search query -- ONLY QUERY AFTER USER STOPS TYPING
 let debounceTimeout: number
-function debounceSearch(fn: () => void, delay: number = 350) {
+function debounceSearch(fn: () => void, delay: number = 450) {
   clearTimeout(debounceTimeout)
   debounceTimeout = setTimeout(fn, delay)
 }
@@ -64,7 +65,7 @@ async function search(query: string): Promise<void> {
 
   try {
     const endpoint = searchOption.value === 'id' ? '/search/id/' : '/search/label/'
-    const response = await fetch(`${apiUrl}${endpoint}${encodeURIComponent(query)}?limit=20`)
+    const response = await fetch(`${API_URL}${endpoint}${encodeURIComponent(query)}?limit=25`)
     const data = await response.json()
 
     if (data.results && data.results.length > 0) {
@@ -101,6 +102,12 @@ function clickResult(result: SearchResult): void {
       showResults.value = false
     }, 100)
   }
+}
+
+// Triggers "toggleLabels" event and "toggleDeprecated" event when "Submit" is clicked
+function handleSubmit() {
+  emit('toggleLabels', showLabels.value)
+  emit('toggleDeprecated', showDeprecated.value)
 }
 </script>
 
@@ -187,7 +194,7 @@ export default {
               </li>
             </ul>
           </div>
-
+          
           <div v-if="isExpandLeftEd" class="m-4 mb-5">
             <label class="flex items-center text-white mb-[30px] mt-7 whitespace-nowrap">
               <input type="checkbox" class="mr-2" v-model="showDeprecated" />

@@ -2,27 +2,26 @@ import time
 import os
 import csv
 import logging
-import yaml
 import psutil
 from io import StringIO
 from rdflib import Graph, Namespace, URIRef, Literal
 from SPARQLWrapper import SPARQLWrapper, CSV
-from config import DATABASE_CONFIG, DATABASE_STORAGE_DIR
-from tests import test_new_database
+from cli.config import (
+    DATABASE_STORAGE_DIR,
+    LOG_LEVEL,
+    SOURCE_QUERY,
+    BATCH_SIZE,
+    SOURCE_OF_TRUTH,
+)
+from cli.tests import test_new_database
 
-from history import history_add_db, get_next_db_filename  # Import history functions
+from cli.history import history_add_db, get_next_db_filename  # Import history functions
 
 BASE_URI = "http://data.15926.org/iso/"
 META = Namespace("http://data.15926.org/meta/")  # Set up namespace for `/meta`
 
-# Load the config file
-with open(DATABASE_CONFIG, "r") as file:
-    config = yaml.safe_load(file)
-
 # Set up logging based on config file
-log_level = getattr(
-    logging, config.get("log_level", "WARNING").upper(), logging.WARNING
-)
+log_level = getattr(logging, LOG_LEVEL.upper(), logging.WARNING)
 logging.basicConfig(
     filename="database.log",
     level=log_level,
@@ -53,7 +52,7 @@ def monitor_memory_usage(message=""):
 # Execute the SPARQL query and retrieve results in CSV format
 def execute_sparql_query(endpoint_url, offset=0, limit=10000):
     sparql = SPARQLWrapper(endpoint_url)
-    query = config["query_source"]
+    query = SOURCE_QUERY
     query += f"\nLIMIT {limit}\nOFFSET {offset}"
     sparql.setQuery(query)
     sparql.setReturnFormat(CSV)
@@ -125,8 +124,8 @@ def save_graph_to_file(graph):
 
 # Main update function that fetches SPARQL data and inserts it into the RDFLib graph
 def update_db():
-    sparql_endpoint_url = config["sparql_endpoint_url"]
-    batch_size = config["batch_size"]
+    sparql_endpoint_url = SOURCE_OF_TRUTH
+    batch_size = BATCH_SIZE
     offset = 0
     total_triples = 0
     success = 0

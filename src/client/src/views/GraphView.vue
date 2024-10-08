@@ -12,6 +12,7 @@ const isSm = computed(() => breakpoints.smaller('sm').value)
 
 console.log(isSm.value)
 
+
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
 
@@ -134,6 +135,7 @@ async function handleLabelClicked(nodeUri: string) {
 }
 
 const infoPaneRef = ref()
+
 
 // Toggles "showDeprecated" and re-fetches the node's children.
 function handleShowDeprecatedToggle(value: boolean) {

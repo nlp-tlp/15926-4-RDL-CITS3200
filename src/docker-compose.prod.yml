@@ -1,17 +1,21 @@
 services:
     client:
-        build: ./client
+        image: myclient
         container_name: Client
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.client.rule=PathPrefix(`/`)"
             - "traefik.http.services.client.loadbalancer.server.port=5173"
+        ports:
+            - "${CLIENT_PORT:-5173}:5173"
         env_file:
-            - .env
+            - .env.production
 
     server:
-        build: ./server
+        image: myserver
         container_name: Server
+        ports:
+            - "${SERVER_PORT:-5000}:5000"
         volumes:
             - db-data:/app/db
         labels:
@@ -23,7 +27,7 @@ services:
             - FLASK_APP=${FLASK_APP:-server.py}
 
     traefik:
-        image: "traefik:v2.4"
+        image: "traefik:v3.1"
         container_name: Traefik
         command:
             - "--log.level=INFO"

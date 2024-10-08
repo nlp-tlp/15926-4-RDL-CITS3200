@@ -1,4 +1,4 @@
-def test_search_by_id(test_client, sample_graph):
+def test_search_by_id(test_client):
     """
     Test the '/search/id' route to search for a node by its URI.
     """
@@ -19,9 +19,12 @@ def test_search_by_id(test_client, sample_graph):
 def test_search_by_id_no_results(test_client):
     """
     Test the '/search/id' route when the search yields no results.
+    Assuming a required >99% score similarity.
     """
     invalid_node_uri = "http://data.15926.org/dm/NonExistentNode"
-    response = test_client.get(f"/search/id/{invalid_node_uri}?limit=5&dep=False")
+    response = test_client.get(
+        f"/search/id/{invalid_node_uri}?limit=5&dep=False&similarity=99"
+    )
     json_data = response.get_json()
 
     # Assert that no results are returned
@@ -30,7 +33,7 @@ def test_search_by_id_no_results(test_client):
     assert len(json_data["results"]) == 0  # Ensure no results are returned
 
 
-def test_search_by_label(test_client, sample_graph):
+def test_search_by_label(test_client):
     """
     Test the '/search/label' route to search for a node by its label.
     """
