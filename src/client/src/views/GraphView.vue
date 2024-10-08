@@ -20,6 +20,8 @@ const initialData = {
 // make the data reactive
 const data = ref(initialData)
 
+const showDeprecated = ref(false)
+
 async function fetchChildren(node: any) {
   console.log(API_URL)
   if (!node || !node.id) {
@@ -27,7 +29,9 @@ async function fetchChildren(node: any) {
     return
   }
   try {
-    const response = await fetch(`${API_URL}${childrenEndpoint}${encodeURIComponent(node.id)}`)
+    const dep = String(showDeprecated.value)
+    const url = `${API_URL}${childrenEndpoint}${encodeURIComponent(node.id)}?dep=${dep}`
+    const response = await fetch(url)
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return
@@ -51,6 +55,7 @@ async function fetchChildren(node: any) {
     }
   }
 }
+
 
 const theNodeInfoDisplay = {
   Label: '',
@@ -95,16 +100,37 @@ async function handleLabelClicked(nodeUri: string) {
 }
 
 const infoPaneRef = ref()
+
+// Toggles "showDeprecated" and re-fetches the node's children.
+function handleShowDeprecatedToggle(value: boolean) {
+  showDeprecated.value = value
+  if (data.value && data.value.id) {
+    fetchChildren(data.value)
+  }
+}
+
+const showLabelsInGraph = ref(true)
+
+// Toggles whether labels are displayed in the graph.
+function handleToggleLabels(value: boolean) {
+  showLabelsInGraph.value = value
+}
+
 </script>
 
 <template>
   <div class="container">
-    <GraphSearchSidepane />
+    <GraphSearchSidepane 
+      @toggle-labels="handleToggleLabels"
+      @toggle-deprecated="handleShowDeprecatedToggle"
+    />
     <GraphInfoSidepane ref="infoPaneRef" :node-info-display="nodeInfoDisplay" />
     <GraphVisualisation
       :data="data"
       :fetch-children="fetchChildren"
       @label-clicked="handleLabelClicked"
+      :show-labels="showLabelsInGraph"
+
     />
   </div>
 </template>

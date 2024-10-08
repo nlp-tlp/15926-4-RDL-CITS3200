@@ -16,6 +16,13 @@ const props = defineProps({
   fetchChildren: {
     type: Function,
     required: true
+  },
+  /**
+   * Indicates whether to show labels in the graph.
+   */
+  showLabels: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -51,6 +58,14 @@ watch(
     if (newData) {
       renderGraph()
     }
+  }
+)
+
+// Watch for changes in "showLabels"
+watch(
+  () => props.showLabels,
+  () => {
+    renderGraph()
   }
 )
 
@@ -273,6 +288,9 @@ function renderNodes(nodes: any) {
 
   // update the node positions
   nodeUpdate.attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+
+  // update visibility of labels based on showLabels prop
+  nodeUpdate.select('text').style('display', props.showLabels ? 'block' : 'none')
 
   // remove the nodes that are no longer needed
   node.exit().remove()
