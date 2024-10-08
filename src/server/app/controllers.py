@@ -542,6 +542,7 @@ def get_local_hierarchy_to_root(
         raise ValueError(f"URI '{uri}' does not exist within the database")
 
     node_list = []
+    children = []
 
     # Create the initial structure for the centre node
     centre_node = get_basic_node_info(uri=uri, graph=graph)
