@@ -15,7 +15,9 @@ async function fetchChildren(node: any, includeDeprecated: boolean = false): Pro
     return null
   }
   try {
-    const response = await fetch(`${API_URL}${childrenEndpoint}${encodeURIComponent(node.id)}?dep=${includeDeprecated}`)
+    const response = await fetch(
+      `${API_URL}${childrenEndpoint}${encodeURIComponent(node.id)}?dep=${includeDeprecated}`
+    )
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return null
@@ -27,15 +29,14 @@ async function fetchChildren(node: any, includeDeprecated: boolean = false): Pro
         ...node,
         // fetchchildren is only called when the node is expanded so set expanded to true
         expanded: true,
-        children: responseData.children,
+        children: responseData.children
       }
       // set the expanded flag to false for each child
       newNode.children.forEach((child: any) => {
         child.expanded = false
       })
       return newNode
-    } 
-    else {
+    } else {
       console.error('Invalid response:', responseData)
       return null
     }
@@ -63,7 +64,9 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
     return null
   }
   try {
-    const response = await fetch(`${API_URL}${parentsEndpoint}${encodeURIComponent(node.id)}?dep=${includeDeprecated}`)
+    const response = await fetch(
+      `${API_URL}${parentsEndpoint}${encodeURIComponent(node.id)}?dep=${includeDeprecated}`
+    )
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return null
@@ -82,8 +85,7 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
         parent.expanded = false
       })
       return newNode
-    } 
-    else {
+    } else {
       console.error('Invalid response:', responseData)
       return null
     }
@@ -98,7 +100,6 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
     return null
   }
 }
-
 
 // Get selected node information
 async function fetchSelectedInfo(nodeId: any): Promise<any> {
@@ -130,8 +131,5 @@ async function fetchSelectedInfo(nodeId: any): Promise<any> {
     return null
   }
 }
-
-
-
 
 export { fetchChildren, fetchParents, fetchSelectedInfo }

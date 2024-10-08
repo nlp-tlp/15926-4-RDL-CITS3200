@@ -2,10 +2,9 @@
 import * as d3 from 'd3'
 import { onMounted, reactive, ref, watch } from 'vue'
 
-import { fetchSelectedInfo } from '../assets/apiFunctions';
+import { fetchSelectedInfo } from '../assets/apiFunctions'
 import { drawChildrenGraph } from '../assets/childrenGraphFunctions'
-import { drawParentsGraph } from '../assets/parentsGraphFunctions';
-
+import { drawParentsGraph } from '../assets/parentsGraphFunctions'
 
 const props = defineProps({
   includeDeprecated: {
@@ -18,21 +17,21 @@ const props = defineProps({
   }
 })
 
-
-watch(() => props.selectedNodeId, (newVal, oldVal) => {
-  fetchSelectedInfo(newVal).then((data) => {
-    drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
-    drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
-
-  })
-})
-
+watch(
+  () => props.selectedNodeId,
+  (newVal, oldVal) => {
+    fetchSelectedInfo(newVal).then((data) => {
+      drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
+      drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+    })
+  }
+)
 
 // initial data for the root of the global view
 const selectedNodeDataChildren = {
   id: 'http://data.15926.org/rdl/RDS458774',
   label: 'SEAMLESS ARTEFACT',
-  has_children: true,
+  has_children: true
   // id: 'http://data.15926.org/dm/Thing',
   // label: 'Thing',
   // has_children: true,
@@ -40,12 +39,11 @@ const selectedNodeDataChildren = {
 const selectedNodeDataParents = {
   id: 'http://data.15926.org/rdl/RDS458774',
   label: 'SEAMLESS ARTEFACT',
-  has_parents: true,
+  has_parents: true
   // id: 'http://data.15926.org/dm/Thing',
   // label: 'Thing',
   // has_parents : false,
 }
-
 
 let childrenHierarchyData = reactive(selectedNodeDataChildren)
 let parentHierarchyData = reactive(selectedNodeDataParents)
@@ -73,7 +71,6 @@ onMounted(() => {
   initialiseGraph()
   drawChildrenGraph(childrenHierarchyData, childrenRoot, svg, props.includeDeprecated)
   drawParentsGraph(parentHierarchyData, parentsRoot, svg, props.includeDeprecated)
-  
 })
 
 // watch(() => props.includeDeprecated, (newVal, oldVal) => {
@@ -81,8 +78,6 @@ onMounted(() => {
 //   initialiseGraph()
 //   drawChildrenGraph(childrenHierarchyData, root, svg, newVal)
 // })
-
-
 
 /**
  * Initialise the graph with the SVG element and reposition it to the center vertically.
@@ -148,23 +143,7 @@ function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
   svg.attr('transform', combinedTransform.toString())
 }
 
-
 //  draw the parents graph
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 
 <script lang="ts">

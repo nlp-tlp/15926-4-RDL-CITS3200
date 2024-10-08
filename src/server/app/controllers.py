@@ -421,11 +421,10 @@ def get_parents(
     uri: str,
     graph,
     dep: bool = False,
-    ex_parents: bool = True,
-    children_flag: bool = True,
+    include_ex_children: bool = False,
+    children_ex_parents: bool = False,
     parent_flag: bool = True,
     order: bool = True,
-    include_children: bool = False,
 ) -> list[dict[str, any]]:
     """
     Retrieves the parents of a given node and ensures that its children are unique across all parents.
@@ -434,11 +433,9 @@ def get_parents(
         uri (str): The URI of the node to fetch parents for.
         graph (rdflib.Graph): The RDFLib graph to query.
         dep (bool, optional): Whether to include deprecated nodes. (default: False).
-        ex_parents (bool, optional): Whether to include extra parents for each child. (default: True).
-        children_flag (bool, optional): Whether to include a boolean flag indicating if the parent has children. (default: True).
-        parent_flag (bool, optional): Whether to include a boolean flag indicating if the parent has other parents. (default: True).
+        include_ex_children(bool, optional): Whether to include children other then uri in `ex_children` field (default: False).
+        children_ex_parents (bool, optional): Whether to include extra parents for each child in parent's children. (default: True).
         order (bool, optional): A flag indicating whether to order the parents alphabetically by their label (default: True).
-        include_children(bool, optional): Whether to include ALL children of the parents in its `children` field (default: False).
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -469,28 +466,16 @@ def get_parents(
         num_parents += 1
 
         # Obtain the children of the parents ONLY if requested
-        if include_children:
-            # Ensure only the original node is the child in ONE PLACE (the ex_parents field will handle the rest)
-            if num_parents == 1:
-                parent_info["children"] = get_children(
-                    uri=parent,
-                    graph=graph,
-                    dep=dep,
-                    ex_parents=ex_parents,
-                    children_flag=children_flag,
-                    order=order,
-                )
-
-            else:
-                parent_info["children"] = get_children(
-                    uri=parent,
-                    graph=graph,
-                    dep=dep,
-                    ex_parents=ex_parents,
-                    children_flag=children_flag,
-                    order=order,
-                    ignore_id=uri,
-                )
+        if include_ex_children:
+            parent_info["extra_children"] = get_children(
+                uri=parent,
+                graph=graph,
+                dep=dep,
+                ex_parents=children_ex_parents,
+                children_flag=False,  # Dont include attribute in children of parents
+                order=order,
+                ignore_id=uri,
+            )
 
         # Append the parent to the hierarchy
         hierarchy.append(parent_info)
@@ -498,47 +483,6 @@ def get_parents(
     # Order the children by their label if 'order' is set to True
     if order:
         hierarchy.sort(key=lambda x: (x.get("label") or ""))
-
-    # Ensure no duplicate children nodes in the list (causes bugs), multiple parents are handled through the ex_parents attribute (ONLY WHEN CHILDREN ARE REQUESTED)
-    if include_children:
-        hierarchy = fix_unique_nodes(hierarchy=hierarchy)
-
-    return hierarchy
-
-
-def fix_unique_nodes(hierarchy: list[dict[str, any]]) -> list[dict[str, any]]:
-    """
-    Ensures that each child node is unique across all parents in the hierarchy.
-
-    Args:
-        hierarchy (list[dict]): A list of dictionaries representing the hierarchy of parent nodes and their children.
-
-    Returns:
-        list[dict]: The updated hierarchy with unique child nodes across all parents. The updated structure ensures
-                    that no child node appears under multiple parents in the same hierarchy.
-    """
-    node_set = set()  # Keep only unique nodes
-
-    for parent in hierarchy:
-        # ASSUME PARENT CANNOT BE ITS OWN CHILD, so dont bother adding parent to set
-
-        children_list = parent.get("children", [])
-        unique_children = []  # Make a new list to rebuild the parent's children
-
-        for child in children_list:
-            child_id = child.get("id")
-
-            if child_id in node_set:
-                # Skip this child if it already exists in the set
-                continue
-
-            else:
-                # Add the child to the unique set and to the unique_children list
-                node_set.add(child_id)
-                unique_children.append(child)
-
-        # Update the parent's children list with unique children only
-        parent["children"] = unique_children
 
     return hierarchy
 

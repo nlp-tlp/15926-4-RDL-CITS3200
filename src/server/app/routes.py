@@ -16,7 +16,7 @@ def ping():
     return jsonify({"status": "success", "message": "Pong!"}), 200
 
 
-@main.route("/graph/root")
+@main.route("/node/root")
 def root():
     """
     Route to fetch the root node information from the graph.
@@ -132,11 +132,10 @@ def parents(node_uri):
 
     Query Parameters:
         dep (bool, optional): Whether to include deprecated nodes. Default is False.
-        extra_parents (bool): Whether to include extra parents for each child. Default is True.
-        has_children (bool, optional): Whether to include a boolean flag indicating if the parents have children. Default is True.
+        extra_children (bool, optional): Whether to include extra children of the parents, excluding the current node. Default is True.
+        children_ex_parents (bool, optional): Whether to include extra parents for each child in the parent's children. Default is False.
         has_parent (bool, optional): Whether to include a boolean flag indicating if the parent nodes have other parents. Default is True.
-        order (bool, optional): Whether to order the nodes in alphabetical order. Default is True.
-        incl_children (bool, optional): Whether to include ALL children of the parent(s). Default is True.
+        order (bool, optional): Whether to order the parents alphabetically. Default is True.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -150,17 +149,14 @@ def parents(node_uri):
     include_deprecation = controllers.str_to_bool(
         request.args.get("dep", default=False)
     )
-    include_extra_parents = controllers.str_to_bool(
-        request.args.get("extra_parents", default=True)
+    include_extra_children = controllers.str_to_bool(
+        request.args.get("extra_children", default=True)
     )
-    include_has_children = controllers.str_to_bool(
-        request.args.get("has_children", default=True)
+    include_parents_children_extra_parents = controllers.str_to_bool(
+        request.args.get("children_ex_parents", default=False)
     )
     include_has_parent = controllers.str_to_bool(
         request.args.get("has_parent", default=True)
-    )
-    include_children = controllers.str_to_bool(
-        request.args.get("incl_children", default=False)
     )
     order = controllers.str_to_bool(request.args.get("order", default=True))
 
@@ -173,11 +169,10 @@ def parents(node_uri):
             uri=node_uri,
             graph=current_app.graph,
             dep=include_deprecation,
-            ex_parents=include_extra_parents,
-            children_flag=include_has_children,
+            include_ex_children=include_extra_children,
+            children_ex_parents=include_parents_children_extra_parents,
             parent_flag=include_has_parent,
             order=order,
-            include_children=include_children,
         )
 
     except ValueError as e:

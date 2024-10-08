@@ -20,7 +20,11 @@ function handleNodeSelected(nodeId: string) {
 
 <template>
   <div class="container">
-    <GraphSearchSidepane :show-deprecated="showDeprecated" @toggle-deprecated="toggleShowDeprecated" @node-selected="handleNodeSelected" />
+    <GraphSearchSidepane
+      :show-deprecated="showDeprecated"
+      @toggle-deprecated="toggleShowDeprecated"
+      @node-selected="handleNodeSelected"
+    />
     <GraphInfoSidepane />
     <GraphVisualisation :include-deprecated="showDeprecated" :selected-node-id="selectedNodeId" />
   </div>

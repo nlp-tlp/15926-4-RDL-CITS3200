@@ -1,11 +1,10 @@
 import * as d3 from 'd3'
 
-import { fetchChildren } from "@/assets/apiFunctions"
+import { fetchChildren } from '@/assets/apiFunctions'
 
 const nodeRadius: number = 7
 const nodeDistanceX: number = 25
 const nodeDistanceY: number = 350
-
 
 // draw the children graph
 function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
@@ -31,7 +30,7 @@ function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: bo
 }
 
 // update
-function updateChildrenGraph(data: any, root:any, svg: any, includeDeprecated: boolean) {
+function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
 
   const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
@@ -46,7 +45,13 @@ function updateChildrenGraph(data: any, root:any, svg: any, includeDeprecated: b
 }
 
 // render the nodes of the graph - uses nodes array
-function renderChildrenNodes(nodes: any, root: any, svg: any, childrenHierarchyData: any, includeDeprecated: boolean) {
+function renderChildrenNodes(
+  nodes: any,
+  root: any,
+  svg: any,
+  childrenHierarchyData: any,
+  includeDeprecated: boolean
+) {
   // Select all nodes and bind the data
   const nodeSelection = svg.selectAll('g.node-children').data(nodes, (d: any) => d.data.id)
   // console.log('Nodes:', nodes)
@@ -120,10 +125,14 @@ function renderChildrenNodes(nodes: any, root: any, svg: any, childrenHierarchyD
   nodeSelection.exit().remove()
 }
 
-
 // toggle the collapse/expansion of a node
-async function toggleChildrenCollapse(node: any, root: any, svg: any, childrenHierarchyData: any, includeDeprecated: boolean) {
-
+async function toggleChildrenCollapse(
+  node: any,
+  root: any,
+  svg: any,
+  childrenHierarchyData: any,
+  includeDeprecated: boolean
+) {
   console.log('depr', includeDeprecated)
 
   if (!node.data.has_children) {
@@ -178,105 +187,102 @@ function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierar
   updateNode(childrenHierarchyData)
 }
 
-
-
 // render the extra links of the graph
 function renderChildrenExtraLinks(nodes: any, svg: any) {
-    // Create an array to store the extra links
-    const extraLinks: any = []
-    // Iterate over the nodes to find the extra links
-    nodes.forEach((d: any) => {
-      if (d.data.extra_parents) {
-        d.data.extra_parents.forEach((parent: any) => {
-          const parentNode = nodes.find((node: any) => node.data.id === parent.id)
-          if (parentNode) {
-            extraLinks.push({ source: parentNode, target: d })
-          }
-        })
-      }
-    })
-  
-    // Select all extra links and bind the data
-    const extraLink: any = svg.selectAll('path.extra-link-children').data(extraLinks, (d: any) => d.target.id)
-  
-    // on enter, insert the path element and set the attributes
-    const extraLinkEnter = extraLink
-      .enter()
-      .insert('path', 'g')
-      .attr('class', 'extra-link-children')
-      .attr('stroke', 'red')
-      .attr('stroke-width', 1)
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrow-extra)')
-      .attr('stroke-dasharray', '5,5')
-  
-    // merge the enter and update selections
-    const extraLinkUpdate = extraLinkEnter.merge(extraLink)
-  
-    // update the extra link positions to use the diagonal function
-    extraLinkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
-  
-    // remove the extra links that are no longer needed
-    extraLink.exit().remove()
-  }
+  // Create an array to store the extra links
+  const extraLinks: any = []
+  // Iterate over the nodes to find the extra links
+  nodes.forEach((d: any) => {
+    if (d.data.extra_parents) {
+      d.data.extra_parents.forEach((parent: any) => {
+        const parentNode = nodes.find((node: any) => node.data.id === parent.id)
+        if (parentNode) {
+          extraLinks.push({ source: parentNode, target: d })
+        }
+      })
+    }
+  })
 
+  // Select all extra links and bind the data
+  const extraLink: any = svg
+    .selectAll('path.extra-link-children')
+    .data(extraLinks, (d: any) => d.target.id)
+
+  // on enter, insert the path element and set the attributes
+  const extraLinkEnter = extraLink
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'extra-link-children')
+    .attr('stroke', 'red')
+    .attr('stroke-width', 1)
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow-extra)')
+    .attr('stroke-dasharray', '5,5')
+
+  // merge the enter and update selections
+  const extraLinkUpdate = extraLinkEnter.merge(extraLink)
+
+  // update the extra link positions to use the diagonal function
+  extraLinkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
+
+  // remove the extra links that are no longer needed
+  extraLink.exit().remove()
+}
 
 // render the links of the graph
 function renderChildrenLinks(links: any, svg: any) {
-    // Select all links and bind the data
-    const link = svg.selectAll('path.link-children').data(links, (d: any) => d.target.id)
-  
-    // on enter, insert the path element and set the attributes
-    const linkEnter = link
-      .enter()
-      .insert('path', 'g')
-      .attr('class', 'link-children')
-      .attr('stroke', '#999')
-      .attr('stroke-width', 1)
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#arrow)')
-  
-    // merge the enter and update selections
-    const linkUpdate = linkEnter.merge(link)
-  
-    // update the link positions
-    linkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
-  
-    // remove the links that are no longer needed
-    link.exit().remove()
-  }
-  
+  // Select all links and bind the data
+  const link = svg.selectAll('path.link-children').data(links, (d: any) => d.target.id)
+
+  // on enter, insert the path element and set the attributes
+  const linkEnter = link
+    .enter()
+    .insert('path', 'g')
+    .attr('class', 'link-children')
+    .attr('stroke', '#999')
+    .attr('stroke-width', 1)
+    .attr('fill', 'none')
+    .attr('marker-end', 'url(#arrow)')
+
+  // merge the enter and update selections
+  const linkUpdate = linkEnter.merge(link)
+
+  // update the link positions
+  linkUpdate.attr('d', (d: any) => customDiagonal(d, 13))
+
+  // remove the links that are no longer needed
+  link.exit().remove()
+}
 
 /**
  * Create a diagonal path generator.
  */
 function customDiagonal(d: any, offset = 13) {
-  const sourceX = d.source.y;
-  const sourceY = d.source.x;
-  const targetX = d.target.y;
-  const targetY = d.target.x;
+  const sourceX = d.source.y
+  const sourceY = d.source.x
+  const targetX = d.target.y
+  const targetY = d.target.x
 
   // Determine if it's a forward or backward link
-  const isForward = targetX > sourceX;
+  const isForward = targetX > sourceX
 
   // Check if the link is vertical or near-vertical
   if (Math.abs(sourceX - targetX) < 1) {
     // For vertical links, adjust the end point slightly to make arrow visible
-    const arrowAdjustment = isForward ? -offset : offset;
+    const arrowAdjustment = isForward ? -offset : offset
     return `
       M ${sourceX},${sourceY}
       L ${targetX},${targetY + arrowAdjustment}
-    `;
+    `
   }
 
   // For non-vertical links, apply offset and use a curved path
-  const adjustedTargetX = isForward ? targetX - offset : targetX + offset;
-  const midX = (sourceX + adjustedTargetX) / 2;
+  const adjustedTargetX = isForward ? targetX - offset : targetX + offset
+  const midX = (sourceX + adjustedTargetX) / 2
   return `
     M ${sourceX},${sourceY}
     C ${midX},${sourceY} ${midX},${targetY} ${adjustedTargetX},${targetY}
-  `;
+  `
 }
-
 
 export { drawChildrenGraph }
