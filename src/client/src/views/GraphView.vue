@@ -56,7 +56,6 @@ async function fetchChildren(node: any) {
   }
 }
 
-
 const theNodeInfoDisplay = {
   Label: '',
   Definition: '',
@@ -115,12 +114,11 @@ const showLabelsInGraph = ref(true)
 function handleToggleLabels(value: boolean) {
   showLabelsInGraph.value = value
 }
-
 </script>
 
 <template>
   <div class="container">
-    <GraphSearchSidepane 
+    <GraphSearchSidepane
       @toggle-labels="handleToggleLabels"
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
@@ -130,7 +128,6 @@ function handleToggleLabels(value: boolean) {
       :fetch-children="fetchChildren"
       @label-clicked="handleLabelClicked"
       :show-labels="showLabelsInGraph"
-
     />
   </div>
 </template>
