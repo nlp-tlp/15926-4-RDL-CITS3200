@@ -192,7 +192,7 @@ function renderExtraChildrenLinks(nodes: any, svg: any) {
       d.data.extra_children.forEach((children: any) => {
         const childrenNode = nodes.find((node: any) => node.data.id === children.id)
         if (childrenNode) {
-          extraLinks.push({ source: childrenNode, target: d })
+          extraLinks.push({ target: childrenNode, source: d })
         }
       })
     }

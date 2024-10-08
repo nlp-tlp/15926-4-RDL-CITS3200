@@ -29,20 +29,20 @@ watch(
 
 // initial data for the root of the global view
 const selectedNodeDataChildren = {
-  id: 'http://data.15926.org/rdl/RDS458774',
-  label: 'SEAMLESS ARTEFACT',
-  has_children: true
-  // id: 'http://data.15926.org/dm/Thing',
-  // label: 'Thing',
-  // has_children: true,
+  // id: 'http://data.15926.org/rdl/RDS458774',
+  // label: 'SEAMLESS ARTEFACT',
+  // has_children: true
+  id: 'http://data.15926.org/dm/Thing',
+  label: 'Thing',
+  has_children: true,
 }
 const selectedNodeDataParents = {
-  id: 'http://data.15926.org/rdl/RDS458774',
-  label: 'SEAMLESS ARTEFACT',
-  has_parents: true
-  // id: 'http://data.15926.org/dm/Thing',
-  // label: 'Thing',
-  // has_parents : false,
+  // id: 'http://data.15926.org/rdl/RDS458774',
+  // label: 'SEAMLESS ARTEFACT',
+  // has_parents: true
+  id: 'http://data.15926.org/dm/Thing',
+  label: 'Thing',
+  has_parents : false,
 }
 
 let childrenHierarchyData = reactive(selectedNodeDataChildren)
