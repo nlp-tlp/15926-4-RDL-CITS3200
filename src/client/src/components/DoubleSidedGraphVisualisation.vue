@@ -34,7 +34,7 @@ const selectedNodeDataChildren = {
   // has_children: true
   id: 'http://data.15926.org/dm/Thing',
   label: 'Thing',
-  has_children: true,
+  has_children: true
 }
 const selectedNodeDataParents = {
   // id: 'http://data.15926.org/rdl/RDS458774',
@@ -42,7 +42,7 @@ const selectedNodeDataParents = {
   // has_parents: true
   id: 'http://data.15926.org/dm/Thing',
   label: 'Thing',
-  has_parents : false,
+  has_parents: false
 }
 
 let childrenHierarchyData = reactive(selectedNodeDataChildren)
