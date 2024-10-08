@@ -17,21 +17,17 @@ interface SearchResult {
   dep?: string | null // If you need the 'dep' property as well
 }
 
-interface Emit {
-  (e: 'toggleIsExpandLeftEd'): void
-}
-
-const emit = defineEmits<Emit>()
-
-const isExpandLeftEd = computed(() => props.isExpandLeftEd)
-
 // Reactive properties
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsExpandLeftEd']) // Defining emit events and leftsidepanel expand
+const isExpandLeftEd = computed(() => props.isExpandLeftEd)
 const searchTerm = ref('') // The search term entered by the user
 const searchOption = ref('id') // The dropdown option selected by the user
 const results = ref<SearchResult[]>([]) // Store search results
 const isSearching = ref(false) // Track API call state
 const showResults = ref(false) // Control whether search results are displayed
 const errorMessage = ref('')
+const showLabels = ref(true) // Control whether labels are displayed in the graph
+const showDeprecated = ref(false) // Control whether deprecated nodes are displayed
 
 // API base URL (NEEDS MODIFICATION FOR PRODUCTION)
 const apiUrl = 'http://localhost:5000'
@@ -194,10 +190,12 @@ export default {
 
           <div v-if="isExpandLeftEd" class="m-4 mb-5">
             <label class="flex items-center text-white mb-[30px] mt-7 whitespace-nowrap">
-              <input type="checkbox" class="mr-2" /> Show Deprecated
+              <input type="checkbox" class="mr-2" v-model="showDeprecated" />
+              Show Deprecated
             </label>
             <label class="flex items-center text-white mb-2 whitespace-nowrap">
-              <input type="checkbox" class="mr-2" /> View Labels in Graph
+              <input type="checkbox" class="mr-2" v-model="showLabels" />
+              View Labels in Graph
             </label>
             <!-- Comment 'Levels Above' and 'Levels Below' part -->
             <!--
