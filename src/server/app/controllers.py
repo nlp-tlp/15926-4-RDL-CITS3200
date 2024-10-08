@@ -68,6 +68,38 @@ def get_basic_node_info(uri: str, graph, default_dep: bool = False) -> dict[str,
 
     return node_info
 
+def get_node_info_with_relations(uri: str, graph) -> dict[str, any]:
+    """
+    Retrieves information about a node, including its label, deprecation date, and whether it has children or parents.
+
+    Args:
+        uri (str): The URI of the node to fetch information for.
+        graph (rdflib.Graph): The RDFLib graph to query.
+
+    Returns:
+        dict: A dictionary containing the node's 'id', 'label', 'dep', 'has_children', and 'has_parents'.
+    """
+    node_info = {"id": str(uri), "label": None, "dep": None, "has_children": False, "has_parents": False}
+
+    uri_ref = URIRef(uri)  # Ensure uri is a ref before querying
+
+    # Query for the label of the node
+    for _, _, label in graph.triples((uri_ref, RDFS.label, None)):
+        if isinstance(label, Literal):
+            node_info["label"] = str(label)
+
+    # Query for the deprecation date
+    for _, _, deprecation_date in graph.triples((uri_ref, META.valDeprecationDate, None)):
+        if isinstance(deprecation_date, Literal):
+            node_info["dep"] = str(deprecation_date)
+
+    # Check if the node has children
+    node_info["has_children"] = has_children(uri, graph, dep=False)
+
+    # Check if the node has parents
+    node_info["has_parents"] = has_parents(uri, graph, dep=False)
+
+    return node_info
 
 # Get all information (predicates and objects) for a given node in the RDFLib graph.
 def get_all_node_info(

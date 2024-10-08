@@ -2,33 +2,42 @@
 import * as d3 from 'd3'
 import { onMounted, reactive, ref, watch } from 'vue'
 
+import { fetchSelectedInfo } from '../assets/apiFunctions';
 import { drawChildrenGraph } from '../assets/childrenGraphFunctions'
 import { drawParentsGraph } from '../assets/parentsGraphFunctions';
 
 
 const props = defineProps({
   includeDeprecated: Boolean,
-  // childrenData: Object,
-  // parentsData: Object
+  selectedNodeId: String
+})
+
+
+watch(() => props.selectedNodeId, (newVal, oldVal) => {
+  fetchSelectedInfo(newVal).then((data) => {
+    drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
+    drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+
+  })
 })
 
 
 // initial data for the root of the global view
 const selectedNodeDataChildren = {
-  id: 'http://data.15926.org/rdl/RDS458774',
-  label: 'SEAMLESS ARTEFACT',
-  has_children: true,
-  // id: 'http://data.15926.org/dm/Thing',
-  // label: 'Thing',
+  // id: 'http://data.15926.org/rdl/RDS458774',
+  // label: 'SEAMLESS ARTEFACT',
   // has_children: true,
+  id: 'http://data.15926.org/dm/Thing',
+  label: 'Thing',
+  has_children: true,
 }
 const selectedNodeDataParents = {
-  id: 'http://data.15926.org/rdl/RDS458774',
-  label: 'SEAMLESS ARTEFACT',
-  has_parents: true,
-  // id: 'http://data.15926.org/dm/Thing',
-  // label: 'Thing',
-  // has_parents : false,
+  // id: 'http://data.15926.org/rdl/RDS458774',
+  // label: 'SEAMLESS ARTEFACT',
+  // has_parents: true,
+  id: 'http://data.15926.org/dm/Thing',
+  label: 'Thing',
+  has_parents : false,
 }
 
 

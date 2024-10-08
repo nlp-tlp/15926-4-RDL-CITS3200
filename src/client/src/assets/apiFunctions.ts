@@ -2,6 +2,7 @@
 const API_URL: string = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint: string = '/node/children/'
 const parentsEndpoint: string = '/node/parents/'
+const selectedInfoEndpoint: string = '/node/selected-info/'
 
 // Get children of a node
 async function fetchChildren(node: any, includeDeprecated: boolean = false): Promise<any> {
@@ -99,5 +100,38 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
 }
 
 
+// Get selected node information
+async function fetchSelectedInfo(nodeId: any): Promise<any> {
+  if (!nodeId) {
+    console.error('Invalid node ID:', nodeId)
+    return null
+  }
+  try {
+    const response = await fetch(`${API_URL}${selectedInfoEndpoint}${encodeURIComponent(nodeId)}`)
+    if (!response.ok) {
+      console.error('Server error:', response.status, await response.text())
+      return null
+    }
+    const responseData = await response.json()
+    if (responseData) {
+      return responseData
+    } else {
+      console.error('Invalid response:', responseData)
+      return null
+    }
+  } catch (error: any) {
+    if (error instanceof TypeError) {
+      // Network error or other fetch-related error
+      console.error('Network error:', error.message)
+    } else {
+      // Something else happened
+      console.error('Error:', error.message)
+    }
+    return null
+  }
+}
 
-export { fetchChildren, fetchParents }
+
+
+
+export { fetchChildren, fetchParents, fetchSelectedInfo }

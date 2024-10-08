@@ -245,6 +245,40 @@ def invalid_info():
         jsonify({"error": "ID/URI not provided. Must use '/node/info/<id>'"}),
         400,
     )
+    
+    
+@main.route("/node/selected-info/<path:node_uri>", methods=["GET"])
+def selected_info(node_uri):
+    """
+    Retrieves selected information about a given node in the RDFLib graph,
+    including its label, deprecation date, and whether it has children or parents.
+
+    Args:
+        node_uri (str): The URI of the node to retrieve information for.
+
+    Raises:
+        ValueError: If the node does not exist in the graph.
+        AttributeError: If the graph is not initialized.
+
+    Returns:
+        JSON: The selected information for the given node.
+    """
+    try:
+        # Check if the graph is available
+        if not hasattr(current_app, "graph"):
+            raise AttributeError("Graph is not initialised")
+
+        # Fetch the node information
+        node_info = controllers.get_node_info_with_relations(uri=node_uri, graph=current_app.graph)
+
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except AttributeError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "Internal Error"}), 500
+
+    return jsonify(node_info)
 
 
 @main.route("/search/<string:field>/<path:search_key>", methods=["GET"])
