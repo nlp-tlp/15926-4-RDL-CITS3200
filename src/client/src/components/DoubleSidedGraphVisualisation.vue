@@ -2,14 +2,29 @@
 import * as d3 from 'd3'
 import { onMounted, reactive, ref, watch } from 'vue'
 
+import { fetchSelectedInfo } from '../assets/apiFunctions';
 import { drawChildrenGraph } from '../assets/childrenGraphFunctions'
 import { drawParentsGraph } from '../assets/parentsGraphFunctions';
 
 
 const props = defineProps({
-  includeDeprecated: Boolean,
-  // childrenData: Object,
-  // parentsData: Object
+  includeDeprecated: {
+    type: Boolean,
+    default: false
+  },
+  selectedNodeId: {
+    type: String,
+    default: ''
+  }
+})
+
+
+watch(() => props.selectedNodeId, (newVal, oldVal) => {
+  fetchSelectedInfo(newVal).then((data) => {
+    drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
+    drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+
+  })
 })
 
 

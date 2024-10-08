@@ -151,11 +151,15 @@ async function toggleChildrenCollapse(node: any, root: any, svg: any, childrenHi
 function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierarchyData: any) {
   function updateNode(currentNode: any): boolean {
     if (currentNode === node.data) {
-      currentNode.children = newNodeData.children.map((child: any) => ({
-        ...child,
-        expanded: false,
-        children: null
-      }))
+      if (newNodeData.children) {
+        currentNode.children = newNodeData.children.map((child: any) => ({
+          ...child,
+          expanded: false,
+          children: null
+        }))
+      } else {
+        currentNode.children = []
+      }
       currentNode.expanded = true
       return true
     }

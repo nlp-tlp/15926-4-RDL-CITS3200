@@ -28,7 +28,7 @@ const showResults = ref(true) // Control whether search results are displayed
 const errorMessage = ref('')
 const showLabels = ref(true) // Control whether labels are displayed in the graph
 const showDeprecated = ref(false) // Control whether deprecated nodes are displayed
-const emit = defineEmits(['toggleLabels', 'toggleDeprecated']) // Defining emit events
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'node-selected']) // Defining emit events
 
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
@@ -84,6 +84,7 @@ async function search(query: string): Promise<void> {
 
 // Handle result click
 function clickResult(result: SearchResult): void {
+  emit('node-selected', result.id)
   if (
     (searchOption.value === 'id' && result.id === searchTerm.value) ||
     (searchOption.value === 'rdf' && result.label === searchTerm.value)
