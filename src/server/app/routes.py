@@ -1,8 +1,10 @@
 # Imports
 from . import controllers
 from flask import jsonify, request, current_app
-from app.blueprints import main
+from rdflib import Graph
+from app.blueprints import main, ctrl
 from app.config import Config
+from app.models import load_selected_db
 
 
 @main.route("/ping")
@@ -290,6 +292,7 @@ def search(field, search_key):
     Query Parameters:
         dep (bool): Whether to include deprecated nodes. Default is False.
         limit (int): Maximum number of results to return. Default is 5, max is 25.
+        similarity (int): Minimum similarity score of results to return. Default is 75(%)
 
     Returns:
         JSON: The search results by either node ID (URI) or label.
@@ -306,6 +309,8 @@ def search(field, search_key):
     abs_limit = abs(int(request.args.get("limit", 5)))
     limit = min(abs_limit, int(Config.MAX_SEARCH_LIMIT))
 
+    similarity = abs(int(request.args.get("similarity", 75)))
+
     try:
         # Check if the graph is available
         if not hasattr(current_app, "graph"):
@@ -315,11 +320,12 @@ def search(field, search_key):
             return jsonify({"error": "Invalid field. Use 'id' or 'label'."}), 400
 
         results = controllers.search(
-            search_key=search_key,
+            search_key=str(search_key),
             field=field,
             graph=current_app.graph,
             dep=include_deprecation,
             limit=limit,
+            min_similarity=similarity,
         )
 
     except AttributeError as e:
@@ -397,3 +403,20 @@ def local_hierarchy(node_uri):
         return jsonify({"error": "Internal Error"}), 500
 
     return jsonify({"centre_id": node_uri, "hierarchy": hierarchy})
+
+
+@ctrl.route("/ctrl/reload", methods=["GET"])
+def reload_graph():
+    """
+    Route to reload the RDFLib graph with the currently selected database file.
+
+    Returns:
+        JSON: Success message if the graph is reloaded successfully.
+    """
+    try:
+        new_graph = Graph()
+        current_app.graph = load_selected_db(graph=new_graph)
+        return jsonify({"status": "success", "message": "Graph successfully reloaded."})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
