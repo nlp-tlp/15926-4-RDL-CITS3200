@@ -11,12 +11,14 @@ function toggleShowDeprecated() {
   showDeprecated.value = !showDeprecated.value
   console.log('showDeprecated', showDeprecated.value)
 }
-
 </script>
 
 <template>
   <div class="container">
-    <GraphSearchSidepane :show-deprecated="showDeprecated" @toggle-deprecated="toggleShowDeprecated" />
+    <GraphSearchSidepane
+      :show-deprecated="showDeprecated"
+      @toggle-deprecated="toggleShowDeprecated"
+    />
     <GraphInfoSidepane />
     <GraphVisualisation :include-deprecated="showDeprecated" />
   </div>

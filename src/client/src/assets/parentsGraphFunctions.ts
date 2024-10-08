@@ -1,11 +1,10 @@
 import * as d3 from 'd3'
 
-import { fetchParents } from "@/assets/apiFunctions"
+import { fetchParents } from '@/assets/apiFunctions'
 
 const nodeRadius: number = 7
 const nodeDistanceX: number = 25
 const nodeDistanceY: number = 350
-
 
 // draw the parents graph
 function drawParentsGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
@@ -27,11 +26,11 @@ function drawParentsGraph(data: any, root: any, svg: any, includeDeprecated: boo
   // Render the nodes and links
   renderParentsNodes(nodes, root, svg, data, includeDeprecated)
   renderParentsLinks(links, svg)
-  renderExtraParentLinks(nodes, svg)
+  renderExtraChildrenLinks(nodes, svg)
 }
 
 // update
-function updateParentsGraph(data: any, root:any, svg: any, includeDeprecated: boolean) {
+function updateParentsGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.parents : null))
 
   const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
@@ -42,11 +41,17 @@ function updateParentsGraph(data: any, root:any, svg: any, includeDeprecated: bo
 
   renderParentsNodes(nodes, root, svg, data, includeDeprecated)
   renderParentsLinks(links, svg)
-  renderExtraParentLinks(nodes, svg)
+  renderExtraChildrenLinks(nodes, svg)
 }
 
 // render the nodes of the graph - uses nodes array
-function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData: any, includeDeprecated: boolean) {
+function renderParentsNodes(
+  nodes: any,
+  root: any,
+  svg: any,
+  parentHierarchyData: any,
+  includeDeprecated: boolean
+) {
   // Select all nodes and bind the data
   const nodeSelection = svg.selectAll('g.node-parents').data(nodes, (d: any) => d.data.id)
   // console.log('Nodes:', nodes)
@@ -121,7 +126,13 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
 }
 
 // toggle the collapse/expansion of a node
-async function toggleParentsCollapse(node: any, root: any, svg: any, parentHierarchyData: any, includeDeprecated: boolean) {
+async function toggleParentsCollapse(
+  node: any,
+  root: any,
+  svg: any,
+  parentHierarchyData: any,
+  includeDeprecated: boolean
+) {
   if (!node.data.has_parents) {
     console.log('Node has no parents:', node.data.label)
     return
@@ -171,23 +182,26 @@ function updateParentsHierarchyData(node: any, newNodeData: any, parentHierarchy
 }
 
 // render the extra links of the graph
-function renderExtraParentLinks(nodes: any, svg: any) {
+function renderExtraChildrenLinks(nodes: any, svg: any) {
   // Create an array to store the extra links
   const extraLinks: any = []
   // Iterate over the nodes to find the extra links
   nodes.forEach((d: any) => {
-    if (d.data.extra_parents) {
-      d.data.extra_parents.forEach((parent: any) => {
-        const parentNode = nodes.find((node: any) => node.data.id === parent.id)
-        if (parentNode) {
-          extraLinks.push({ source: parentNode, target: d })
+    console.log(d.data)
+    if (d.data.extra_children) {
+      d.data.extra_children.forEach((children: any) => {
+        const childrenNode = nodes.find((node: any) => node.data.id === children.id)
+        if (childrenNode) {
+          extraLinks.push({ source: childrenNode, target: d })
         }
       })
     }
   })
 
   // Select all extra links and bind the data
-  const extraLink: any = svg.selectAll('path.extra-link-parents').data(extraLinks, (d: any) => d.target.id)
+  const extraLink: any = svg
+    .selectAll('path.extra-link-parents')
+    .data(extraLinks, (d: any) => d.target.id)
 
   // on enter, insert the path element and set the attributes
   const extraLinkEnter = extraLink
@@ -239,31 +253,31 @@ function renderParentsLinks(links: any, svg: any) {
  * Create a diagonal path generator.
  */
 function customDiagonal(d: any, offset = 13) {
-  const sourceX = -d.source.y; // Invert both x and y coordinates
-  const sourceY = -d.source.x; // Invert both x and y coordinates
-  const targetX = -d.target.y; // Invert both x and y coordinates
-  const targetY = -d.target.x; // Invert both x and y coordinates
+  const sourceX = -d.source.y // Invert both x and y coordinates
+  const sourceY = -d.source.x // Invert both x and y coordinates
+  const targetX = -d.target.y // Invert both x and y coordinates
+  const targetY = -d.target.x // Invert both x and y coordinates
 
   // Determine if it's a forward or backward link
-  const isForward = targetX > sourceX;
+  const isForward = targetX > sourceX
 
   // Check if the link is vertical or near-vertical
   if (Math.abs(sourceX - targetX) < 1) {
     // For vertical links, adjust the end point slightly to make arrow visible
-    const arrowAdjustment = isForward ? -offset : offset;
+    const arrowAdjustment = isForward ? -offset : offset
     return `
       M ${sourceX},${sourceY}
       L ${targetX},${targetY + arrowAdjustment}
-    `;
+    `
   }
 
   // For non-vertical links, apply offset and use a curved path
-  const adjustedTargetX = isForward ? targetX - offset : targetX + offset;
-  const midX = (sourceX + adjustedTargetX) / 2;
+  const adjustedTargetX = isForward ? targetX - offset : targetX + offset
+  const midX = (sourceX + adjustedTargetX) / 2
   return `
     M ${sourceX},${sourceY}
     C ${midX},${sourceY} ${midX},${targetY} ${adjustedTargetX},${targetY}
-  `;
+  `
 }
 
 export { drawParentsGraph }
