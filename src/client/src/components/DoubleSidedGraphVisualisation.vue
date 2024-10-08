@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 
 import { drawChildrenGraph } from '../assets/childrenGraphFunctions'
 import { drawParentsGraph } from '../assets/parentsGraphFunctions'
