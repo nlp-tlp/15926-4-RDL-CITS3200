@@ -154,7 +154,7 @@ def parents(node_uri):
         request.args.get("extra_parents", default=True)
     )
     include_has_children = controllers.str_to_bool(
-        request.args.get("has_children", default=False)
+        request.args.get("has_children", default=True)
     )
     include_has_parent = controllers.str_to_bool(
         request.args.get("has_parent", default=True)
@@ -187,7 +187,7 @@ def parents(node_uri):
     except Exception as e:
         return jsonify({"error": "Internal Error"}), 500
 
-    return jsonify({"id": node_uri, "children": hierarchy})
+    return jsonify({"id": node_uri, "parents": hierarchy})
 
 
 @main.route("/node/info/<path:node_uri>", methods=["GET"])
