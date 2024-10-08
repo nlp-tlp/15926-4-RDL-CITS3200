@@ -240,8 +240,8 @@ def invalid_info():
         jsonify({"error": "ID/URI not provided. Must use '/node/info/<id>'"}),
         400,
     )
-    
-    
+
+
 @main.route("/node/selected-info/<path:node_uri>", methods=["GET"])
 def selected_info(node_uri):
     """
@@ -264,7 +264,9 @@ def selected_info(node_uri):
             raise AttributeError("Graph is not initialised")
 
         # Fetch the node information
-        node_info = controllers.get_node_info_with_relations(uri=node_uri, graph=current_app.graph)
+        node_info = controllers.get_node_info_with_relations(
+            uri=node_uri, graph=current_app.graph
+        )
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 404

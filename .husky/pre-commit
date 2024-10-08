@@ -7,8 +7,28 @@ cd src/client && npm run lint:fix && npm run format && npm run type-check
 # Navigate to the server directory
 cd ../../src/server
 
-# Activate the Python virtual environment
-. venv/bin/activate
+# Define possible virtual environment directories as a space-separated list
+venv_dirs="venv .venv env myenv"
+# Attempt to activate the virtual environment
+venv_found=false
+for venv_dir in $venv_dirs; do
+  if [ -d "$venv_dir/bin" ]; then
+    echo "Activating virtual environment: $venv_dir"
+    . "$venv_dir/bin/activate"
+    venv_found=true
+    break
+  elif [ -d "$venv_dir/Scripts" ]; then
+    echo "Activating virtual environment: $venv_dir (Windows)"
+    . "$venv_dir/Scripts/activate"
+    venv_found=true
+    break
+  fi
+done
+# Check if a virtual environment was found
+if [ "$venv_found" = false ]; then
+  echo "No virtual environment found. Please ensure one is set up."
+  exit 1  # Exit with an error code to prevent the commit
+fi
 
 # Run black and capture both stdout and stderr
 black_output=$(black . 2>&1)
