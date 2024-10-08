@@ -84,7 +84,6 @@ async function fetchNodeInfo(nodeId: string) {
       nodeInfoDisplay.value.Parents += '• ' + nodeInfo.parents[i] + '\n'
     }
     nodeInfoDisplay.value.Types = ''
-    console.log(nodeInfo.types)
     for (let i = 0; i < nodeInfo.types.length; i++) {
       nodeInfoDisplay.value.Types += '• ' + nodeInfo.types[i] + '\n'
     }
