@@ -173,7 +173,7 @@ export default {
 
           <div
             v-if="showResults"
-            class="max-h-[300px] overflow-y-auto bg-nav-background m-4 p-4 border border-white rounded-lg absolute top-[8rem] left-[-1rem] w-[calc(95%)] shadow-lg z-10 ml-[22px] scrollbar-none"
+            class="max-h-[300px] overflow-y-auto bg-nav-background m-4 p-4 border border-white rounded-lg absolute top-[8.5rem] left-[-1rem] w-[calc(95%)] shadow-lg z-10 ml-[22px] scrollbar-none"
           >
             <div v-if="isSearching" class="text-center text-white">Searching...</div>
             <div v-if="errorMessage" class="text-center text-white">
@@ -183,7 +183,7 @@ export default {
               <li
                 v-for="(result, index) in results"
                 :key="index"
-                class="p-2 text-white cursor-pointer ml-[-20px] hover:bg-nav-background-dark"
+                class="p-1 px-1 text-white cursor-pointer hover:bg-nav-background-dark break-words"
                 @click="clickResult(result)"
               >
                 <span v-if="searchOption === 'id'">{{ result.id }}</span>
@@ -199,6 +199,35 @@ export default {
             <label class="flex items-center text-white mb-2 whitespace-nowrap">
               <input type="checkbox" class="mr-2" /> View Labels in Graph
             </label>
+            <!-- Comment 'Levels Above' and 'Levels Below' part -->
+            <!--
+            <div v-if="isExpandLeftEd" class="mt-12 flex justify-between">
+              <div class="flex flex-col w-[45%]">
+                <label class="text-white mb-2 text-sm font-medium whitespace-nowrap"
+                  >Levels Above:</label
+                >
+                <input
+                  type="number"
+                  min="0"
+                  max="6"
+                  class="small-input p-2 bg-white text-nav-background border border-white rounded-lg text-sm shadow-sm transition-all duration-300 appearance-auto"
+                  value="0"
+                />
+              </div>
+              <div v-if="isExpandLeftEd" class="flex flex-col w-[45%]">
+                <label class="text-white mb-2 text-sm font-medium whitespace-nowrap"
+                  >Levels Below:</label
+                >
+                <input
+                  type="number"
+                  min="0"
+                  max="6"
+                  class="small-input p-2 bg-white text-nav-background border border-white rounded-lg text-sm shadow-sm transition-all duration-300 appearance-auto"
+                  value="0"
+                />
+              </div>
+            </div>
+            -->
           </div>
           <button
             class="w-[80%] mx-auto p-3 bg-nav-background text-white ml-5 border-2 border-white rounded-lg text-sm font-extrabold cursor-pointer mt-5 text-center transition-all duration-300"
