@@ -3,17 +3,18 @@ services:
         image: myclient
         container_name: Client
         labels:
-          # HTTP Redirection Middleware
-          - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-          # HTTP Router
-          - "traefik.http.routers.client-http.rule=Host(`iso15926vis.org`)"  # Domain rule
-          - "traefik.http.routers.client-http.entrypoints=web"  # HTTP entrypoint
-          - "traefik.http.routers.client-http.middlewares=redirect-to-https"  # Apply middleware to redirect HTTP to HTTPS
-          # HTTPS Router
-          - "traefik.http.routers.client-https.rule=Host(`iso15926vis.org`)"  # Domain rule
-          - "traefik.http.routers.client-https.entrypoints=websecure"  # HTTPS entrypoint
-          - "traefik.http.routers.client-https.tls=true"  # Enable TLS for HTTPS
-          - "traefik.http.services.client.loadbalancer.server.port=${CLIENT_PORT:-5173}"  # Forward to Nginx on 5173
+            - "traefik.enable=true"
+            - "traefik.http.middlewares.client-https.redirectscheme.scheme=https"
+            # HTTP Router
+            - "traefik.http.routers.client-http.rule=Host(`iso15926vis.org`) && PathPrefix(`/`)" # Domain rule
+            - "traefik.http.routers.client-http.entrypoints=web" # HTTP entrypoint
+            - "traefik.http.routers.client-http.priority=1" # Lower priority to let server rules override client
+            # HTTPS Router
+            - "traefik.http.routers.client-https.rule=Host(`iso15926vis.org`) && PathPrefix(`/`)" # Domain rule
+            - "traefik.http.routers.client-https.entrypoints=websecure" # HTTPS entrypoint
+            - "traefik.http.routers.client-https.priority=1"
+            - "traefik.http.routers.client-https.tls=true" # Enable TLS for HTTPS
+            - "traefik.http.services.client.loadbalancer.server.port=${CLIENT_PORT:-5173}" # Forward to Nginx on 5173
         ports:
             - "${CLIENT_PORT:-5173}:5173"
         env_file:
@@ -27,23 +28,24 @@ services:
         volumes:
             - db-data:/app/db
         labels:
-          # HTTP Redirection Middleware
-          - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-          # HTTP Router
-          - "traefik.http.routers.server-http.rule=Host(`iso15926vis.org`)"  # Domain rule
-          - "traefik.http.routers.server-http.entrypoints=web"  # HTTP entrypoint
-          - "traefik.http.routers.server-http.middlewares=redirect-to-https"  # Apply middleware to redirect HTTP to HTTPS
-          # HTTPS Router
-          - "traefik.http.routers.server-https.rule=Host(`iso15926vis.org`) && (PathPrefix(`/node`) || PathPrefix(`/search`))"  # Domain and path rule
-          - "traefik.http.routers.server-https.entrypoints=websecure"  # HTTPS entrypoint
-          - "traefik.http.routers.server-https.tls=true"  # Enable TLS for HTTPS
-          - "traefik.http.services.server.loadbalancer.server.port=${SERVER_PORT:-5000}"  # Forward to Flask server on 5000
+            - "traefik.enable=true"
+            - "traefik.http.middlewares.server-https.redirectscheme.scheme=https"
+            # HTTP Router
+            - "traefik.http.routers.server-http.rule=Host(`iso15926vis.org`) && (PathPrefix(`/node`) || PathPrefix(`/search`))"
+            - "traefik.http.routers.server-http.entrypoints=web"
+            - "traefik.http.routers.server-http.priority=10" # Higher priority to match API routes first
+            # HTTPS Router
+            - "traefik.http.routers.server-https.rule=Host(`iso15926vis.org`) && (PathPrefix(`/node`) || PathPrefix(`/search`))"
+            - "traefik.http.routers.server-https.entrypoints=websecure"
+            - "traefik.http.routers.server-https.priority=10"
+            - "traefik.http.routers.server-https.tls=true" # Enable TLS for HTTPS
+            - "traefik.http.services.server.loadbalancer.server.port=${SERVER_PORT:-5000}" # Forward to server on 5000
         environment:
             - FLASK_ENV=production
             - FLASK_APP=${FLASK_APP:-server.py}
 
     traefik:
-        image: "traefik:v2.11"
+        image: "traefik:v3.1"
         container_name: Traefik
         command:
             - "--log.level=INFO"
@@ -52,7 +54,7 @@ services:
             - "--providers.docker.exposedbydefault=false"
             - "--entryPoints.web.address=:80"
             - "--entryPoints.websecure.address=:443"
-            - "--entryPoints.websecure.http.tls=true"  # Enable TLS for websecure
+            - "--entryPoints.websecure.http.tls=true" # Enable TLS for websecure
             - "--providers.file.directory=/certs/"
             - "--providers.file.watch=true"
         ports:
