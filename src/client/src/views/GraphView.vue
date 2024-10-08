@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { computed, ref, watch } from 'vue'
 
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
-// API URL
-const API_URL = 'http://127.0.0.1:5000'
+const breakpoints = useBreakpoints(breakpointsTailwind)
+
+const isSm = computed(() => breakpoints.smaller('sm').value)
+
+console.log(isSm.value)
+
+const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
 
 // initial data for the root of the graph
@@ -22,6 +28,7 @@ const initialData = {
 const data = ref(initialData)
 
 async function fetchChildren(node: any) {
+  console.log(API_URL)
   if (!node || !node.id) {
     console.error('Invalid node:', node)
     return
@@ -51,13 +58,97 @@ async function fetchChildren(node: any) {
     }
   }
 }
+
+const theNodeInfoDisplay = {
+  Label: '',
+  Definition: '',
+  Dep: '',
+  ID: '',
+  Parents: '',
+  Properties: '',
+  Types: ''
+}
+const nodeInfoDisplay = ref(theNodeInfoDisplay)
+const infoTag = '/node/info/'
+
+const isExpandLeftEd = ref(false)
+const isExpandRightEd = ref(false)
+
+watch(
+  isSm,
+  () => {
+    isExpandLeftEd.value = false
+    isExpandRightEd.value = false
+  },
+  {
+    immediate: true
+  }
+)
+
+function toggleIsExpandLeftEd() {
+  if (isSm.value && isExpandRightEd.value) return
+  isExpandLeftEd.value = !isExpandLeftEd.value
+}
+
+function toggleIsExpandRightEd() {
+  if (isSm.value && isExpandLeftEd.value) return
+  isExpandRightEd.value = !isExpandRightEd.value
+}
+
+async function fetchNodeInfo(nodeId: string) {
+  try {
+    const response = await fetch(`${API_URL}${infoTag}${encodeURIComponent(nodeId)}`)
+    if (!response.ok) {
+      console.error('Failed to fetch node info:', response.status)
+      return null
+    }
+    const nodeInfo = await response.json()
+    nodeInfoDisplay.value.Label = nodeInfo.label
+    nodeInfoDisplay.value.Definition = nodeInfo.definition
+    nodeInfoDisplay.value.Dep = nodeInfo.dep
+    nodeInfoDisplay.value.ID = nodeInfo.id
+    nodeInfoDisplay.value.Parents = nodeInfo.parents
+    nodeInfoDisplay.value.Properties = nodeInfo.properties
+    nodeInfoDisplay.value.Types = nodeInfo.types
+
+    return {
+      nodeInfoDisplay
+    }
+  } catch (error) {
+    console.error('Error fetching node info:', error)
+    return null
+  }
+}
+
+async function handleLabelClicked(nodeUri: string) {
+  await fetchNodeInfo(nodeUri)
+  if (isSm.value && isExpandLeftEd.value) {
+    isExpandLeftEd.value = false
+    //If smaller than 640px and leftside is open.If is not expacted to click the node and will expand the rightsidepanel
+  }
+  isExpandRightEd.value = true
+}
+
+const infoPaneRef = ref()
 </script>
 
 <template>
   <div class="container">
-    <GraphSearchSidepane />
-    <GraphInfoSidepane />
-    <GraphVisualisation :data="data" :fetch-children="fetchChildren" />
+    <GraphSearchSidepane
+      :is-expand-left-ed="isExpandLeftEd"
+      @toggle-is-expand-left-ed="toggleIsExpandLeftEd"
+    />
+    <GraphInfoSidepane
+      ref="infoPaneRef"
+      :node-info-display="nodeInfoDisplay"
+      :is-expand-right-ed="isExpandRightEd"
+      @toggle-is-expand-right-ed="toggleIsExpandRightEd"
+    />
+    <GraphVisualisation
+      :data="data"
+      :fetch-children="fetchChildren"
+      @label-clicked="handleLabelClicked"
+    />
   </div>
 </template>
 
