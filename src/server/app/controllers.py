@@ -431,7 +431,7 @@ def get_parents(
 
         # Add the 'has_parents' field
         if parent_flag:
-            parent_info["has_children"] = has_parents(str(parent), graph, dep)
+            parent_info["has_parents"] = has_parents(str(parent), graph, dep)
 
         # Incriment number of parents since it has now been included as a parent
         num_parents += 1
@@ -542,6 +542,7 @@ def get_local_hierarchy_to_root(
         raise ValueError(f"URI '{uri}' does not exist within the database")
 
     node_list = []
+    children = []
 
     # Create the initial structure for the centre node
     centre_node = get_basic_node_info(uri=uri, graph=graph)
