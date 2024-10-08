@@ -30,7 +30,7 @@ def test_get_root_node_info(sample_graph):
     # Validate the root node info
     assert root_info["id"] == "http://data.15926.org/dm/Thing"
     assert root_info["label"] == "Thing"
-    assert root_info["dep"] is None, "Root node should not have a deprecation date."
+    assert "dep" not in root_info, "Root node should not have a deprecation date."
 
 
 def test_has_children_without_deprecation(sample_graph):
@@ -87,10 +87,12 @@ def test_get_children_without_deprecation(sample_graph):
     assert (
         len(children) == 2
     ), "Root node should have 2 children when dep=False, Child2 and Child4."
+
     assert children[0]["id"] == "http://data.15926.org/dm/Child2"
-    assert children[0]["dep"] is None, "Child2 should not have a deprecation date."
+    assert "dep" not in children[0], "Child2 should not have a deprecation date."
+
     assert children[1]["id"] == "http://data.15926.org/dm/Child4"
-    assert children[1]["dep"] is None, "Child4 should not have a deprecation date."
+    assert "dep" not in children[1], "Child4 should not have a deprecation date."
 
 
 def test_get_children_with_deprecation_included(sample_graph):
@@ -100,12 +102,11 @@ def test_get_children_with_deprecation_included(sample_graph):
     # Get the children of the root node with dep=True
     children = get_children("http://data.15926.org/dm/Thing", sample_graph, dep=True)
 
-    # Validate that both children are returned
+    # Validate that all children are returned
     assert (
         len(children) == 3
     ), "Root node should have 3 children when dep=True, Child1, Child2, and Child4."
 
-    # Check child IDs and deprecation dates
     child_ids = {child["id"] for child in children}
     assert "http://data.15926.org/dm/Child1" in child_ids
     assert "http://data.15926.org/dm/Child2" in child_ids
@@ -118,7 +119,7 @@ def test_get_children_with_deprecation_included(sample_graph):
             ), "Child1 should have a deprecation date."
         else:
             assert (
-                child["dep"] is None
+                "dep" not in child
             ), "Child2 and Child4 should not have deprecation dates."
 
 
