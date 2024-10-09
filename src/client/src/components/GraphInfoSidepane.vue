@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { computed, ref } from 'vue'
 
 const props = defineProps({
@@ -9,6 +10,7 @@ const props = defineProps({
   nodeInfoDisplay: {
     type: Object,
     required: true
+
   },
   isExpandRightEd: {
     type: Boolean
@@ -23,6 +25,7 @@ const emit = defineEmits<Emit>()
 
 const isExpandRightEd = computed(() => props.isExpandRightEd)
 
+
 const isRightExpanded = ref(props.initialExpanded)
 
 function toggleRightNav(): void {
@@ -32,6 +35,7 @@ function toggleRightNav(): void {
 }
 
 function toggleRightNavButton(): void {
+
   emit('toggleIsExpandRightEd')
   return
 }
@@ -91,6 +95,7 @@ export default {
 </template>
 
 <style scoped>
+
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -112,5 +117,37 @@ export default {
 .sidepanel-leave-from {
   transform: translateX(0);
   opacity: 1;
+  
+.rdf-info {
+  flex: 1; /* Allow rdf-info to take up remaining space */
+  margin: 1rem;
+  color: white;
+  /* Allow scrolling within the rdf-info div but no scrollbars */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.rdf-info::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.rdf-field {
+  margin-bottom: 1rem;
+}
+
+.rdf-field-name {
+  display: block;
+  font-weight: bold;
+}
+
+.rdf-field-value {
+  display: block;
+  margin-left: 1rem;
+  white-space: pre-line;
+  word-wrap: break-word;
+  word-break: break-all;
+}
 }
 </style>
