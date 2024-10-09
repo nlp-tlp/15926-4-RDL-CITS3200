@@ -64,6 +64,7 @@ async function fetchChildren(node: any) {
 }
 
 const theNodeInfoDisplay = {
+
   Label: '',
   Definition: '',
   Dep: '',
@@ -74,6 +75,7 @@ const theNodeInfoDisplay = {
 }
 const nodeInfoDisplay = ref(theNodeInfoDisplay)
 const infoTag = '/node/info/'
+
 
 const isExpandLeftEd = ref(false)
 const isExpandRightEd = ref(false)
@@ -109,11 +111,27 @@ async function fetchNodeInfo(nodeId: string) {
     const nodeInfo = await response.json()
     nodeInfoDisplay.value.Label = nodeInfo.label
     nodeInfoDisplay.value.Definition = nodeInfo.definition
+
     nodeInfoDisplay.value.Dep = nodeInfo.dep
     nodeInfoDisplay.value.ID = nodeInfo.id
     nodeInfoDisplay.value.Parents = nodeInfo.parents
     nodeInfoDisplay.value.Properties = nodeInfo.properties
     nodeInfoDisplay.value.Types = nodeInfo.types
+    if (nodeInfo.dep === null) {
+      nodeInfoDisplay.value.Dep = 'N/A'
+    } else {
+      nodeInfoDisplay.value.Dep = nodeInfo.dep
+    }
+    nodeInfoDisplay.value.ID = nodeInfo.id
+    nodeInfoDisplay.value.Parents = ''
+    for (let i = 0; i < nodeInfo.parents.length; i++) {
+      nodeInfoDisplay.value.Parents += '• ' + nodeInfo.parents[i] + '\n'
+    }
+    nodeInfoDisplay.value.Types = ''
+    for (let i = 0; i < nodeInfo.types.length; i++) {
+      nodeInfoDisplay.value.Types += '• ' + nodeInfo.types[i] + '\n'
+    }
+
 
     return {
       nodeInfoDisplay
@@ -131,6 +149,7 @@ async function handleLabelClicked(nodeUri: string) {
     //If smaller than 640px and leftside is open.If is not expacted to click the node and will expand the rightsidepanel
   }
   isExpandRightEd.value = true
+  infoPaneRef.value.toggleRightNav()
 }
 
 const infoPaneRef = ref()
