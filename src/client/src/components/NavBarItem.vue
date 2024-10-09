@@ -64,7 +64,9 @@ export default {
     rel="noopener noreferrer"
   >
     <slot name="icon"></slot>
-    {{ label }}
+    <div>
+      {{ label }}
+    </div>
   </a>
 
   <RouterLink
@@ -77,7 +79,9 @@ export default {
     ]"
   >
     <slot name="icon"></slot>
-    {{ label }}
+    <div class="hidden sm:inline">
+      {{ label }}
+    </div>
   </RouterLink>
 </template>
 
