@@ -17,7 +17,6 @@ interface SearchResult {
   dep?: string | null // If you need the 'dep' property as well
 }
 
-
 // Reactive properties
 const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsExpandLeftEd']) // Defining emit events and leftsidepanel expand
 const isExpandLeftEd = computed(() => props.isExpandLeftEd)
@@ -29,7 +28,6 @@ const showResults = ref(false) // Control whether search results are displayed
 const errorMessage = ref('')
 const showLabels = ref(true) // Control whether labels are displayed in the graph
 const showDeprecated = ref(false) // Control whether deprecated nodes are displayed
-
 
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
@@ -194,7 +192,7 @@ export default {
               </li>
             </ul>
           </div>
-          
+
           <div v-if="isExpandLeftEd" class="m-4 mb-5">
             <label class="flex items-center text-white mb-[30px] mt-7 whitespace-nowrap">
               <input type="checkbox" class="mr-2" v-model="showDeprecated" />
@@ -236,6 +234,7 @@ export default {
           </div>
           <button
             class="w-[80%] mx-auto p-3 bg-nav-background text-white ml-5 border-2 border-white rounded-lg text-sm font-extrabold cursor-pointer mt-5 text-center transition-all duration-300"
+            @click="handleSubmit"
           >
             Submit
           </button>
