@@ -64,7 +64,6 @@ async function fetchChildren(node: any) {
 }
 
 const theNodeInfoDisplay = {
-
   Label: '',
   Definition: '',
   Dep: '',
@@ -75,7 +74,6 @@ const theNodeInfoDisplay = {
 }
 const nodeInfoDisplay = ref(theNodeInfoDisplay)
 const infoTag = '/node/info/'
-
 
 const isExpandLeftEd = ref(false)
 const isExpandRightEd = ref(false)
@@ -131,7 +129,6 @@ async function fetchNodeInfo(nodeId: string) {
     for (let i = 0; i < nodeInfo.types.length; i++) {
       nodeInfoDisplay.value.Types += '• ' + nodeInfo.types[i] + '\n'
     }
-
 
     return {
       nodeInfoDisplay
