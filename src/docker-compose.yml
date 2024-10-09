@@ -1,22 +1,41 @@
 services:
-  client:
-    build: ./client
-    container_name: Client
-    ports:
-      - "${CLIENT_PORT:-5173}:5173"
-    volumes:
-      - ./client:/app
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
+    client:
+        build: ./client
+        container_name: Client
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+            - "traefik.http.services.client.loadbalancer.server.port=5173"
+        env_file:
+            - .env
 
-  server:
-    build: ./server
-    container_name: Server
-    ports:
-      - "${SERVER_PORT:-5000}:5000"
-    volumes:
-      - ./server:/app
-      - ./db:/db # Mount the database for access
-    environment:
-      - FLASK_ENV=${FLASK_ENV:-development}
-      - FLASK_APP=${FLASK_APP:-server.py}
+    server:
+        build: ./server
+        container_name: Server
+        volumes:
+            - db-data:/app/db
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.server.rule=PathPrefix(`/node`) || PathPrefix(`/search`)"
+            - "traefik.http.services.server.loadbalancer.server.port=5000"
+        environment:
+            - FLASK_ENV=production
+            - FLASK_APP=${FLASK_APP:-server.py}
+
+    traefik:
+        image: "traefik:v2.4"
+        container_name: Traefik
+        command:
+            - "--log.level=INFO"
+            - "--api.insecure=false"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--entryPoints.web.address=:80"
+        ports:
+            - "80:80" # HTTP
+            - "8080:8080" # Traefik Dashboard
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+volumes:
+    db-data: # Yes nothing below this line

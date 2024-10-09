@@ -1,0 +1,64 @@
+name: Deploy Client and Server to AWS Lightsail
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.LIGHTSAIL_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.LIGHTSAIL_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Set up production environment
+        run: |
+          echo -e "\nVITE_SERVER_URL=http://${{ secrets.LIGHTSAIL_HOST }}:80" >> ./src/.env.production
+
+      - name: Build Docker images
+        run: |
+          docker build -t myclient ./src/client
+          docker build -t myserver ./src/server
+
+      - name: Export Docker images
+        run: |
+          docker save myclient | gzip > client_image.tar.gz
+          docker save myserver | gzip > server_image.tar.gz
+
+      - name: Transfer Docker Compose files and Docker images to Lightsail
+        run: |
+          scp -i ~/.ssh/id_rsa ./src/docker-compose.prod.yml ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/docker-compose.yml
+          scp -i ~/.ssh/id_rsa ./src/../src/.env.production ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu
+          scp -i ~/.ssh/id_rsa client_image.tar.gz ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
+          scp -i ~/.ssh/id_rsa server_image.tar.gz ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/
+
+      - name: Transfer SSL Certificate and Key Files
+        run: |
+          # Decode the SSL secrets and write them to files
+          echo "${{ secrets.SSL_PRIVATE_KEY }}" > private.key
+          echo "${{ secrets.SSL_CERTIFICATE }}" > certificate.crt
+          echo "${{ secrets.SSL_CA_BUNDLE }}" > ca-bundle.crt
+
+          # Ensure the /home/ubuntu/certs/ directory exists on the server
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "mkdir -p /home/ubuntu/certs"
+
+          # Transfer these files to the server
+          scp -i ~/.ssh/id_rsa ./src/../src/tls.yml ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/tls.yml
+          scp -i ~/.ssh/id_rsa private.key ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/private.key
+          scp -i ~/.ssh/id_rsa certificate.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/certificate.crt
+          scp -i ~/.ssh/id_rsa ca-bundle.crt ubuntu@${{ secrets.LIGHTSAIL_HOST }}:/home/ubuntu/certs/ca-bundle.crt
+
+      - name: Load Docker images and run containers on Lightsail
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker compose down && docker load -i /home/ubuntu/client_image.tar.gz && docker load -i /home/ubuntu/server_image.tar.gz"
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker image prune -f"
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.LIGHTSAIL_HOST }} "docker compose up -d"

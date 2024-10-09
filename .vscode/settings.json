@@ -11,5 +11,8 @@
 	"eslint.validate": ["typescript"],
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"typescript.preferences.importModuleSpecifier": "non-relative",
-	"eslint.workingDirectories": ["./src/client"]
+	"eslint.workingDirectories": ["./src/client"],
+	"[yaml]": {
+		"editor.defaultFormatter": "redhat.vscode-yaml"
+	}
 }

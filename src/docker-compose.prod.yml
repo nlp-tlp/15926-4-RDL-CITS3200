@@ -1,0 +1,69 @@
+services:
+    client:
+        image: myclient
+        container_name: Client
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.middlewares.client-https.redirectscheme.scheme=https"
+            # HTTP Router
+            - "traefik.http.routers.client-http.rule=Host(`iso15926vis.org`) && PathPrefix(`/`)" # Domain rule
+            - "traefik.http.routers.client-http.entrypoints=web" # HTTP entrypoint
+            - "traefik.http.routers.client-http.priority=1" # Lower priority to let server rules override client
+            # HTTPS Router
+            - "traefik.http.routers.client-https.rule=Host(`iso15926vis.org`) && PathPrefix(`/`)" # Domain rule
+            - "traefik.http.routers.client-https.entrypoints=websecure" # HTTPS entrypoint
+            - "traefik.http.routers.client-https.priority=1"
+            - "traefik.http.routers.client-https.tls=true" # Enable TLS for HTTPS
+            - "traefik.http.services.client.loadbalancer.server.port=${CLIENT_PORT:-5173}" # Forward to Nginx on 5173
+        ports:
+            - "${CLIENT_PORT:-5173}:5173"
+        env_file:
+            - .env.production
+
+    server:
+        image: myserver
+        container_name: Server
+        ports:
+            - "${SERVER_PORT:-5000}:5000"
+        volumes:
+            - db-data:/app/db
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.middlewares.server-https.redirectscheme.scheme=https"
+            # HTTP Router
+            - "traefik.http.routers.server-http.rule=Host(`iso15926vis.org`) && (PathPrefix(`/node`) || PathPrefix(`/search`))"
+            - "traefik.http.routers.server-http.entrypoints=web"
+            - "traefik.http.routers.server-http.priority=10" # Higher priority to match API routes first
+            # HTTPS Router
+            - "traefik.http.routers.server-https.rule=Host(`iso15926vis.org`) && (PathPrefix(`/node`) || PathPrefix(`/search`))"
+            - "traefik.http.routers.server-https.entrypoints=websecure"
+            - "traefik.http.routers.server-https.priority=10"
+            - "traefik.http.routers.server-https.tls=true" # Enable TLS for HTTPS
+            - "traefik.http.services.server.loadbalancer.server.port=${SERVER_PORT:-5000}" # Forward to server on 5000
+        environment:
+            - FLASK_ENV=production
+            - FLASK_APP=${FLASK_APP:-server.py}
+
+    traefik:
+        image: "traefik:v3.1"
+        container_name: Traefik
+        command:
+            - "--log.level=INFO"
+            - "--api.insecure=false"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--entryPoints.web.address=:80"
+            - "--entryPoints.websecure.address=:443"
+            - "--entryPoints.websecure.http.tls=true" # Enable TLS for websecure
+            - "--providers.file.directory=/certs/"
+            - "--providers.file.watch=true"
+        ports:
+            - "80:80" # HTTP
+            - "443:443" # HTTPS
+            - "8080:8080" # Traefik Dashboard
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            - "/home/ubuntu/certs:/certs" # SSL certificate directory
+
+volumes:
+    db-data: # Yes nothing below this line
