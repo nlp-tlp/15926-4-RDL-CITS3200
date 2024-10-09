@@ -156,6 +156,8 @@ function handleToggleLabels(value: boolean) {
     <GraphSearchSidepane
       :is-expand-left-ed="isExpandLeftEd"
       @toggle-is-expand-left-ed="toggleIsExpandLeftEd"
+      @toggle-labels="handleToggleLabels"
+      @toggle-deprecated="handleShowDeprecatedToggle"
     />
     <GraphInfoSidepane
       ref="infoPaneRef"
@@ -167,8 +169,6 @@ function handleToggleLabels(value: boolean) {
       :data="data"
       :fetch-children="fetchChildren"
       @label-clicked="handleLabelClicked"
-      @toggle-labels="handleToggleLabels"
-      @toggle-deprecated="handleShowDeprecatedToggle"
       :show-labels="showLabelsInGraph"
     />
   </div>
