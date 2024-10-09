@@ -3,8 +3,6 @@ copyright: System Health Lab
 repo_url: https://github.com/nlp-tlp/15926-4-RDL-CITS3200
 
 theme:
-    logo: nlp-tlp-192x192.png
-    favicon: favicon-32x32.png
     name: material
     palette:
         - media: "(prefers-color-scheme: light)"
