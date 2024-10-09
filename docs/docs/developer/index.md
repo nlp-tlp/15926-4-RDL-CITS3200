@@ -14,6 +14,6 @@ The server is part of the backend and is written as a lightweight REST API. It q
 
 ### Command-line interface
 
-The command-line interface (CLI) part of the backend, and is used as admin access to interact with the server and stored RDL data. It is also responsible for updating the served data from our source of truth for the RDL at https://data.15926.org/rdl.
+The command-line interface (CLI) part of the backend, and is used as admin access to interact with the server and stored RDL data. It is also responsible for updating the served data from our source of truth for the RDL at [https://data.15926.org/rdl](https://data.15926.org/rdl).
 
 Note that the CLI and database files are both located under the server folder in the source code, though the CLI was built separately. This is for convenience of deployment.

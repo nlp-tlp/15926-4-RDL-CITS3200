@@ -26,8 +26,13 @@ nav:
     - Overview: index.md
     - Developer:
           - Introduction: developer/index.md
+          - Tech stack: developer/tech-stack.md
+          - Developer setup: developer/deverloper-setup.md
+          - CI/CD: developer/cicd.md
     - Maintainer:
           - Introduction: maintainer/index.md
+          - Accessing production: maintainer/using-instance.md
+          - Migrating production: maintainer/migrating-instance.md
     - Administrator:
           - Introduction: administrator/index.md
     - Changelog:
