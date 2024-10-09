@@ -8,6 +8,7 @@ theme:
         - navigation.tabs
 
 extra:
+  favicon: 'img/favicon.ico'
   extra_head: |
     <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png" />
