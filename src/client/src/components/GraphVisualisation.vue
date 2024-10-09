@@ -34,7 +34,7 @@
 import * as d3 from 'd3'
 import { saveAs } from 'file-saver'
 import html2canvas from 'html2canvas'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
   /**
@@ -87,7 +87,7 @@ const captureScreen = () => {
 
 // Function to inline all styles into the SVG
 //(Styles from our d3 graph have to be put inline to export as a SVG)
-const inlineStyles = (element: HTMLElement) => {
+const inlineStyles = (element: SVGElement) => {
   const styleSheets = Array.from(document.styleSheets)
 
   styleSheets.forEach((styleSheet) => {
@@ -150,9 +150,9 @@ const closePreview = () => {
   isPreviewVisible.value = false
 }
 
-const svgRef = ref(null)
 // Reference to the SVG elemen
 const svgRef = ref<SVGSVGElement | null>(null)
+// const svgRef = ref(null)
 
 // Graph dimensions
 const width: number = window.innerWidth
@@ -487,10 +487,7 @@ export default {
 }
 </script>
 
-<template>
-  <svg ref="svgRef"></svg>
-</template>
-
+<style>
 .link {
   fill: none;
   stroke: #555;
@@ -555,6 +552,7 @@ select {
   padding: 0.3rem;
   width: 100%;
   border-radius: 5px;
+  border: 1px solid black;
 }
 
 .spinner {
