@@ -150,8 +150,6 @@ def get_all_node_info(uri: str, graph, all_info: bool = True) -> dict[str, any]:
                 else:
                     node_info["properties"][pred_str] = [obj_str]
 
-    # node_info["types"] = "\n".join(f"• {item} \n HELLO" for item in node_info["types"])
-
     return node_info
 
 
