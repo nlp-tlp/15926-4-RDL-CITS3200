@@ -63,7 +63,7 @@ export default {
 <template>
   <div>
     <button
-      class="fixed top-[5rem] right-2 bg-transparent cursor-pointer border-none text-[22px] font-bold z-20 text-nav-background transition-colors duration-300 ease-in-out"
+      class="right-btn fixed top-[5rem] right-2 bg-transparent cursor-pointer border-none text-[22px] font-bold z-20 text-nav-background transition-colors duration-300 ease-in-out"
       @click="toggleRightNavButton"
       :class="{ 'text-white': isExpandRightEd }"
     >
@@ -73,7 +73,7 @@ export default {
     <transition name="sidepanel">
       <div
         v-if="isExpandRightEd"
-        class="fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-[calc(100vh-var(--navbar-height,4.5rem))] bg-nav-background z-10 flex flex-col pt-1 transform transition-transform duration-500 ease-in-out"
+        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-[calc(100vh-var(--navbar-height,4.5rem))] bg-nav-background z-10 flex flex-col pt-1 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-nowrap">Node Information</p>
 

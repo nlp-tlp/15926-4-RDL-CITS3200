@@ -128,7 +128,7 @@ export default {
 <template>
   <div>
     <button
-      class="fixed top-20 left-2 bg-transparent cursor-pointer border-none text-2xl font-bold z-20 text-nav-background transition-colors duration-500 ease"
+      class="left-btn fixed top-20 left-2 bg-transparent cursor-pointer border-none text-2xl font-bold z-20 text-nav-background transition-colors duration-500 ease"
       @click="toggleLeftNav"
       :class="{ 'text-white': isExpandLeftEd }"
     >
@@ -138,7 +138,7 @@ export default {
     <transition name="sidepanel">
       <div
         v-if="isExpandLeftEd"
-        class="sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-[calc(100vh-4.5rem)] bg-nav-background transition-transform duration-500 ease overflow-hidden"
+        class="left-sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-[calc(100vh-4.5rem)] bg-nav-background transition-transform duration-500 ease overflow-hidden"
       >
         <p class="ml-auto text-white mt-3 mr-4 whitespace-nowrap">Graph Search</p>
 
