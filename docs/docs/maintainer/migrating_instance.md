@@ -1,32 +1,32 @@
-## Migrating instances
+# Migrating instances
 
 The current production website is hosted on AWS Lightsail. Here are instructions for if the instance needs to be shut down or a new instance needs to be set up the same way.
 
-### Shutting down Lightsail instance
+## Shutting down Lightsail instance
 
-#### Detaching static IP address
+### Detaching static IP address
 
 In the AWS Lightsail web app, select the iso15926vis instance. In the instance management go to the Networking tab, where you will see a pin icon under the public IPv4 address. Select it to go to the the details of the Static IP address.
 
 If you want to stop hosting an instance altogether, make sure to the delete the instance. If not, simply detach the IP from the instance and reassign it to the new instance later.
 
-#### Deleting the Lightsail instance
+### Deleting the Lightsail instance
 
 Back in the management console for the instance, stop the instance and delete it.
 
-#### Removing Github autodeployment pipeline
+### Removing Github autodeployment pipeline
 
 If you do not intend to initialise another Lightsail instance, or use a similar service, disable or remove the Lightsail deploy pipeline from Github.
 
-### Initialising Lightsail instance
+## Initialising Lightsail instance
 
-#### Create Lightsail instance
+### Create Lightsail instance
 
 From the AWS Lightsail webapp, create a new instance and choose the packages and configurations you want. Choose a region for the instance to be in that is closest to where your users will be located.
 
 The instance can run on a 1GB RAM instance but has best performance on a 2GB RAM instance. The following steps are based on Ubuntu.
 
-#### Assigning static IP address
+### Assigning static IP address
 
 A static IP address is required to ensure that the public IP address of the instance will not change after stopping and starting again.
 
@@ -34,7 +34,7 @@ In the Networking tab of the instance's management console, choose Create static
 
 Note that static IP addresses can only be attached to instances in the same region.
 
-#### Lightsail Docker initialisation
+### Lightsail Docker initialisation
 
 To set up Docker on the instance, follow these commands in order (or use any equivalent docker installation steps).
 
@@ -73,11 +73,11 @@ sudo usermod -aG docker ubuntu
 newgrp docker
 ```
 
-#### Opening ports
+### Opening ports
 
 In the Networking tab of the instance management console, make new rules to open up ports 80 (HTTP) and 443 (HTTPS), and any other ports you want open for the project to run.
 
-#### Github auto-deployment setup
+### Github auto-deployment setup
 
 To use the auto-deployment setup in the Github repo, you need to set up Github to use SSH. For more information about this pipeline, go to the Developer documentation's CI/CD section.
 
