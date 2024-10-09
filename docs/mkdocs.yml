@@ -12,7 +12,7 @@ nav:
     - Developer:
           - Introduction: developer/index.md
           - Tech stack: developer/tech_stack.md
-          - Developer setup: developer/deverloper_setup.md
+          - Developer setup: developer/developer_setup.md
           - CI/CD: developer/cicd.md
     - Maintainer:
           - Introduction: maintainer/index.md

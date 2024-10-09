@@ -39,12 +39,19 @@ docker exec -it Server /app/cli.py
 When run, the CLI specifies what choices you can make on each menu.
 
 The main CLI menu has:
-**Q** = Quit the program\
-**V** = Check the version, which shows you the current RDL .ttl file that is in use as well as when it was created\
-**U** = Update the database, which will create a new .ttl file from the data on [https://data.15926.org/rdl](https://data.\15926.org/rdl) and reload the server's graph if it is running.\
+
+**Q** = Quit the program
+
+**V** = Check the version, which shows you the current RDL .ttl file that is in use as well as when it was created
+
+**U** = Update the database, which will create a new .ttl file from the data on [https://data.15926.org/rdl](https://data.\15926.org/rdl) and reload the server's graph if it is running.
+
 **M** = Modify the database in use.
 
-If you choose option **M**, you will be directed to another menu with choices:\
-**D** = Delete a database, which will let you choose a .ttl file to delete\
-**C** = Change the current database in use, which will show you all the .ttl files you have stored and which you can switch between.\
-**Q** = Return to the previous menu.\
+If you choose option **M**, you will be directed to another menu with choices:
+
+**D** = Delete a database, which will let you choose a .ttl file to delete
+
+**C** = Change the current database in use, which will show you all the .ttl files you have stored and which you can switch between.
+
+**Q** = Return to the previous menu.
