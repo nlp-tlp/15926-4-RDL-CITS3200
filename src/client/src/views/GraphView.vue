@@ -56,6 +56,58 @@ async function fetchChildren(node: any) {
   }
 }
 
+const theNodeInfoDisplay = {
+  ID: '',
+  Label: '',
+  Definition: '',
+  Dep: '',
+  Parents: '',
+  Types: ''
+}
+const nodeInfoDisplay = ref(theNodeInfoDisplay)
+const infoTag = '/node/info/'
+
+async function fetchNodeInfo(nodeId: string) {
+  try {
+    const response = await fetch(`${API_URL}${infoTag}${encodeURIComponent(nodeId)}`)
+    if (!response.ok) {
+      console.error('Failed to fetch node info:', response.status)
+      return null
+    }
+    const nodeInfo = await response.json()
+    nodeInfoDisplay.value.Label = nodeInfo.label
+    nodeInfoDisplay.value.Definition = nodeInfo.definition
+    if (nodeInfo.dep === null) {
+      nodeInfoDisplay.value.Dep = 'N/A'
+    } else {
+      nodeInfoDisplay.value.Dep = nodeInfo.dep
+    }
+    nodeInfoDisplay.value.ID = nodeInfo.id
+    nodeInfoDisplay.value.Parents = ''
+    for (let i = 0; i < nodeInfo.parents.length; i++) {
+      nodeInfoDisplay.value.Parents += '• ' + nodeInfo.parents[i] + '\n'
+    }
+    nodeInfoDisplay.value.Types = ''
+    for (let i = 0; i < nodeInfo.types.length; i++) {
+      nodeInfoDisplay.value.Types += '• ' + nodeInfo.types[i] + '\n'
+    }
+
+    return {
+      nodeInfoDisplay
+    }
+  } catch (error) {
+    console.error('Error fetching node info:', error)
+    return null
+  }
+}
+
+async function handleLabelClicked(nodeUri: string) {
+  await fetchNodeInfo(nodeUri)
+  infoPaneRef.value.toggleRightNav()
+}
+
+const infoPaneRef = ref()
+
 // Toggles "showDeprecated" and re-fetches the node's children.
 function handleShowDeprecatedToggle(value: boolean) {
   showDeprecated.value = value
@@ -78,10 +130,11 @@ function handleToggleLabels(value: boolean) {
       @toggle-labels="handleToggleLabels"
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
-    <GraphInfoSidepane />
+    <GraphInfoSidepane ref="infoPaneRef" :node-info-display="nodeInfoDisplay" />
     <GraphVisualisation
       :data="data"
       :fetch-children="fetchChildren"
+      @label-clicked="handleLabelClicked"
       :show-labels="showLabelsInGraph"
     />
   </div>
