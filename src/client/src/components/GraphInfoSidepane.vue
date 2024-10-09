@@ -1,35 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = withDefaults(
-  defineProps<{
-    /**
-     * Determines if the side panel is initially expanded.
-     */
-    initialExpanded?: boolean
-  }>(),
-  {
-    initialExpanded: false
+const props = defineProps({
+  initialExpanded: {
+    type: Boolean,
+    default: false
+  },
+  nodeInfoDisplay: {
+    type: Object,
+    required: true
   }
-)
+})
 
 const isRightExpanded = ref(props.initialExpanded)
 
 function toggleRightNav(): void {
+  if (!isRightExpanded.value) {
+    isRightExpanded.value = !isRightExpanded.value
+  }
+}
+
+function toggleRightNavButton(): void {
   isRightExpanded.value = !isRightExpanded.value
 }
 
-// Mock RDF data for demonstration purposes
-const mockRDFData = {
-  Label: 'AbstractObject',
-  id: 'http://data.15926.org/dm/AbstractObject',
-  Definition: 'An <AbstractObject>; is a <Thing>; that does not exist in space-time',
-  'subclass of': 'Thing',
-  Type: ['Class', 'ISO15926-2 ENTITY TYPE']
-}
+defineExpose({
+  toggleRightNav
+})
 
 // Create a reactive object to hold the RDF data
-const rdfData = ref(mockRDFData)
+const rdfData = ref(props.nodeInfoDisplay)
 </script>
 
 <script lang="ts">
@@ -50,7 +50,11 @@ export default {
 
 <template>
   <div>
-    <button class="right-btn" @click="toggleRightNav" :class="{ 'expanded-btn': isRightExpanded }">
+    <button
+      class="right-btn"
+      @click="toggleRightNavButton"
+      :class="{ 'expanded-btn': isRightExpanded }"
+    >
       &#9776;
     </button>
 
@@ -109,6 +113,7 @@ export default {
     background-color 0.5s ease;
   transform: translateX(0);
   overflow: hidden; /* Ensure the side panel itself does not scroll */
+  white-space: normal;
 }
 
 .right-text {
@@ -155,7 +160,8 @@ export default {
 .rdf-field-value {
   display: block;
   margin-left: 1rem;
-  white-space: normal;
+  white-space: pre-line;
   word-wrap: break-word;
+  word-break: break-all;
 }
 </style>
