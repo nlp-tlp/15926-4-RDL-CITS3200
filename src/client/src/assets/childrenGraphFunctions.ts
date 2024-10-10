@@ -24,10 +24,6 @@ const nodeNoParentsColor: string = '#999'
  * @param emit The emit function of the component
  */
 function drawChildrenGraph(data: any, root: any, svg: any, props: any, emit: any) {
-  if (!data || !data.has_children) {
-    return
-  }
-
   // Construct root node/hierarchy from the data
   root = d3.hierarchy(data)
 
@@ -132,6 +128,8 @@ function renderChildrenNodes(
 
   // append text to the node
   nodeEnter
+    // exclude the root node from the text
+    .filter((d: any) => d.depth !== 0)
     .append('text')
     .attr('dy', '.35em')
     .text((d: any) => d.data.label)
@@ -145,7 +143,7 @@ function renderChildrenNodes(
     // display the node based on the parent expanded state - this is to avoid the node being displayed when the parent is collapsed if has not been handled by the togglecollapse function (should not happen - but just in case)
     .style('display', (d: any) => (d.parent && !d.parent.data.expanded ? 'none' : null))
 
-  // Update the text position based on the expanded state - note that text will overlap with the parent text for the root node (doesn't make any visual difference)
+  // Update the text position based on the expanded state
   nodeUpdate
     .select('text')
     // display none if prop showLabels is false
