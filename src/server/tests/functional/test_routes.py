@@ -100,7 +100,7 @@ def test_node_info_route_missing_id(test_client):
     assert response.status_code == 400
     assert "error" in json_data
     assert json_data["error"] == "ID/URI not provided. Must use '/node/info/<id>'"
-    
+
 
 def test_selected_info_route_missing_id(test_client):
     """
@@ -112,7 +112,9 @@ def test_selected_info_route_missing_id(test_client):
     # Assert the response is a 400 Bad Request due to missing ID/URI
     assert response.status_code == 400
     assert "error" in json_data
-    assert json_data["error"] == "ID/URI not provided. Must use '/node/selected-info/<id>'"
+    assert (
+        json_data["error"] == "ID/URI not provided. Must use '/node/selected-info/<id>'"
+    )
 
 
 def test_node_info_route_invalid_id(test_client):

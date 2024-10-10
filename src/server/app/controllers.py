@@ -70,7 +70,7 @@ def get_basic_node_info(uri: str, graph, default_dep: bool = False) -> dict[str,
     return node_info
 
 
-def get_node_info_with_relations(uri: str, graph, dep: bool = False) -> dict[str, any]: 
+def get_node_info_with_relations(uri: str, graph, dep: bool = False) -> dict[str, any]:
     """
     Retrieves information about a node, including its label, deprecation date, and whether it has children or parents.
 

@@ -4,26 +4,47 @@
 # Run client-side checks
 cd src/client && npm run lint:fix && npm run format && npm run type-check
 
-# Navigate to the server directory
-cd ../../src/server
+# Navigate back to the root directory
+cd ../../
 
 # Define possible virtual environment directories as a space-separated list
 venv_dirs="venv .venv env myenv"
-# Attempt to activate the virtual environment
+# Attempt to activate the virtual environment in the root directory
 venv_found=false
 for venv_dir in $venv_dirs; do
   if [ -d "$venv_dir/bin" ]; then
-    echo "Activating virtual environment: $venv_dir"
+    echo "Activating virtual environment in root: $venv_dir"
     . "$venv_dir/bin/activate"
     venv_found=true
     break
   elif [ -d "$venv_dir/Scripts" ]; then
-    echo "Activating virtual environment: $venv_dir (Windows)"
+    echo "Activating virtual environment in root: $venv_dir (Windows)"
     . "$venv_dir/Scripts/activate"
     venv_found=true
     break
   fi
 done
+
+# Navigate to the server directory
+cd src/server
+
+# If no virtual environment was found in the root directory, check in the server directory
+if [ "$venv_found" = false ]; then
+  for venv_dir in $venv_dirs; do
+    if [ -d "$venv_dir/bin" ]; then
+      echo "Activating virtual environment in server: $venv_dir"
+      . "$venv_dir/bin/activate"
+      venv_found=true
+      break
+    elif [ -d "$venv_dir/Scripts" ]; then
+      echo "Activating virtual environment in server: $venv_dir (Windows)"
+      . "$venv_dir/Scripts/activate"
+      venv_found=true
+      break
+    fi
+  done
+fi
+
 # Check if a virtual environment was found
 if [ "$venv_found" = false ]; then
   echo "No virtual environment found. Please ensure one is set up."
