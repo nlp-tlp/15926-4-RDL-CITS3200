@@ -4,8 +4,8 @@ import { fetchChildren } from '@/assets/apiFunctions'
 
 // node dimensions + spacing
 const nodeRadius: number = 7
-const nodeDistanceX: number = 25
-const nodeDistanceY: number = 350
+const nodeDistanceX: number = 30
+const nodeDistanceY: number = 370
 
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
@@ -113,8 +113,10 @@ function renderChildrenNodes(
         return d.data.has_children ? nodeNormalColor : nodeNoParentsColor
       }
     })
-    // set the cursor style based on the presence of children
-    .attr('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
+    // set the cursor style based on the presence of children, if root, leave as default
+    .attr('cursor', (d: any, i: number) =>
+      i === 0 ? 'default' : d.data.has_children ? 'pointer' : 'default'
+    )
     .attr('stroke', '#444')
     .attr('stroke-width', (d: any) => (d.data.has_children ? 2 : 0))
 
@@ -146,7 +148,7 @@ function renderChildrenNodes(
     .style('text-anchor', (d: any, i: number) =>
       i === 0 ? 'middle' : d.data.expanded ? 'end' : 'start'
     )
-    .style('font-weight', (d: any) => (d.data.dep ? 300 : 450))
+    .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
     .style('font-style', (d: any) => (d.data.dep ? 'italic' : 'normal'))
 
   // remove the nodes that are no longer needed
@@ -169,7 +171,7 @@ async function toggleChildrenCollapse(
   props: any
 ) {
   if (!node.data.has_children) {
-    console.log('Node has no children:', node)
+    // console.log('Node has no children:', node.data.label)
     return
   }
 

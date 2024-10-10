@@ -74,7 +74,7 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
     console.error('Invalid node:', node)
     return null
   }
-  // Only root node, i.e. 'Thing has no parents
+  // Only root node, i.e. 'Thing' has no parents
   if (!node.has_parents) {
     // console.log('Node has no parents:', node)
     return null

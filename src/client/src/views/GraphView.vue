@@ -12,14 +12,26 @@ const showLabels = ref(true)
 // The ID of the selected node for which we are rendering the graph - default is `Thing`
 const selectedNodeId = ref('http://data.15926.org/dm/Thing')
 
+/**
+ * Handles the event when the user toggles the deprecated nodes visibility.
+ * @param {boolean} val - The new value of the flag to include deprecated nodes.
+ */
 function handleToggleDeprecated(val: boolean) {
   showDeprecated.value = val
 }
 
+/**
+ * Handles the event when the user selects a node in the graph.
+ * @param {string} nodeId - The ID of the selected node.
+ */
 function handleNodeSelected(nodeId: string) {
   selectedNodeId.value = nodeId
 }
 
+/**
+ * Handles the event when the user toggles the visibility of labels on the graph nodes.
+ * @param {boolean} val - The new value of the flag to show labels.
+ */
 function handleToggleLabels(val: boolean) {
   showLabels.value = val
 }

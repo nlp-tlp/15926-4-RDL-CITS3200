@@ -47,7 +47,7 @@ let svg: any
 let childrenRoot: any
 let parentsRoot: any
 
-// onMounted hook to initialise the graph and render with the initial data - prop `Thing` as initial node
+// onMounted hook to initialise the graph and render with the initial data - prop `Thing` as initial node before search
 onMounted(() => {
   initialiseGraph()
   fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
@@ -56,7 +56,7 @@ onMounted(() => {
   })
 })
 
-// Watch the selected node ID and if it changes, render the graph with the new data
+// Watch the selected node ID prop and if it changes, re-render the graph with the new data
 watch(
   () => props.selectedNodeId,
   (newVal, oldVal) => {
@@ -154,16 +154,17 @@ function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
 
 <script lang="ts">
 /**
- * GraphVisualisation component represents the global graph hierarchy visualisation.
- * It uses D3.js to render the graph with the provided data object.
- * The graph is interactive and allows for collapsing and expanding nodes.
- * The component also fetches the children of a node from the server upon node expansion.
+ * Graph visualisation component to render the children and parents graph of the selected node.
+ * The component uses D3.js to render the graph.
  *
- * @param {Object} data - The reactive data object to be visualised.
- * @param {Function} fetchChildren - Function to fetch the children of a node from the server.
+ * @param {boolean} includeDeprecated - Flag to include deprecated nodes in the graph.
+ * @param {string} selectedNodeId - The ID of the selected node for which to render the graph.
+ * @param {boolean} showLabels - Flag to show labels on the graph nodes.
  *
  * @example
- * <GraphVisualisation :data="data" :fetch-children="fetchChildren" />
+ * <GraphVisualisation includeDeprecated selectedNodeId="http://data.15926.org/dm/Thing" showLabels />
+ * <GraphVisualisation :includeDeprecated="false" :selectedNodeId="selectedNodeId" :showLabels="true" />
+ * <GraphVisualisation />
  */
 export default {
   name: 'GraphVisualisation'

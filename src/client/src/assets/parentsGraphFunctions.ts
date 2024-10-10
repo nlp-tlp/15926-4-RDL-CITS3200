@@ -4,8 +4,8 @@ import { fetchParents } from '@/assets/apiFunctions'
 
 // node dimensions + spacing
 const nodeRadius: number = 7
-const nodeDistanceX: number = 25
-const nodeDistanceY: number = 350
+const nodeDistanceX: number = 30
+const nodeDistanceY: number = 370
 
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
@@ -107,8 +107,10 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
         return d.data.has_parents ? nodeNormalColor : nodeNoParentsColor
       }
     })
-    // set the cursor style based on the presence of parents
-    .attr('cursor', (d: any) => (d.data.has_parents ? 'pointer' : 'default'))
+    // set the cursor style based on the presence of parents, if root, leave default
+    .attr('cursor', (d: any, i: number) =>
+      i === 0 ? 'default' : d.data.has_parents ? 'pointer' : 'default'
+    )
     .attr('stroke', '#444')
     .attr('stroke-width', (d: any) => (d.data.has_parents ? 2 : 0))
 
@@ -141,7 +143,7 @@ function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData
     .style('text-anchor', (d: any, i: number) =>
       i === 0 ? 'middle' : d.data.expanded ? 'end' : 'start'
     )
-    .style('font-weight', (d: any) => (d.data.dep ? 300 : 450))
+    .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
     .style('font-style', (d: any) => (d.data.dep ? 'italic' : 'normal'))
 
   // remove the nodes that are no longer needed
