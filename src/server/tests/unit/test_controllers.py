@@ -185,7 +185,32 @@ def test_get_node_info_with_relations(sample_graph):
     assert node_info["dep"] is None
     assert node_info["has_children"] is False
     assert node_info["has_parents"] is True
-
+    
+ 
+def test_get_node_info_with_relations_deprecated(sample_graph):
+    """
+    Test the get_node_info_with_relations function from controllers.py with deprecated nodes.
+    """
+    # Test with a node that has deprecated parents
+    node_uri = "http://data.15926.org/dm/Child3"
+    node_info = get_node_info_with_relations(node_uri, sample_graph, dep=True)
+    
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child Three"
+    assert node_info["dep"] is None
+    assert node_info["has_children"] is False
+    assert node_info["has_parents"] is True
+        
+    # Test with a node that has deprecated children
+    node_uri = "http://data.15926.org/dm/Child4"
+    node_info = get_node_info_with_relations(node_uri, sample_graph, dep=True)
+    
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child Four"
+    assert node_info["dep"] is None
+    assert node_info["has_children"] is True
+    assert node_info["has_parents"] is True
+ 
 
 def test_get_all_node_info(sample_graph):
     """

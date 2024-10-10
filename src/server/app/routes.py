@@ -252,6 +252,9 @@ def selected_info(node_uri):
 
     Args:
         node_uri (str): The URI of the node to retrieve information for.
+        
+    Query Parameters:
+        dep (bool): Whether to include deprecated nodes. Default is False.
 
     Raises:
         ValueError: If the node does not exist in the graph.
@@ -260,6 +263,10 @@ def selected_info(node_uri):
     Returns:
         JSON: The selected information for the given node.
     """
+    include_deprecation = controllers.str_to_bool(
+        request.args.get("dep", default=False)
+    )
+    
     try:
         # Check if the graph is available
         if not hasattr(current_app, "graph"):
@@ -267,7 +274,7 @@ def selected_info(node_uri):
 
         # Fetch the node information
         node_info = controllers.get_node_info_with_relations(
-            uri=node_uri, graph=current_app.graph
+            uri=node_uri, graph=current_app.graph, dep=include_deprecation
         )
 
     except ValueError as e:
