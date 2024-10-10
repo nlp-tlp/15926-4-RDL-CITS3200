@@ -21,6 +21,9 @@ const nodeNoParentsColor: string = '#999'
  * @param props The properties of the graph
  */
 function drawParentsGraph(data: any, root: any, svg: any, props: any) {
+  if (!data || !data.has_parents) {
+    return
+  }
   // Construct the hierarchy
   root = d3.hierarchy(data)
 
