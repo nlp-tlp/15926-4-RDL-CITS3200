@@ -78,9 +78,9 @@ export default {
       </p>
     </section>
 
-    <section class="text-center mb-[50px]">
+    <section class="flex lg:flex-row flex-col justify-center items-center text-center mb-[50px]">
       <a href="https://www.uwa.edu.au/" class="inline-block hover:bg-transparent cursor-pointer" target="_blank">
-        <img src="/images/UWA Logo.png" class="max-w-[188px] mr-[52px] mb-[11.5px]" alt="University of Western Australia Logo" />
+        <img src="/images/UWA Logo.png" class="max-w-[188px] lg:mr-[45px] lg:mb-[0px] mb-[20px]" alt="University of Western Australia Logo" />
       </a>
       <a href="https://nlp-tlp.org/" class="inline-block hover:bg-transparent cursor-pointer" target="_blank">
         <img
