@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { computed, ref, watch } from 'vue'
 
 import { fetchNodeInfo } from '../assets/apiFunctions'
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+
+const isSm = computed(() => breakpoints.smaller('sm').value)
 
 // Boolean flag to include deprecated nodes in the graph - default is false
 const showDeprecated = ref(false)
@@ -65,6 +70,30 @@ async function handleLabelClicked(nodeUri: string) {
   }
 }
 const infoPaneRef = ref()
+
+const isLeftExpanded = ref(false)
+const isRightExpanded = ref(false)
+
+watch(
+  isSm,
+  () => {
+    isLeftExpanded.value = false
+    isRightExpanded.value = false
+  },
+  {
+    immediate: true
+  }
+)
+
+function toggleIsLeftExpanded() {
+  if (isSm.value && isRightExpanded.value) return
+  isLeftExpanded.value = !isLeftExpanded.value
+}
+
+function toggleIsRightExpanded() {
+  if (isSm.value && isLeftExpanded.value) return
+  isRightExpanded.value = !isRightExpanded.value
+}
 </script>
 
 <template>
@@ -72,9 +101,16 @@ const infoPaneRef = ref()
     <GraphSearchSidepane
       @node-selected="handleNodeSelected"
       @toggle-deprecated="handleToggleDeprecated"
+      :is-left-expanded="isLeftExpanded"
+      @toggle-is-left-expanded="toggleIsLeftExpanded"
       @toggle-labels="handleToggleLabels"
     />
-    <GraphInfoSidepane ref="infoPaneRef" :node-info-display="nodeInfoDisplay" />
+    <GraphInfoSidepane
+      ref="infoPaneRef"
+      :node-info-display="nodeInfoDisplay"
+      :is-right-expanded="isRightExpanded"
+      @toggle-is-right-expanded="toggleIsRightExpanded"
+    />
     <GraphVisualisation
       :include-deprecated="showDeprecated"
       :selected-node-id="selectedNodeId"
