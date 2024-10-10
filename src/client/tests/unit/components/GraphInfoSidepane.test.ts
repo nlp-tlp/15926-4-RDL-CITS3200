@@ -16,7 +16,7 @@ describe('GraphSearchSidepane.vue', () => {
 
   it('does not render the sidepane by default', () => {
     const wrapper = mount(GraphView)
-    const rightHeaderText = wrapper.find('.right-text')
+    const rightHeaderText = wrapper.find('.right-sidebar')
     expect(rightHeaderText.exists()).toBe(false)
   })
 
@@ -24,14 +24,14 @@ describe('GraphSearchSidepane.vue', () => {
     const wrapper = mount(GraphView)
     const sidepaneButton = wrapper.find('.right-btn')
     expect(sidepaneButton.isVisible()).toBe(true)
-    expect(wrapper.find('.right-text').exists()).toBe(false)
+    expect(wrapper.find('.right-sidebar').exists()).toBe(false)
 
     await sidepaneButton.trigger('click')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.right-text').exists()).toBe(true)
+    expect(wrapper.find('.right-sidebar').exists()).toBe(true)
 
     await sidepaneButton.trigger('click')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.right-text').exists()).toBe(false)
+    expect(wrapper.find('.right-sidebar').exists()).toBe(false)
   })
 })

@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
+import { computed, ref, watch } from 'vue'
 
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+
+const isSm = computed(() => breakpoints.smaller('sm').value)
 
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
@@ -64,8 +69,33 @@ const theNodeInfoDisplay = {
   Parents: '',
   Types: ''
 }
+
 const nodeInfoDisplay = ref(theNodeInfoDisplay)
 const infoTag = '/node/info/'
+
+const isLeftExpanded = ref(false)
+const isRightExpanded = ref(false)
+
+watch(
+  isSm,
+  () => {
+    isLeftExpanded.value = false
+    isRightExpanded.value = false
+  },
+  {
+    immediate: true
+  }
+)
+
+function toggleIsLeftExpanded() {
+  if (isSm.value && isRightExpanded.value) return
+  isLeftExpanded.value = !isLeftExpanded.value
+}
+
+function toggleIsRightExpanded() {
+  if (isSm.value && isLeftExpanded.value) return
+  isRightExpanded.value = !isRightExpanded.value
+}
 
 async function fetchNodeInfo(nodeId: string) {
   try {
@@ -103,6 +133,11 @@ async function fetchNodeInfo(nodeId: string) {
 
 async function handleLabelClicked(nodeUri: string) {
   await fetchNodeInfo(nodeUri)
+  if (isSm.value && isLeftExpanded.value) {
+    isLeftExpanded.value = false
+    //on small screens, only allow one sidepanel open at a time
+  }
+  isRightExpanded.value = true
   infoPaneRef.value.toggleRightNav()
 }
 
@@ -127,10 +162,17 @@ function handleToggleLabels(value: boolean) {
 <template>
   <div class="container">
     <GraphSearchSidepane
+      :is-left-expanded="isLeftExpanded"
+      @toggle-is-left-expanded="toggleIsLeftExpanded"
       @toggle-labels="handleToggleLabels"
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
-    <GraphInfoSidepane ref="infoPaneRef" :node-info-display="nodeInfoDisplay" />
+    <GraphInfoSidepane
+      ref="infoPaneRef"
+      :node-info-display="nodeInfoDisplay"
+      :is-right-expanded="isRightExpanded"
+      @toggle-is-right-expanded="toggleIsRightExpanded"
+    />
     <GraphVisualisation
       :data="data"
       :fetch-children="fetchChildren"
