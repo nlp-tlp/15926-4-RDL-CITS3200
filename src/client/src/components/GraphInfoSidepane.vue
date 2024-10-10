@@ -73,7 +73,7 @@ export default {
     <transition name="sidepanel">
       <div
         v-if="isExpandRightEd"
-        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-[calc(100vh-var(--navbar-height,4.5rem))] bg-nav-background z-10 flex flex-col pt-1 transform transition-transform duration-500 ease-in-out"
+        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-[calc(100vh-var(--navbar-height,4.5rem))] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
 

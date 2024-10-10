@@ -64,14 +64,14 @@ async function fetchChildren(node: any) {
 }
 
 const theNodeInfoDisplay = {
+  ID: '',
   Label: '',
   Definition: '',
   Dep: '',
-  ID: '',
   Parents: '',
-  Properties: '',
   Types: ''
 }
+
 const nodeInfoDisplay = ref(theNodeInfoDisplay)
 const infoTag = '/node/info/'
 
@@ -109,12 +109,6 @@ async function fetchNodeInfo(nodeId: string) {
     const nodeInfo = await response.json()
     nodeInfoDisplay.value.Label = nodeInfo.label
     nodeInfoDisplay.value.Definition = nodeInfo.definition
-
-    nodeInfoDisplay.value.Dep = nodeInfo.dep
-    nodeInfoDisplay.value.ID = nodeInfo.id
-    nodeInfoDisplay.value.Parents = nodeInfo.parents
-    nodeInfoDisplay.value.Properties = nodeInfo.properties
-    nodeInfoDisplay.value.Types = nodeInfo.types
     if (nodeInfo.dep === null) {
       nodeInfoDisplay.value.Dep = 'N/A'
     } else {
