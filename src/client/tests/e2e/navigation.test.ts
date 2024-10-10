@@ -7,7 +7,7 @@ test('Navigates to the correct page when a NavBar item is clicked', async ({ pag
   await page.waitForURL('http://localhost:5173/graph')
   expect(page.url()).toBe('http://localhost:5173/graph')
 
-  await page.click('text=iso15926vis')
+  await page.click('text=Iso15926Visualiser')
   await page.waitForURL('http://localhost:5173/')
   expect(page.url()).toBe('http://localhost:5173/')
 

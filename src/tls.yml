@@ -1,0 +1,6 @@
+# This file handles the files used in SSL certificates
+# The certificates are only added during deployment stages from GitHub secrets.
+tls:
+  certificates:
+    - certFile: /certs/certificate.crt
+      keyFile: /certs/private.key

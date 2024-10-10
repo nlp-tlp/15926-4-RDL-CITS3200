@@ -61,14 +61,6 @@ watch(
   }
 )
 
-// Watch for changes in "showLabels"
-watch(
-  () => props.showLabels,
-  () => {
-    renderGraph()
-  }
-)
-
 /**
  * Initialise the graph with the SVG element and reposition it to the center vertically.
  */
@@ -247,6 +239,18 @@ function renderNodes(nodes: any) {
     .style('fill', (d: any) => (d.data.has_children ? 'lightsteelblue' : '#999'))
     // set the cursor style based on the presence of children
     .style('cursor', (d: any) => (d.data.has_children ? 'pointer' : 'default'))
+    .on('mouseover', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement).style('fill', 'lightblue')
+    })
+    .on('mouseout', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement).style('fill', (d: any) =>
+        d.data.has_children ? 'lightsteelblue' : '#999'
+      )
+    })
+    .on('click', (event: any, d: any) => {
+      event.stopPropagation() // Prevents bubbling
+      toggleCollapse(d)
+    })
 
   nodeEnter
     .append('text')
@@ -254,7 +258,22 @@ function renderNodes(nodes: any) {
     // set the text position based on the expanded state - left if expanded, right if collapsed
     .attr('x', (d: any) => (d.data.expanded ? -10 : 10))
     .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
+    .style('cursor', () => 'pointer')
     .text((d: any) => d.data.label)
+    .on('mouseover', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', 'lightblue')
+        .style('font-weight', 'bold')
+    })
+    .on('mouseout', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', '')
+        .style('font-weight', 'normal')
+    })
+    .on('click', (event: any, d: any) => {
+      event.stopPropagation()
+      handleLabelClick(d)
+    })
 
   // merge the enter and update selections
   const nodeUpdate = nodeEnter.merge(node)
@@ -267,6 +286,12 @@ function renderNodes(nodes: any) {
 
   // remove the nodes that are no longer needed
   node.exit().remove()
+}
+
+const emit = defineEmits(['label-clicked'])
+
+function handleLabelClick(node: any) {
+  emit('label-clicked', node.data.id)
 }
 
 /**

@@ -1,20 +1,25 @@
-site_name: ISO 15926-4 Visualiser
-
+site_name: Iso15926Visualiser Documentation
+copyright: System Health Lab
+repo_url: https://github.com/nlp-tlp/15926-4-RDL-CITS3200
 
 theme:
-  name: material
-  features:
-    - navigation.tabs
-
+    name: material
+    features:
+        - navigation.tabs
 
 nav:
-  - Overview: index.md
-  - Developer:
-      - Introduction: developer/index.md
-  - Maintainer: 
-      - Introduction: maintainer/index.md
-  - Administrator: 
-      - Introduction: administrator/index.md
-  - Changelog: 
-      - Introduction: changelog/index.md
-
+    - Overview: index.md
+    - Developer:
+          - Introduction: developer/index.md
+          - Tech stack: developer/tech_stack.md
+          - Developer setup: developer/developer_setup.md
+          - CI/CD: developer/cicd.md
+    - Maintainer:
+          - Introduction: maintainer/index.md
+          - Accessing production: maintainer/using_instance.md
+          - Migrating production: maintainer/migrating_instance.md
+          - Maintaining SSL Certificate: maintainer/ssl_cert.md
+    - Administrator:
+          - Introduction: administrator/index.md
+    - Changelog:
+          - Introduction: changelog/index.md
