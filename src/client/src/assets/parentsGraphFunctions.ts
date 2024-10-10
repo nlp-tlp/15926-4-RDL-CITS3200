@@ -24,6 +24,9 @@ const nodeNoParentsColor: string = '#999'
  * @param emit The emit function to emit events to the parent component
  */
 function drawParentsGraph(data: any, root: any, svg: any, props: any, emit: any) {
+  if (!data) {
+    return
+  }
   // Construct the hierarchy
   root = d3.hierarchy(data)
 

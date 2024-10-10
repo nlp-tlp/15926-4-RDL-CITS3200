@@ -24,6 +24,9 @@ const nodeNoParentsColor: string = '#999'
  * @param emit The emit function of the component
  */
 function drawChildrenGraph(data: any, root: any, svg: any, props: any, emit: any) {
+  if (!data) {
+    return
+  }
   // Construct root node/hierarchy from the data
   root = d3.hierarchy(data)
 
