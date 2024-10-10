@@ -15,7 +15,7 @@ const props = defineProps({
   }
 })
 
-//The parent component can be unified control, and the child component does not need to change once when the parent component changes
+//parent is responsible for toggling
 interface Emit {
   (e: 'toggleIsRightExpanded'): void
 }

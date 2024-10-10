@@ -135,7 +135,7 @@ async function handleLabelClicked(nodeUri: string) {
   await fetchNodeInfo(nodeUri)
   if (isSm.value && isLeftExpanded.value) {
     isLeftExpanded.value = false
-    //If smaller than 640px and leftside is open.If is not expacted to click the node and will expand the rightsidepanel
+    //on small screens, only allow one sidepanel open at a time
   }
   isRightExpanded.value = true
   infoPaneRef.value.toggleRightNav()

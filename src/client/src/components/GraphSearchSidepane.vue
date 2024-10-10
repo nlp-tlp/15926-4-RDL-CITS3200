@@ -17,8 +17,7 @@ interface SearchResult {
   dep?: string | null // If you need the 'dep' property as well
 }
 
-// Reactive properties
-const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsLeftExpanded']) // Defining emit events and leftsidepanel expand
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsLeftExpanded'])
 const isLeftExpanded = computed(() => props.isLeftExpanded)
 const searchTerm = ref('') // The search term entered by the user
 const searchOption = ref('id') // The dropdown option selected by the user
@@ -94,11 +93,6 @@ function clickResult(result: SearchResult): void {
   } else {
     // Update the search term to the clicked result
     searchTerm.value = searchOption.value === 'id' ? result.id || '' : result.label || ''
-
-    // Delay hiding the results after setting the search term to avoid triggering the search again via watch
-    setTimeout(() => {
-      showResults.value = false
-    }, 100)
   }
 }
 
@@ -220,7 +214,7 @@ export default {
               <input type="checkbox" class="mr-2" v-model="showLabels" />
               View Labels in Graph
             </label>
-            <!-- Comment 'Levels Above' and 'Levels Below' part -->
+            <!-- Removed due to change in rendering strategy, unsure if will need again -->
             <!--
             <div v-if="isLeftExpanded" class="mt-12 flex justify-between">
               <div class="flex flex-col w-[45%]">
