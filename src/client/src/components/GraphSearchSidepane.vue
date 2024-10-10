@@ -18,7 +18,7 @@ interface SearchResult {
 }
 
 // Reactive properties
-const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleisLeftExpanded']) // Defining emit events and leftsidepanel expand
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsLeftExpanded']) // Defining emit events and leftsidepanel expand
 const isLeftExpanded = computed(() => props.isLeftExpanded)
 const searchTerm = ref('') // The search term entered by the user
 const searchOption = ref('id') // The dropdown option selected by the user
@@ -33,7 +33,7 @@ const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
 // Function to toggle the left nav
 function toggleLeftNav(): void {
-  emit('toggleisLeftExpanded')
+  emit('toggleIsLeftExpanded')
 }
 
 // Function to debounce the search query -- ONLY QUERY AFTER USER STOPS TYPING
@@ -138,7 +138,7 @@ export default {
     <transition name="sidepanel">
       <div
         v-if="isLeftExpanded"
-        class="left-sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-[calc(100vh-4.5rem)] h-full bg-nav-background pb-10 transition-transform duration-500 ease overflow-hidden"
+        class="left-sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-full bg-nav-background pb-10 transition-transform duration-500 ease overflow-hidden"
       >
         <p class="ml-auto text-white mt-3 mr-4 whitespace-nowrap">Graph Search</p>
 

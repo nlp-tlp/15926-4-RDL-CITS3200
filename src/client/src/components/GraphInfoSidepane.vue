@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   initialExpanded: {
@@ -17,15 +17,13 @@ const props = defineProps({
 
 //The parent component can be unified control, and the child component does not need to change once when the parent component changes
 interface Emit {
-  (e: 'toggleisRightExpanded'): void
+  (e: 'toggleIsRightExpanded'): void
 }
 
 const emit = defineEmits<Emit>()
 
-const isRightExpanded = computed(() => props.isRightExpanded) //
-
 function toggleRightNavButton(): void {
-  emit('toggleisRightExpanded')
+  emit('toggleIsRightExpanded')
 }
 
 // Create a reactive object to hold the RDF data
@@ -61,7 +59,7 @@ export default {
     <transition name="sidepanel">
       <div
         v-if="isRightExpanded"
-        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-[calc(100vh-var(--navbar-height,4.5rem))] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
+        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
 

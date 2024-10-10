@@ -87,12 +87,12 @@ watch(
   }
 )
 
-function toggleisLeftExpanded() {
+function toggleIsLeftExpanded() {
   if (isSm.value && isRightExpanded.value) return
   isLeftExpanded.value = !isLeftExpanded.value
 }
 
-function toggleisRightExpanded() {
+function toggleIsRightExpanded() {
   if (isSm.value && isLeftExpanded.value) return
   isRightExpanded.value = !isRightExpanded.value
 }
@@ -163,7 +163,7 @@ function handleToggleLabels(value: boolean) {
   <div class="container">
     <GraphSearchSidepane
       :is-left-expanded="isLeftExpanded"
-      @toggle-is-left-expanded="toggleisLeftExpanded"
+      @toggle-is-left-expanded="toggleIsLeftExpanded"
       @toggle-labels="handleToggleLabels"
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
@@ -171,7 +171,7 @@ function handleToggleLabels(value: boolean) {
       ref="infoPaneRef"
       :node-info-display="nodeInfoDisplay"
       :is-right-expanded="isRightExpanded"
-      @toggle-is-right-expanded="toggleisRightExpanded"
+      @toggle-is-right-expanded="toggleIsRightExpanded"
     />
     <GraphVisualisation
       :data="data"
