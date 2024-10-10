@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   initialExpanded: {
@@ -9,25 +9,34 @@ const props = defineProps({
   nodeInfoDisplay: {
     type: Object,
     required: true
-  },
-  isRightExpanded: {
-    type: Boolean
   }
 })
 
-//parent is responsible for toggling
-interface Emit {
-  (e: 'toggleIsRightExpanded'): void
-}
+const isRightExpanded = ref(props.initialExpanded)
 
-const emit = defineEmits<Emit>()
+function toggleRightNav(): void {
+  if (!isRightExpanded.value) {
+    isRightExpanded.value = !isRightExpanded.value
+  }
+}
 
 function toggleRightNavButton(): void {
-  emit('toggleIsRightExpanded')
+  isRightExpanded.value = !isRightExpanded.value
 }
+
+defineExpose({
+  toggleRightNav
+})
 
 // Create a reactive object to hold the RDF data
 const rdfData = ref(props.nodeInfoDisplay)
+
+watch(
+  () => props.nodeInfoDisplay,
+  (newValue) => {
+    rdfData.value = newValue
+  }
+)
 </script>
 
 <script lang="ts">
@@ -65,7 +74,9 @@ export default {
 
         <div class="flex-1 m-4 text-white overflow-y-auto scrollbar-none">
           <div v-for="(value, key) in rdfData" :key="key" class="mb-4">
-            <strong class="block font-bold">{{ key }}:</strong>
+            <strong class="block font-bold"
+              >{{ key.charAt(0).toUpperCase() + key.slice(1) }}:</strong
+            >
             <span class="block ml-4 break-words whitespace-pre-line break-all">
               <slot :name="key" :value="value">{{ value }}</slot>
             </span>

@@ -75,9 +75,10 @@ def test_get_children_with_deprecation(test_client):
     )
     assert child1_info is not None
     assert child1_info["label"] == "Child One"
-    assert child1_info["dep"] == "2021-03-21Z"  # Child1 has a deprecation date
+    assert "dep" in child1_info  # Child1 has a deprecation date
+    assert child1_info["dep"] == "2021-03-21Z"
 
-    # Validate Child2
+    # Validate Child2 (ensure dep key is not present)
     child2_info = next(
         (
             child
@@ -88,9 +89,9 @@ def test_get_children_with_deprecation(test_client):
     )
     assert child2_info is not None
     assert child2_info["label"] == "Child Two"
-    assert child2_info["dep"] is None  # Child2 does not have a deprecation date
+    assert "dep" not in child2_info  # Child2 does not have a deprecation date
 
-    # Validate Child4
+    # Validate Child4 (ensure dep key is not present)
     child4_info = next(
         (
             child
@@ -101,7 +102,7 @@ def test_get_children_with_deprecation(test_client):
     )
     assert child4_info is not None
     assert child4_info["label"] == "Child Four"
-    assert child4_info["dep"] is None  # Child4 does not have a deprecation date
+    assert "dep" not in child4_info  # Child4 does not have a deprecation date
 
 
 def test_get_root_node_info(test_client):
@@ -117,7 +118,9 @@ def test_get_root_node_info(test_client):
     assert response.status_code == 200
     assert data["id"] == "http://data.15926.org/dm/Thing"
     assert data["label"] == "Thing"
-    assert data["dep"] is None  # Root node has no deprecation date
+    assert (
+        "dep" not in data
+    )  # Root node has no deprecation date, so dep should not be present
 
 
 def test_invalid_query_to_children(test_client):
