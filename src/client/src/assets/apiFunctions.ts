@@ -3,6 +3,7 @@ const API_URL: string = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:500
 const childrenEndpoint: string = '/node/children/'
 const parentsEndpoint: string = '/node/parents/'
 const selectedInfoEndpoint: string = '/node/selected-info/'
+const infoEndpoint: string = '/node/info/'
 
 /**
  * Fetches the children of a node from the server
@@ -158,4 +159,66 @@ async function fetchSelectedInfo(nodeId: string, includeDeprecated: boolean = fa
   }
 }
 
-export { fetchChildren, fetchParents, fetchSelectedInfo }
+/**
+ * Fetches the node's information from the server
+ * @param nodeId The ID of the node
+ * @returns The node's information or null if an error occurred
+ * @throws TypeError if a network error occurred
+ * @throws Error if any other error occurred (invalid response, invalid node, etc.)
+ */
+async function fetchNodeInfo(nodeId: string) {
+  if (!nodeId) {
+    console.error('Invalid node ID:', nodeId)
+    return null
+  }
+  try {
+    const response = await fetch(`${API_URL}${infoEndpoint}${encodeURIComponent(nodeId)}`)
+    if (!response.ok) {
+      console.error('Failed to fetch node info:', response.status)
+      return null
+    }
+    const responseData = await response.json()
+    if (responseData) {
+      // create structure to return
+      const nodeInfoDisplay = {
+        id: '',
+        label: '',
+        definition: '',
+        deprecation: '',
+        parents: '',
+        types: ''
+      }
+      nodeInfoDisplay.id = responseData.id
+      nodeInfoDisplay.label = responseData.label
+      nodeInfoDisplay.definition = responseData.definition
+      if (responseData.dep === null) {
+        nodeInfoDisplay.deprecation = 'N/A'
+      } else {
+        nodeInfoDisplay.deprecation = responseData.dep
+      }
+      nodeInfoDisplay.parents = ''
+      for (let i = 0; i < responseData.parents.length; i++) {
+        nodeInfoDisplay.parents += '• ' + responseData.parents[i] + '\n'
+      }
+      nodeInfoDisplay.types = ''
+      for (let i = 0; i < responseData.types.length; i++) {
+        nodeInfoDisplay.types += '• ' + responseData.types[i] + '\n'
+      }
+      return nodeInfoDisplay
+    } else {
+      console.error('Invalid response:', responseData)
+      return null
+    }
+  } catch (error: any) {
+    if (error instanceof TypeError) {
+      // Network error or other fetch-related error
+      console.error('Network error:', error.message)
+    } else {
+      // Something else happened
+      console.error('Error:', error.message)
+    }
+    return null
+  }
+}
+
+export { fetchChildren, fetchNodeInfo, fetchParents, fetchSelectedInfo }
