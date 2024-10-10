@@ -1,5 +1,38 @@
+<template>
+  <div id="app">
+    <!-- Capture Screen Button -->
+    <button class="capture-button" @click="captureScreen">Capture Screen</button>
+
+    <div v-if="isLoading" class="spinner"></div>
+
+    <!-- Preview Modal -->
+    <div v-if="isPreviewVisible" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closePreview">&times;</span>
+        <h3>Screenshot Preview</h3>
+        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="screenshot-preview" />
+
+        <!-- Dropdown for file type (maybe change to toggle switch?) -->
+        <select v-model="selectedFileType">
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="svg">SVG</option>
+        </select>
+
+        <!-- Save button on Modal -->
+        <button @click="saveScreenshot">Save</button>
+      </div>
+    </div>
+    <div id="captureArea">
+      <svg ref="svgRef"></svg>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import * as d3 from 'd3'
+import { saveAs } from 'file-saver'
+import html2canvas from 'html2canvas'
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -26,8 +59,99 @@ const props = defineProps({
   }
 })
 
-// Reference to the SVG element
+const selectedFileType = ref('png') // Selected file type for export
+const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
+const screenshotDataUrl = ref('') // Store the data URL of the screenshot
+const isLoading = ref(false)
+
+// Function to capture the screen and show the preview modal
+const captureScreen = () => {
+  isLoading.value = true
+  setTimeout(() => {
+    const captureArea = document.getElementById('captureArea')
+
+    if (captureArea) {
+      html2canvas(captureArea, {
+        scale: 2, // Increase scale for better quality
+        logging: false, // Disable logging to reduce overhead
+        useCORS: true // Enable cross-origin if required for resources
+      }).then((canvas) => {
+        screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
+        isPreviewVisible.value = true // Show the preview modal
+        isLoading.value = false
+      })
+    }
+  }, 0)
+}
+
+// Function to inline all styles into the SVG
+//(Styles from our d3 graph have to be put inline to export as a SVG)
+const inlineStyles = (element: SVGElement) => {
+  const styleSheets = Array.from(document.styleSheets)
+
+  styleSheets.forEach((styleSheet) => {
+    try {
+      const cssRules = Array.from(styleSheet.cssRules)
+
+      cssRules.forEach((rule) => {
+        if (rule instanceof CSSStyleRule) {
+          const matchingElements = element.querySelectorAll(rule.selectorText)
+          matchingElements.forEach((el: any) => {
+            for (let style of rule.style) {
+              el.style.setProperty(style, rule.style.getPropertyValue(style))
+            }
+          })
+        }
+      })
+    } catch (e) {
+      console.warn('Cannot access rules from stylesheet: ', styleSheet.href)
+    }
+  })
+}
+
+// Function to save the screenshot based on the selected file type
+const saveScreenshot = () => {
+  if (selectedFileType.value === 'svg') {
+    const svgElement = svgRef.value
+    if (!svgElement) return
+
+    inlineStyles(svgElement)
+
+    const serializer = new XMLSerializer()
+    const svgString = serializer.serializeToString(svgElement)
+
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+    saveAs(blob, 'graph.svg')
+  } else {
+    // (PNG, JPEG)
+    const canvas = document.createElement('canvas')
+    const img = new Image()
+    img.src = screenshotDataUrl.value
+
+    img.onload = () => {
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      ctx?.drawImage(img, 0, 0)
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const fileName = `screenshot.${selectedFileType.value}`
+          saveAs(blob, fileName)
+        }
+      }, `image/${selectedFileType.value}`)
+    }
+  }
+}
+
+// Function to close the preview modal
+const closePreview = () => {
+  isPreviewVisible.value = false
+}
+
+// Reference to the SVG elemen
 const svgRef = ref<SVGSVGElement | null>(null)
+// const svgRef = ref(null)
 
 // Graph dimensions
 const width: number = window.innerWidth
@@ -395,8 +519,93 @@ export default {
 }
 </script>
 
-<template>
-  <svg ref="svgRef"></svg>
-</template>
+<style>
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-width: 1.5px;
+  stroke-opacity: 0.4;
+}
 
-<style scoped></style>
+/* Modal Styles */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.screenshot-preview {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Button Styles */
+button {
+  width: 100px;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-nav-background);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.capture-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+}
+
+button:hover {
+  color: var(--color-nav-text-active);
+}
+
+select {
+  margin-bottom: 1rem;
+  padding: 0.3rem;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
