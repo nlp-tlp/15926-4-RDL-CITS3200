@@ -10,8 +10,6 @@ const breakpoints = useBreakpoints(breakpointsTailwind)
 
 const isSm = computed(() => breakpoints.smaller('sm').value)
 
-console.log(isSm.value)
-
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 const childrenEndpoint = '/node/children/'
 
@@ -75,28 +73,28 @@ const theNodeInfoDisplay = {
 const nodeInfoDisplay = ref(theNodeInfoDisplay)
 const infoTag = '/node/info/'
 
-const isExpandLeftEd = ref(false)
-const isExpandRightEd = ref(false)
+const isLeftExpanded = ref(false)
+const isRightExpanded = ref(false)
 
 watch(
   isSm,
   () => {
-    isExpandLeftEd.value = false
-    isExpandRightEd.value = false
+    isLeftExpanded.value = false
+    isRightExpanded.value = false
   },
   {
     immediate: true
   }
 )
 
-function toggleIsExpandLeftEd() {
-  if (isSm.value && isExpandRightEd.value) return
-  isExpandLeftEd.value = !isExpandLeftEd.value
+function toggleisLeftExpanded() {
+  if (isSm.value && isRightExpanded.value) return
+  isLeftExpanded.value = !isLeftExpanded.value
 }
 
-function toggleIsExpandRightEd() {
-  if (isSm.value && isExpandLeftEd.value) return
-  isExpandRightEd.value = !isExpandRightEd.value
+function toggleisRightExpanded() {
+  if (isSm.value && isLeftExpanded.value) return
+  isRightExpanded.value = !isRightExpanded.value
 }
 
 async function fetchNodeInfo(nodeId: string) {
@@ -135,11 +133,11 @@ async function fetchNodeInfo(nodeId: string) {
 
 async function handleLabelClicked(nodeUri: string) {
   await fetchNodeInfo(nodeUri)
-  if (isSm.value && isExpandLeftEd.value) {
-    isExpandLeftEd.value = false
+  if (isSm.value && isLeftExpanded.value) {
+    isLeftExpanded.value = false
     //If smaller than 640px and leftside is open.If is not expacted to click the node and will expand the rightsidepanel
   }
-  isExpandRightEd.value = true
+  isRightExpanded.value = true
   infoPaneRef.value.toggleRightNav()
 }
 
@@ -164,16 +162,16 @@ function handleToggleLabels(value: boolean) {
 <template>
   <div class="container">
     <GraphSearchSidepane
-      :is-expand-left-ed="isExpandLeftEd"
-      @toggle-is-expand-left-ed="toggleIsExpandLeftEd"
+      :is-left-expanded="isLeftExpanded"
+      @toggle-is-left-expanded="toggleisLeftExpanded"
       @toggle-labels="handleToggleLabels"
       @toggle-deprecated="handleShowDeprecatedToggle"
     />
     <GraphInfoSidepane
       ref="infoPaneRef"
       :node-info-display="nodeInfoDisplay"
-      :is-expand-right-ed="isExpandRightEd"
-      @toggle-is-expand-right-ed="toggleIsExpandRightEd"
+      :is-right-expanded="isRightExpanded"
+      @toggle-is-right-expanded="toggleisRightExpanded"
     />
     <GraphVisualisation
       :data="data"

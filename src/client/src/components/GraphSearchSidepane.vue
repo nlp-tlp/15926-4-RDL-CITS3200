@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 const props = withDefaults(
   defineProps<{
     initialExpanded?: boolean
-    isExpandLeftEd: boolean
+    isLeftExpanded: boolean
   }>(),
   {
     initialExpanded: false
@@ -18,8 +18,8 @@ interface SearchResult {
 }
 
 // Reactive properties
-const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleIsExpandLeftEd']) // Defining emit events and leftsidepanel expand
-const isExpandLeftEd = computed(() => props.isExpandLeftEd)
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'toggleisLeftExpanded']) // Defining emit events and leftsidepanel expand
+const isLeftExpanded = computed(() => props.isLeftExpanded)
 const searchTerm = ref('') // The search term entered by the user
 const searchOption = ref('id') // The dropdown option selected by the user
 const results = ref<SearchResult[]>([]) // Store search results
@@ -33,7 +33,7 @@ const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
 // Function to toggle the left nav
 function toggleLeftNav(): void {
-  emit('toggleIsExpandLeftEd')
+  emit('toggleisLeftExpanded')
 }
 
 // Function to debounce the search query -- ONLY QUERY AFTER USER STOPS TYPING
@@ -130,19 +130,19 @@ export default {
     <button
       class="left-btn fixed top-20 left-2 bg-transparent cursor-pointer border-none text-2xl font-bold z-20 text-nav-background transition-colors duration-500 ease"
       @click="toggleLeftNav"
-      :class="{ 'text-white': isExpandLeftEd }"
+      :class="{ 'text-white': isLeftExpanded }"
     >
       &#9776;
     </button>
 
     <transition name="sidepanel">
       <div
-        v-if="isExpandLeftEd"
-        class="left-sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-[calc(100vh-4.5rem)] bg-nav-background transition-transform duration-500 ease overflow-hidden"
+        v-if="isLeftExpanded"
+        class="left-sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-[calc(100vh-4.5rem)] h-full bg-nav-background pb-10 transition-transform duration-500 ease overflow-hidden"
       >
         <p class="ml-auto text-white mt-3 mr-4 whitespace-nowrap">Graph Search</p>
 
-        <div v-if="isExpandLeftEd" class="overflow-hidden">
+        <div v-if="isLeftExpanded" class="overflow-hidden">
           <div class="flex flex-col m-4 mt-12">
             <div class="relative">
               <svg
@@ -211,7 +211,7 @@ export default {
             </ul>
           </div>
 
-          <div v-if="isExpandLeftEd" class="m-4 mb-5">
+          <div v-if="isLeftExpanded" class="m-4 mb-5">
             <label class="flex items-center text-white mb-[30px] mt-7 whitespace-nowrap">
               <input type="checkbox" class="mr-2" v-model="showDeprecated" />
               Show Deprecated
@@ -222,7 +222,7 @@ export default {
             </label>
             <!-- Comment 'Levels Above' and 'Levels Below' part -->
             <!--
-            <div v-if="isExpandLeftEd" class="mt-12 flex justify-between">
+            <div v-if="isLeftExpanded" class="mt-12 flex justify-between">
               <div class="flex flex-col w-[45%]">
                 <label class="text-white mb-2 text-sm font-medium whitespace-nowrap"
                   >Levels Above:</label
@@ -235,7 +235,7 @@ export default {
                   value="0"
                 />
               </div>
-              <div v-if="isExpandLeftEd" class="flex flex-col w-[45%]">
+              <div v-if="isLeftExpanded" class="flex flex-col w-[45%]">
                 <label class="text-white mb-2 text-sm font-medium whitespace-nowrap"
                   >Levels Below:</label
                 >

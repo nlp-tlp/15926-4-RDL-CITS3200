@@ -10,35 +10,23 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  isExpandRightEd: {
+  isRightExpanded: {
     type: Boolean
   }
 })
 
+//The parent component can be unified control, and the child component does not need to change once when the parent component changes
 interface Emit {
-  (e: 'toggleIsExpandRightEd'): void
+  (e: 'toggleisRightExpanded'): void
 }
 
 const emit = defineEmits<Emit>()
 
-const isExpandRightEd = computed(() => props.isExpandRightEd)
-
-const isRightExpanded = ref(props.initialExpanded)
-
-function toggleRightNav(): void {
-  if (!isRightExpanded.value) {
-    isRightExpanded.value = !isRightExpanded.value
-  }
-}
+const isRightExpanded = computed(() => props.isRightExpanded) //
 
 function toggleRightNavButton(): void {
-  emit('toggleIsExpandRightEd')
-  return
+  emit('toggleisRightExpanded')
 }
-
-defineExpose({
-  toggleRightNav
-})
 
 // Create a reactive object to hold the RDF data
 const rdfData = ref(props.nodeInfoDisplay)
@@ -65,14 +53,14 @@ export default {
     <button
       class="right-btn fixed top-[5rem] right-2 bg-transparent cursor-pointer border-none text-[22px] font-bold z-20 text-nav-background transition-colors duration-300 ease-in-out"
       @click="toggleRightNavButton"
-      :class="{ 'text-white': isExpandRightEd }"
+      :class="{ 'text-white': isRightExpanded }"
     >
       &#9776;
     </button>
 
     <transition name="sidepanel">
       <div
-        v-if="isExpandRightEd"
+        v-if="isRightExpanded"
         class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-[calc(100vh-var(--navbar-height,4.5rem))] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
