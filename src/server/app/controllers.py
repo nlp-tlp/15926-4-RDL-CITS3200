@@ -185,7 +185,9 @@ def get_all_node_info(
 
         # If the predicate is skos:definition, store it separately
         elif predicate == SKOS.definition and isinstance(obj, Literal):
-            node_info["definition"] = str(obj)
+            definition = str(obj)
+            definition = definition.replace("&lt;", "<").replace("&gt;", ">")
+            node_info["definition"] = definition
 
         # If the predicate is rdfs:subClassOf, store it in the 'parents' list
         elif predicate == RDFS.subClassOf:
