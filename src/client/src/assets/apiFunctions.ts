@@ -126,13 +126,13 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
  * @throws TypeError if a network error occurred
  * @throws Error if any other error occurred (invalid response, invalid node, etc.)
  */
-async function fetchSelectedInfo(nodeId: string): Promise<any> {
+async function fetchSelectedInfo(nodeId: string, includeDeprecated: boolean = false): Promise<any> {
   if (!nodeId) {
     console.error('Invalid node ID:', nodeId)
     return null
   }
   try {
-    const response = await fetch(`${API_URL}${selectedInfoEndpoint}${encodeURIComponent(nodeId)}`)
+    const response = await fetch(`${API_URL}${selectedInfoEndpoint}${encodeURIComponent(nodeId)}?dep=${includeDeprecated}`)
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return null
