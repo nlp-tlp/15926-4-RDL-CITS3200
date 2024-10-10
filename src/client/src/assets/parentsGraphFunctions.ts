@@ -18,9 +18,9 @@ const nodeNoParentsColor: string = '#999'
  * @param data The data to be displayed in the graph
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to draw the graph on
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The properties of the graph
  */
-function drawParentsGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
+function drawParentsGraph(data: any, root: any, svg: any, props: any) {
   // Construct the hierarchy
   root = d3.hierarchy(data)
 
@@ -34,10 +34,10 @@ function drawParentsGraph(data: any, root: any, svg: any, includeDeprecated: boo
   const links = root.links()
 
   // Expand the root node to start with 1 level of parents
-  toggleParentsCollapse(nodes[0], root, svg, data, includeDeprecated)
+  toggleParentsCollapse(nodes[0], root, svg, data, props)
 
   // Render the nodes, links and extra links
-  renderParentsNodes(nodes, root, svg, data, includeDeprecated)
+  renderParentsNodes(nodes, root, svg, data, props)
   renderParentsLinks(links, svg)
   renderExtraChildrenLinks(nodes, svg)
 }
@@ -47,9 +47,9 @@ function drawParentsGraph(data: any, root: any, svg: any, includeDeprecated: boo
  * @param data The data to be displayed in the graph
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to draw the graph on
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The properties of the graph
  */
-function updateParentsGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
+function updateParentsGraph(data: any, root: any, svg: any, props: any) {
   // Construct the hierarchy - use the parents property to determine the parent-child relationship
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.parents : null))
 
@@ -63,7 +63,7 @@ function updateParentsGraph(data: any, root: any, svg: any, includeDeprecated: b
   const links = root.links()
 
   // Render the nodes, links and extra links
-  renderParentsNodes(nodes, root, svg, data, includeDeprecated)
+  renderParentsNodes(nodes, root, svg, data, props)
   renderParentsLinks(links, svg)
   renderExtraChildrenLinks(nodes, svg)
 }
@@ -74,15 +74,9 @@ function updateParentsGraph(data: any, root: any, svg: any, includeDeprecated: b
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to draw the graph on
  * @param parentHierarchyData The data of the parent hierarchy
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The properties of the graph
  */
-function renderParentsNodes(
-  nodes: any,
-  root: any,
-  svg: any,
-  parentHierarchyData: any,
-  includeDeprecated: boolean
-) {
+function renderParentsNodes(nodes: any, root: any, svg: any, parentHierarchyData: any, props: any) {
   // Select all nodes and bind the data using the node id
   const nodeSelection = svg.selectAll('g.node-parents').data(nodes, (d: any) => d.data.id)
 
@@ -95,7 +89,7 @@ function renderParentsNodes(
     .on('click', (event: Event, d: any) => {
       // Prevent the click event from propagating to the parent elements
       event.stopPropagation()
-      toggleParentsCollapse(d, root, svg, parentHierarchyData, includeDeprecated)
+      toggleParentsCollapse(d, root, svg, parentHierarchyData, props)
     })
 
   // append circle to the node
@@ -137,6 +131,8 @@ function renderParentsNodes(
   // Update the text
   nodeUpdate
     .select('text')
+    // display none if prop showLabels is false
+    .style('display', props.showLabels ? 'block' : 'none')
     // x: root at 0 and parents otherwise based on expanded state
     .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -10 : 15))
     // y: root at -20 and parents not changed
@@ -158,14 +154,14 @@ function renderParentsNodes(
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to draw the graph on
  * @param parentHierarchyData The data of the parent hierarchy
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The properties of the graph
  */
 async function toggleParentsCollapse(
   node: any,
   root: any,
   svg: any,
   parentHierarchyData: any,
-  includeDeprecated: boolean
+  props: any
 ) {
   if (!node.data.has_parents) {
     // console.log('Node has no parents:', node.data.label)
@@ -174,7 +170,7 @@ async function toggleParentsCollapse(
 
   if (!node.data.parents) {
     // Fetch the parents of the node
-    const newNodeData = await fetchParents(node.data, includeDeprecated)
+    const newNodeData = await fetchParents(node.data, props.includeDeprecated)
     updateParentsHierarchyData(node, newNodeData, parentHierarchyData)
   } else {
     // if it is the root node, do not collapse
@@ -185,7 +181,7 @@ async function toggleParentsCollapse(
     node.data.expanded = !node.data.expanded
   }
   // Call the update function to re-render the graph with the new data
-  updateParentsGraph(parentHierarchyData, root, svg, includeDeprecated)
+  updateParentsGraph(parentHierarchyData, root, svg, props)
 }
 
 /**

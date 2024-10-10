@@ -26,9 +26,9 @@ const isSearching = ref(false) // Track API call state
 const isLeftExpanded = ref(props.initialExpanded)
 const showResults = ref(true) // Control whether search results are displayed
 const errorMessage = ref('')
-const showLabels = ref(true) // Control whether labels are displayed in the graph
+const labelsToggle = ref(true) // Control whether labels are displayed in the graph
 const deprecatedToggle = ref(false) // Control whether deprecated nodes are displayed
-const emit = defineEmits(['toggleLabels', 'toggle-deprecated', 'node-selected']) // Defining emit events
+const emit = defineEmits(['toggleLabels', 'toggleDeprecated', 'nodeSelected']) // Defining emit events
 
 const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
 
@@ -84,7 +84,7 @@ async function search(query: string): Promise<void> {
 
 // Handle result click
 function clickResult(result: SearchResult): void {
-  emit('node-selected', result.id)
+  emit('nodeSelected', result.id)
   if (
     (searchOption.value === 'id' && result.id === searchTerm.value) ||
     (searchOption.value === 'rdf' && result.label === searchTerm.value)
@@ -98,8 +98,8 @@ function clickResult(result: SearchResult): void {
 
 // Triggers "toggleLabels" event and "toggleDeprecated" event when "Submit" is clicked
 function handleSubmit() {
-  emit('toggleLabels', showLabels.value)
-  emit('toggle-deprecated', deprecatedToggle.value)
+  emit('toggleLabels', labelsToggle.value)
+  emit('toggleDeprecated', deprecatedToggle.value)
 }
 </script>
 
@@ -182,7 +182,7 @@ export default {
               <input type="checkbox" v-model="deprecatedToggle" /> Show Deprecated
             </label>
             <label class="toggle-label">
-              <input type="checkbox" v-model="showLabels" /> View Labels in Graph
+              <input type="checkbox" v-model="labelsToggle" /> View Labels in Graph
             </label>
 
             <div v-if="isLeftExpanded" class="levels-inputs">

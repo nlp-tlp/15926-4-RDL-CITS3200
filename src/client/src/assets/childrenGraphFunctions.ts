@@ -18,9 +18,9 @@ const nodeNoParentsColor: string = '#999'
  * @param data The data to draw the graph with
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to draw the graph on
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The props of the component
  */
-function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
+function drawChildrenGraph(data: any, root: any, svg: any, props: any) {
   // Construct root node/hierarchy from the data
   root = d3.hierarchy(data)
 
@@ -34,10 +34,10 @@ function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: bo
   const links = root.links()
 
   // Expand the root node to start with 1st level children visible
-  toggleChildrenCollapse(nodes[0], root, svg, data, includeDeprecated)
+  toggleChildrenCollapse(nodes[0], root, svg, data, props)
 
   // Render the nodes, links and extra links
-  renderChildrenNodes(nodes, root, svg, data, includeDeprecated)
+  renderChildrenNodes(nodes, root, svg, data, props)
   renderChildrenLinks(links, svg)
   renderChildrenExtraLinks(nodes, svg)
 }
@@ -47,9 +47,9 @@ function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: bo
  * @param data The data to update the graph with
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to update the graph on
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The props of the component
  */
-function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
+function updateChildrenGraph(data: any, root: any, svg: any, props: any) {
   // Construct root node/hierarchy from the data - use expanded children to determine hierarchy
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
 
@@ -63,7 +63,7 @@ function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: 
   const links = root.links()
 
   // Render the nodes, links and extra links
-  renderChildrenNodes(nodes, root, svg, data, includeDeprecated)
+  renderChildrenNodes(nodes, root, svg, data, props)
   renderChildrenLinks(links, svg)
   renderChildrenExtraLinks(nodes, svg)
 }
@@ -74,14 +74,14 @@ function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: 
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to render the nodes on
  * @param childrenHierarchyData The data of the children hierarchy
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The props of the component
  */
 function renderChildrenNodes(
   nodes: any,
   root: any,
   svg: any,
   childrenHierarchyData: any,
-  includeDeprecated: boolean
+  props: any
 ) {
   // Select all nodes and bind the data
   const nodeSelection = svg.selectAll('g.node-children').data(nodes, (d: any) => d.data.id)
@@ -95,7 +95,7 @@ function renderChildrenNodes(
     .on('click', (event: Event, d: any) => {
       // Prevent the click event from propagating to the parent nodes
       event.stopPropagation()
-      toggleChildrenCollapse(d, root, svg, childrenHierarchyData, includeDeprecated)
+      toggleChildrenCollapse(d, root, svg, childrenHierarchyData, props)
     })
 
   // append circle to the node
@@ -133,9 +133,11 @@ function renderChildrenNodes(
     // display the node based on the parent expanded state - this is to avoid the node being displayed when the parent is collapsed if has not been handled by the togglecollapse function (should not happen - but just in case)
     .style('display', (d: any) => (d.parent && !d.parent.data.expanded ? 'none' : null))
 
-  // Update the text position based on the expanded state - text will overlap with the parent text for the root node (doesn't make any visual difference)
+  // Update the text position based on the expanded state - note that text will overlap with the parent text for the root node (doesn't make any visual difference)
   nodeUpdate
     .select('text')
+    // display none if prop showLabels is false
+    .style('display', props.showLabels ? 'block' : 'none')
     // x: root at 0 and children otherwise based on expanded state
     .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -15 : 10))
     // y: root at -20 and children not changed
@@ -157,23 +159,23 @@ function renderChildrenNodes(
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to update the graph on
  * @param childrenHierarchyData The data of the children hierarchy
- * @param includeDeprecated Whether to include deprecated nodes in the graph
+ * @param props The props of the component
  */
 async function toggleChildrenCollapse(
   node: any,
   root: any,
   svg: any,
   childrenHierarchyData: any,
-  includeDeprecated: boolean
+  props: any
 ) {
   if (!node.data.has_children) {
-    // console.log('Node has no children:', node.data.label)
+    console.log('Node has no children:', node)
     return
   }
 
   if (!node.data.children) {
     // Fetch the children of the node
-    const newNodeData = await fetchChildren(node.data, includeDeprecated)
+    const newNodeData = await fetchChildren(node.data, props.includeDeprecated)
     updateChildrenHierarchyData(node, newNodeData, childrenHierarchyData)
   } else {
     // if it is the root node, do not collapse
@@ -184,7 +186,7 @@ async function toggleChildrenCollapse(
     node.data.expanded = !node.data.expanded
   }
   // Call the update function to re-render the graph
-  updateChildrenGraph(childrenHierarchyData, root, svg, includeDeprecated)
+  updateChildrenGraph(childrenHierarchyData, root, svg, props)
 }
 
 /**

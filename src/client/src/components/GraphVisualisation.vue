@@ -20,6 +20,13 @@ const props = defineProps({
   selectedNodeId: {
     type: String,
     default: 'http://data.15926.org/dm/Thing'
+  },
+  /**
+   * The flag to show labels on the graph nodes.
+   */
+  showLabels: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -43,9 +50,9 @@ let parentsRoot: any
 // onMounted hook to initialise the graph and render with the initial data - prop `Thing` as initial node
 onMounted(() => {
   initialiseGraph()
-  fetchSelectedInfo(props.selectedNodeId).then((data) => {
-    drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
-    drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+  fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
+    drawChildrenGraph(data, childrenRoot, svg, props)
+    drawParentsGraph(data, parentsRoot, svg, props)
   })
 })
 
@@ -53,9 +60,9 @@ onMounted(() => {
 watch(
   () => props.selectedNodeId,
   (newVal, oldVal) => {
-    fetchSelectedInfo(newVal).then((data) => {
-      drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
-      drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+    fetchSelectedInfo(newVal, props.includeDeprecated).then((data) => {
+      drawChildrenGraph(data, childrenRoot, svg, props)
+      drawParentsGraph(data, parentsRoot, svg, props)
     })
   }
 )
@@ -64,9 +71,20 @@ watch(
 watch(
   () => props.includeDeprecated,
   (newVal, oldVal) => {
-    fetchSelectedInfo(props.selectedNodeId).then((data) => {
-      drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
-      drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+    fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
+      drawChildrenGraph(data, childrenRoot, svg, props)
+      drawParentsGraph(data, parentsRoot, svg, props)
+    })
+  }
+)
+
+// Watch the showLabels prop and re-render the graph when it changes
+watch(
+  () => props.showLabels,
+  (newVal, oldVal) => {
+    fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
+      drawChildrenGraph(data, childrenRoot, svg, props)
+      drawParentsGraph(data, parentsRoot, svg, props)
     })
   }
 )

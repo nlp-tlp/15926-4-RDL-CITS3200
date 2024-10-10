@@ -132,7 +132,9 @@ async function fetchSelectedInfo(nodeId: string, includeDeprecated: boolean = fa
     return null
   }
   try {
-    const response = await fetch(`${API_URL}${selectedInfoEndpoint}${encodeURIComponent(nodeId)}?dep=${includeDeprecated}`)
+    const response = await fetch(
+      `${API_URL}${selectedInfoEndpoint}${encodeURIComponent(nodeId)}?dep=${includeDeprecated}`
+    )
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return null
