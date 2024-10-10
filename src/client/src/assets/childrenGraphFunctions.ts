@@ -13,7 +13,6 @@ const nodeNormalColor: string = '#69B3A2'
 const nodeRootColor: string = '#FFCF00'
 const nodeNoParentsColor: string = '#999'
 
-
 /**
  * Draw the children graph
  * @param data The data to draw the graph with
@@ -43,14 +42,13 @@ function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: bo
   renderChildrenExtraLinks(nodes, svg)
 }
 
-
 /**
  * Update the children graph
  * @param data The data to update the graph with
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to update the graph on
  * @param includeDeprecated Whether to include deprecated nodes in the graph
-*/
+ */
 function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
   // Construct root node/hierarchy from the data - use expanded children to determine hierarchy
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
@@ -70,7 +68,6 @@ function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: 
   renderChildrenExtraLinks(nodes, svg)
 }
 
-
 /**
  * Render the nodes of the graph
  * @param nodes The nodes to render
@@ -78,7 +75,7 @@ function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: 
  * @param svg The SVG element to render the nodes on
  * @param childrenHierarchyData The data of the children hierarchy
  * @param includeDeprecated Whether to include deprecated nodes in the graph
-*/
+ */
 function renderChildrenNodes(
   nodes: any,
   root: any,
@@ -154,7 +151,6 @@ function renderChildrenNodes(
   nodeSelection.exit().remove()
 }
 
-
 /**
  * Toggle the collapse of the children of a node
  * @param node The node to toggle the collapse
@@ -162,7 +158,7 @@ function renderChildrenNodes(
  * @param svg The SVG element to update the graph on
  * @param childrenHierarchyData The data of the children hierarchy
  * @param includeDeprecated Whether to include deprecated nodes in the graph
-*/
+ */
 async function toggleChildrenCollapse(
   node: any,
   root: any,
@@ -170,16 +166,6 @@ async function toggleChildrenCollapse(
   childrenHierarchyData: any,
   includeDeprecated: boolean
 ) {
-
-
-
-
-  console.log('depr', includeDeprecated)
-
-
-
-
-
   if (!node.data.has_children) {
     // console.log('Node has no children:', node.data.label)
     return
@@ -201,13 +187,12 @@ async function toggleChildrenCollapse(
   updateChildrenGraph(childrenHierarchyData, root, svg, includeDeprecated)
 }
 
-
 /**
  * Update the children hierarchy data with the new data
  * @param node The node to update the children of
  * @param newNodeData The new data of the node
  * @param childrenHierarchyData The data of the children hierarchy
-*/
+ */
 function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierarchyData: any) {
   if (!newNodeData) {
     return
@@ -238,12 +223,11 @@ function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierar
   updateNode(childrenHierarchyData)
 }
 
-
 /**
  * Render the extra links of the children graph
  * @param nodes The nodes to render the extra links for
  * @param svg The SVG element to render the extra links on
-*/
+ */
 function renderChildrenExtraLinks(nodes: any, svg: any) {
   // Create an array to store the extra links
   const extraLinks: any = []
@@ -285,12 +269,11 @@ function renderChildrenExtraLinks(nodes: any, svg: any) {
   extraLink.exit().remove()
 }
 
-
 /**
  * Render the links of the children graph
  * @param links The links to render
  * @param svg The SVG element to render the links on
-*/
+ */
 function renderChildrenLinks(links: any, svg: any) {
   // Select all links and bind the data
   const link = svg.selectAll('path.link-children').data(links, (d: any) => d.target.id)
@@ -315,12 +298,11 @@ function renderChildrenLinks(links: any, svg: any) {
   link.exit().remove()
 }
 
-
 /**
  * Custom diagonal function for the links
  * @param d The data of the link
  * @param offset The offset of the link (default 13)
-*/
+ */
 function customDiagonal(d: any, offset = 13) {
   const sourceX = d.source.y
   const sourceY = d.source.x
@@ -348,6 +330,5 @@ function customDiagonal(d: any, offset = 13) {
     C ${midX},${sourceY} ${midX},${targetY} ${adjustedTargetX},${targetY}
   `
 }
-
 
 export { drawChildrenGraph }

@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import GraphVisualisation from '../components/DoubleSidedGraphVisualisation.vue'
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
+import GraphVisualisation from '../components/GraphVisualisation.vue'
 
+// Boolean flag to include deprecated nodes in the graph - default is false
 const showDeprecated = ref(false)
-const selectedNodeId = ref('')
+// The ID of the selected node for which we are rendering the graph - default is `Thing`
+const selectedNodeId = ref('http://data.15926.org/dm/Thing')
 
-function toggleShowDeprecated() {
-  showDeprecated.value = !showDeprecated.value
-  console.log('showDeprecated', showDeprecated.value)
+function handleToggleDeprecated(val: boolean) {
+  showDeprecated.value = val
 }
 
 function handleNodeSelected(nodeId: string) {
@@ -21,9 +22,8 @@ function handleNodeSelected(nodeId: string) {
 <template>
   <div class="container">
     <GraphSearchSidepane
-      :show-deprecated="showDeprecated"
-      @toggle-deprecated="toggleShowDeprecated"
       @node-selected="handleNodeSelected"
+      @toggle-deprecated="handleToggleDeprecated"
     />
     <GraphInfoSidepane />
     <GraphVisualisation :include-deprecated="showDeprecated" :selected-node-id="selectedNodeId" />

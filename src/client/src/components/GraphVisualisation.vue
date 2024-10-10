@@ -1,22 +1,55 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 import { fetchSelectedInfo } from '../assets/apiFunctions'
 import { drawChildrenGraph } from '../assets/childrenGraphFunctions'
 import { drawParentsGraph } from '../assets/parentsGraphFunctions'
 
 const props = defineProps({
+  /**
+   * The flag to include deprecated nodes in the graph.
+   */
   includeDeprecated: {
     type: Boolean,
     default: false
   },
+  /**
+   * The ID of the selected node from the search results for which to fetch the children.
+   */
   selectedNodeId: {
     type: String,
-    default: ''
+    default: 'http://data.15926.org/dm/Thing'
   }
 })
 
+// Reference to the SVG element
+const svgRef = ref<SVGSVGElement | null>(null)
+
+// Graph size
+const width: number = window.innerWidth
+const height: number = window.innerHeight
+
+// Graph layout
+const initialGraphX: number = (width / 7) * 3 // Center the graph horizontally
+const initialGraphY: number = (height / 7) * 3
+const zoomScale: [number, number] = [0.25, 5]
+
+// D3 variables
+let svg: any
+let childrenRoot: any
+let parentsRoot: any
+
+// onMounted hook to initialise the graph and render with the initial data - prop `Thing` as initial node
+onMounted(() => {
+  initialiseGraph()
+  fetchSelectedInfo(props.selectedNodeId).then((data) => {
+    drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
+    drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+  })
+})
+
+// Watch the selected node ID and if it changes, render the graph with the new data
 watch(
   () => props.selectedNodeId,
   (newVal, oldVal) => {
@@ -27,67 +60,26 @@ watch(
   }
 )
 
-// initial data for the root of the global view
-const selectedNodeDataChildren = {
-  // id: 'http://data.15926.org/rdl/RDS458774',
-  // label: 'SEAMLESS ARTEFACT',
-  // has_children: true
-  id: 'http://data.15926.org/dm/Thing',
-  label: 'Thing',
-  has_children: true
-}
-const selectedNodeDataParents = {
-  // id: 'http://data.15926.org/rdl/RDS458774',
-  // label: 'SEAMLESS ARTEFACT',
-  // has_parents: true
-  id: 'http://data.15926.org/dm/Thing',
-  label: 'Thing',
-  has_parents: false
-}
-
-let childrenHierarchyData = reactive(selectedNodeDataChildren)
-let parentHierarchyData = reactive(selectedNodeDataParents)
-
-// Reference to the SVG element
-const svgRef = ref<SVGSVGElement | null>(null)
-
-// Graph dimensions
-const width: number = window.innerWidth
-const height: number = window.innerHeight
-
-// Graph layout
-
-const initialGraphX: number = (width / 7) * 3.5
-const initialGraphY: number = (height / 7) * 3
-const zoomScale: [number, number] = [0.25, 5]
-
-// D3 variables
-let svg: any
-let childrenRoot: any
-let parentsRoot: any
-
-// onMounted hook - initialise the graph and render it
-onMounted(() => {
-  initialiseGraph()
-  drawChildrenGraph(childrenHierarchyData, childrenRoot, svg, props.includeDeprecated)
-  drawParentsGraph(parentHierarchyData, parentsRoot, svg, props.includeDeprecated)
-})
-
-// watch(() => props.includeDeprecated, (newVal, oldVal) => {
-//   console.log('includeDeprecated', newVal)
-//   initialiseGraph()
-//   drawChildrenGraph(childrenHierarchyData, root, svg, newVal)
-// })
+// Watch the includeDeprecated prop and re-render the graph when it changes
+watch(
+  () => props.includeDeprecated,
+  (newVal, oldVal) => {
+    fetchSelectedInfo(props.selectedNodeId).then((data) => {
+      drawChildrenGraph(data, childrenRoot, svg, props.includeDeprecated)
+      drawParentsGraph(data, parentsRoot, svg, props.includeDeprecated)
+    })
+  }
+)
 
 /**
- * Initialise the graph with the SVG element and reposition it to the center vertically.
+ * Initialises the graph by creating the SVG element and adding the zoom behaviour.
  */
 function initialiseGraph() {
+  // Create the SVG element
   svg = d3
     .select(svgRef.value as SVGSVGElement)
     .attr('width', width)
     .attr('height', height)
-    // .style('background-color', 'red')
     .call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
     .append('g')
     .attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())
@@ -108,7 +100,7 @@ function initialiseGraph() {
     .attr('d', 'M0,-5L10,0L0,5')
     .attr('fill', '#444')
 
-  // add arrow marker for extra links
+  // Add arrow marker for extra links
   svg
     .append('defs')
     .append('marker')
@@ -123,14 +115,12 @@ function initialiseGraph() {
     .append('path')
     .attr('d', 'M0,-5L10,0L0,5')
     .attr('fill', 'red')
-
-  // console.log('Initialised graph')
 }
 
 /**
- * Zoom function for the graph.
+ * Zoom event handler for the graph.
  * Combines the initial transform of centering the graph with the new transform of the zoom event.
- * @param event The zoom event.
+ * @param {Object} event - The D3 zoom event object.
  */
 function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
   const transform = event.transform
@@ -142,8 +132,6 @@ function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
 
   svg.attr('transform', combinedTransform.toString())
 }
-
-//  draw the parents graph
 </script>
 
 <script lang="ts">
