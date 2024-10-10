@@ -93,6 +93,13 @@ function clickResult(result: SearchResult): void {
   } else {
     // Update the search term to the clicked result
     searchTerm.value = searchOption.value === 'id' ? result.id || '' : result.label || ''
+
+    showResults.value = false // Hide search results after setting the search term
+
+    // Delay hiding the results after setting the search term to avoid triggering the search again via watch
+    setTimeout(() => {
+      showResults.value = false
+    }, 100)
   }
 }
 
