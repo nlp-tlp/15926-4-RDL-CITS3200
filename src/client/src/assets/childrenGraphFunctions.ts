@@ -2,49 +2,83 @@ import * as d3 from 'd3'
 
 import { fetchChildren } from '@/assets/apiFunctions'
 
+// node dimensions + spacing
 const nodeRadius: number = 7
 const nodeDistanceX: number = 25
 const nodeDistanceY: number = 350
 
-// draw the children graph
+// node visuals
+const nodeDeprecatedColor: string = '#FC1455'
+const nodeNormalColor: string = '#69B3A2'
+const nodeRootColor: string = '#FFCF00'
+const nodeNoParentsColor: string = '#999'
+
+
+/**
+ * Draw the children graph
+ * @param data The data to draw the graph with
+ * @param root The root element that holds the hierarchy data
+ * @param svg The SVG element to draw the graph on
+ * @param includeDeprecated Whether to include deprecated nodes in the graph
+ */
 function drawChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
-  // Construct root node from the data
+  // Construct root node/hierarchy from the data
   root = d3.hierarchy(data)
 
   // Create a tree layout
   const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
-  // assign x and y properties to the root and its descendants
+  // Compute the layout - assigns x and y positions to the nodes
   tree(root)
 
   // Get all the nodes and links
   const nodes = root.descendants()
   const links = root.links()
 
-  // Start with the root node expanded
+  // Expand the root node to start with 1st level children visible
   toggleChildrenCollapse(nodes[0], root, svg, data, includeDeprecated)
 
-  // Render the nodes and links
+  // Render the nodes, links and extra links
   renderChildrenNodes(nodes, root, svg, data, includeDeprecated)
   renderChildrenLinks(links, svg)
   renderChildrenExtraLinks(nodes, svg)
 }
 
-// update
+
+/**
+ * Update the children graph
+ * @param data The data to update the graph with
+ * @param root The root element that holds the hierarchy data
+ * @param svg The SVG element to update the graph on
+ * @param includeDeprecated Whether to include deprecated nodes in the graph
+*/
 function updateChildrenGraph(data: any, root: any, svg: any, includeDeprecated: boolean) {
+  // Construct root node/hierarchy from the data - use expanded children to determine hierarchy
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
 
+  // Create a tree layout
   const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+  // Compute the layout - assigns x and y positions to the nodes
   tree(root)
 
+  // Get all the nodes and links
   const nodes = root.descendants()
   const links = root.links()
 
+  // Render the nodes, links and extra links
   renderChildrenNodes(nodes, root, svg, data, includeDeprecated)
   renderChildrenLinks(links, svg)
   renderChildrenExtraLinks(nodes, svg)
 }
 
-// render the nodes of the graph - uses nodes array
+
+/**
+ * Render the nodes of the graph
+ * @param nodes The nodes to render
+ * @param root The root element that holds the hierarchy data
+ * @param svg The SVG element to render the nodes on
+ * @param childrenHierarchyData The data of the children hierarchy
+ * @param includeDeprecated Whether to include deprecated nodes in the graph
+*/
 function renderChildrenNodes(
   nodes: any,
   root: any,
@@ -54,15 +88,15 @@ function renderChildrenNodes(
 ) {
   // Select all nodes and bind the data
   const nodeSelection = svg.selectAll('g.node-children').data(nodes, (d: any) => d.data.id)
-  // console.log('Nodes:', nodes)
 
-  // Enter new nodes
+  // on enter, append a new node group and set the class
   const nodeEnter = nodeSelection
     .enter()
     .append('g')
     .attr('class', 'node-children')
     // on click, toggle the collapse of the node
     .on('click', (event: Event, d: any) => {
+      // Prevent the click event from propagating to the parent nodes
       event.stopPropagation()
       toggleChildrenCollapse(d, root, svg, childrenHierarchyData, includeDeprecated)
     })
@@ -71,17 +105,15 @@ function renderChildrenNodes(
   nodeEnter
     .append('circle')
     .attr('r', nodeRadius)
-    // set the fill color based on the presence of children
-    // .attr('fill', (d: any) => (d.data.has_children ? '#69b3a2' : '#999'))
     .attr('fill', (d: any) => {
       if (d.data.dep) {
-        return '#fc1455'
+        return nodeDeprecatedColor
       } else {
         // if is root node
         if (d.data.id === childrenHierarchyData.id) {
-          return '#FFCF00'
+          return nodeRootColor
         }
-        return d.data.has_children ? '#69b3a2' : '#999'
+        return d.data.has_children ? nodeNormalColor : nodeNoParentsColor
       }
     })
     // set the cursor style based on the presence of children
@@ -93,23 +125,20 @@ function renderChildrenNodes(
   nodeEnter
     .append('text')
     .attr('dy', '.35em')
-    // set the text position based on the expanded state - left if expanded, right if collapsed
-    // .attr('x', (d: any) => (d.data.expanded ? -15 : 10))
-    // .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
     .text((d: any) => d.data.label)
 
   // merge the enter and update selections
   const nodeUpdate = nodeEnter.merge(nodeSelection)
 
-  // Update the node positions and visibility
+  // node update
   nodeUpdate
     .attr('transform', (d: any) => `translate(${d.y},${d.x})`)
+    // display the node based on the parent expanded state - this is to avoid the node being displayed when the parent is collapsed if has not been handled by the togglecollapse function (should not happen - but just in case)
     .style('display', (d: any) => (d.parent && !d.parent.data.expanded ? 'none' : null))
 
-  // Update the text position based on the expanded state
+  // Update the text position based on the expanded state - text will overlap with the parent text for the root node (doesn't make any visual difference)
   nodeUpdate
     .select('text')
-
     // x: root at 0 and children otherwise based on expanded state
     .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -15 : 10))
     // y: root at -20 and children not changed
@@ -125,7 +154,15 @@ function renderChildrenNodes(
   nodeSelection.exit().remove()
 }
 
-// toggle the collapse/expansion of a node
+
+/**
+ * Toggle the collapse of the children of a node
+ * @param node The node to toggle the collapse
+ * @param root The root element that holds the hierarchy data
+ * @param svg The SVG element to update the graph on
+ * @param childrenHierarchyData The data of the children hierarchy
+ * @param includeDeprecated Whether to include deprecated nodes in the graph
+*/
 async function toggleChildrenCollapse(
   node: any,
   root: any,
@@ -133,10 +170,18 @@ async function toggleChildrenCollapse(
   childrenHierarchyData: any,
   includeDeprecated: boolean
 ) {
+
+
+
+
   console.log('depr', includeDeprecated)
 
+
+
+
+
   if (!node.data.has_children) {
-    console.log('Node has no children:', node.data.label)
+    // console.log('Node has no children:', node.data.label)
     return
   }
 
@@ -145,19 +190,29 @@ async function toggleChildrenCollapse(
     const newNodeData = await fetchChildren(node.data, includeDeprecated)
     updateChildrenHierarchyData(node, newNodeData, childrenHierarchyData)
   } else {
-    // if root node, do not collapse
+    // if it is the root node, do not collapse
     if (node.data.id === childrenHierarchyData.id) {
       return
     }
     // Toggle the expanded state
     node.data.expanded = !node.data.expanded
   }
-
+  // Call the update function to re-render the graph
   updateChildrenGraph(childrenHierarchyData, root, svg, includeDeprecated)
 }
 
-// find the node in childrenHierarchyData and update it
+
+/**
+ * Update the children hierarchy data with the new data
+ * @param node The node to update the children of
+ * @param newNodeData The new data of the node
+ * @param childrenHierarchyData The data of the children hierarchy
+*/
 function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierarchyData: any) {
+  if (!newNodeData) {
+    return
+  }
+  // Update the children of the node in the hierarchy data
   function updateNode(currentNode: any): boolean {
     if (currentNode === node.data) {
       if (newNodeData.children) {
@@ -166,8 +221,6 @@ function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierar
           expanded: false,
           children: null
         }))
-      } else {
-        currentNode.children = []
       }
       currentNode.expanded = true
       return true
@@ -180,14 +233,17 @@ function updateChildrenHierarchyData(node: any, newNodeData: any, childrenHierar
         }
       }
     }
-
     return false
   }
-
   updateNode(childrenHierarchyData)
 }
 
-// render the extra links of the graph
+
+/**
+ * Render the extra links of the children graph
+ * @param nodes The nodes to render the extra links for
+ * @param svg The SVG element to render the extra links on
+*/
 function renderChildrenExtraLinks(nodes: any, svg: any) {
   // Create an array to store the extra links
   const extraLinks: any = []
@@ -229,7 +285,12 @@ function renderChildrenExtraLinks(nodes: any, svg: any) {
   extraLink.exit().remove()
 }
 
-// render the links of the graph
+
+/**
+ * Render the links of the children graph
+ * @param links The links to render
+ * @param svg The SVG element to render the links on
+*/
 function renderChildrenLinks(links: any, svg: any) {
   // Select all links and bind the data
   const link = svg.selectAll('path.link-children').data(links, (d: any) => d.target.id)
@@ -254,9 +315,12 @@ function renderChildrenLinks(links: any, svg: any) {
   link.exit().remove()
 }
 
+
 /**
- * Create a diagonal path generator.
- */
+ * Custom diagonal function for the links
+ * @param d The data of the link
+ * @param offset The offset of the link (default 13)
+*/
 function customDiagonal(d: any, offset = 13) {
   const sourceX = d.source.y
   const sourceY = d.source.x
@@ -284,5 +348,6 @@ function customDiagonal(d: any, offset = 13) {
     C ${midX},${sourceY} ${midX},${targetY} ${adjustedTargetX},${targetY}
   `
 }
+
 
 export { drawChildrenGraph }
