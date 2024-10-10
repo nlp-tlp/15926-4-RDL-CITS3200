@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import { fetchNodeInfo } from '../assets/apiFunctions'
 import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
@@ -35,6 +36,35 @@ function handleNodeSelected(nodeId: string) {
 function handleToggleLabels(val: boolean) {
   showLabels.value = val
 }
+
+const nodeInfoDisplay = ref({
+  id: '',
+  label: '',
+  definition: '',
+  deprecation: '',
+  parents: '',
+  types: ''
+})
+
+/**
+ * Handles the event when a label is clicked on the graph.
+ * @param {string} nodeUri - The URI of the node for which the label was clicked.
+ */
+async function handleLabelClicked(nodeUri: string) {
+  let nodeInfo = await fetchNodeInfo(nodeUri)
+  if (nodeInfo) {
+    nodeInfoDisplay.value = {
+      id: nodeInfo.id,
+      label: nodeInfo.label,
+      definition: nodeInfo.definition,
+      deprecation: nodeInfo.deprecation,
+      parents: nodeInfo.parents,
+      types: nodeInfo.types
+    }
+    infoPaneRef.value.toggleRightNav()
+  }
+}
+const infoPaneRef = ref()
 </script>
 
 <template>
@@ -44,10 +74,11 @@ function handleToggleLabels(val: boolean) {
       @toggle-deprecated="handleToggleDeprecated"
       @toggle-labels="handleToggleLabels"
     />
-    <GraphInfoSidepane />
+    <GraphInfoSidepane ref="infoPaneRef" :node-info-display="nodeInfoDisplay" />
     <GraphVisualisation
       :include-deprecated="showDeprecated"
       :selected-node-id="selectedNodeId"
+      @label-clicked="handleLabelClicked"
       :show-labels="showLabels"
     />
   </div>

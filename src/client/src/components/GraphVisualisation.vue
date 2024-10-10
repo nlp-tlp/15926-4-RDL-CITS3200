@@ -47,12 +47,15 @@ let svg: any
 let childrenRoot: any
 let parentsRoot: any
 
+// Define the emit function to emit the label-clicked event
+const emit = defineEmits(['label-clicked'])
+
 // onMounted hook to initialise the graph and render with the initial data - prop `Thing` as initial node before search
 onMounted(() => {
   initialiseGraph()
   fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
-    drawChildrenGraph(data, childrenRoot, svg, props)
-    drawParentsGraph(data, parentsRoot, svg, props)
+    drawChildrenGraph(data, childrenRoot, svg, props, emit)
+    drawParentsGraph(data, parentsRoot, svg, props, emit)
   })
 })
 
@@ -61,8 +64,8 @@ watch(
   () => props.selectedNodeId,
   (newVal, oldVal) => {
     fetchSelectedInfo(newVal, props.includeDeprecated).then((data) => {
-      drawChildrenGraph(data, childrenRoot, svg, props)
-      drawParentsGraph(data, parentsRoot, svg, props)
+      drawChildrenGraph(data, childrenRoot, svg, props, emit)
+      drawParentsGraph(data, parentsRoot, svg, props, emit)
     })
   }
 )
@@ -72,8 +75,8 @@ watch(
   () => props.includeDeprecated,
   (newVal, oldVal) => {
     fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
-      drawChildrenGraph(data, childrenRoot, svg, props)
-      drawParentsGraph(data, parentsRoot, svg, props)
+      drawChildrenGraph(data, childrenRoot, svg, props, emit)
+      drawParentsGraph(data, parentsRoot, svg, props, emit)
     })
   }
 )
@@ -83,8 +86,8 @@ watch(
   () => props.showLabels,
   (newVal, oldVal) => {
     fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
-      drawChildrenGraph(data, childrenRoot, svg, props)
-      drawParentsGraph(data, parentsRoot, svg, props)
+      drawChildrenGraph(data, childrenRoot, svg, props, emit)
+      drawParentsGraph(data, parentsRoot, svg, props, emit)
     })
   }
 )

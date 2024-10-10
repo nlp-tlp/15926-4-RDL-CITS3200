@@ -10,6 +10,8 @@ const nodeDistanceY: number = 370
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
 const nodeNormalColor: string = '#69B3A2'
+const nodeHoverColor: string = '#16F1A2'
+const textHoverColor: string = '#19C1A2'
 const nodeRootColor: string = '#FFCF00'
 const nodeNoParentsColor: string = '#999'
 
@@ -19,8 +21,9 @@ const nodeNoParentsColor: string = '#999'
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to draw the graph on
  * @param props The props of the component
+ * @param emit The emit function of the component
  */
-function drawChildrenGraph(data: any, root: any, svg: any, props: any) {
+function drawChildrenGraph(data: any, root: any, svg: any, props: any, emit: any) {
   if (!data || !data.has_children) {
     return
   }
@@ -38,10 +41,10 @@ function drawChildrenGraph(data: any, root: any, svg: any, props: any) {
   const links = root.links()
 
   // Expand the root node to start with 1st level children visible
-  toggleChildrenCollapse(nodes[0], root, svg, data, props)
+  toggleChildrenCollapse(nodes[0], root, svg, data, props, emit)
 
   // Render the nodes, links and extra links
-  renderChildrenNodes(nodes, root, svg, data, props)
+  renderChildrenNodes(nodes, root, svg, data, props, emit)
   renderChildrenLinks(links, svg)
   renderChildrenExtraLinks(nodes, svg)
 }
@@ -52,8 +55,9 @@ function drawChildrenGraph(data: any, root: any, svg: any, props: any) {
  * @param root The root element that holds the hierarchy data
  * @param svg The SVG element to update the graph on
  * @param props The props of the component
+ * @param emit The emit function of the component
  */
-function updateChildrenGraph(data: any, root: any, svg: any, props: any) {
+function updateChildrenGraph(data: any, root: any, svg: any, props: any, emit: any) {
   // Construct root node/hierarchy from the data - use expanded children to determine hierarchy
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
 
@@ -67,7 +71,7 @@ function updateChildrenGraph(data: any, root: any, svg: any, props: any) {
   const links = root.links()
 
   // Render the nodes, links and extra links
-  renderChildrenNodes(nodes, root, svg, data, props)
+  renderChildrenNodes(nodes, root, svg, data, props, emit)
   renderChildrenLinks(links, svg)
   renderChildrenExtraLinks(nodes, svg)
 }
@@ -79,13 +83,15 @@ function updateChildrenGraph(data: any, root: any, svg: any, props: any) {
  * @param svg The SVG element to render the nodes on
  * @param childrenHierarchyData The data of the children hierarchy
  * @param props The props of the component
+ * @param emit The emit function of the component
  */
 function renderChildrenNodes(
   nodes: any,
   root: any,
   svg: any,
   childrenHierarchyData: any,
-  props: any
+  props: any,
+  emit: any
 ) {
   // Select all nodes and bind the data
   const nodeSelection = svg.selectAll('g.node-children').data(nodes, (d: any) => d.data.id)
@@ -99,7 +105,7 @@ function renderChildrenNodes(
     .on('click', (event: Event, d: any) => {
       // Prevent the click event from propagating to the parent nodes
       event.stopPropagation()
-      toggleChildrenCollapse(d, root, svg, childrenHierarchyData, props)
+      toggleChildrenCollapse(d, root, svg, childrenHierarchyData, props, emit)
     })
 
   // append circle to the node
@@ -155,6 +161,53 @@ function renderChildrenNodes(
     .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
     .style('font-style', (d: any) => (d.data.dep ? 'italic' : 'normal'))
 
+  // label hover effect
+  nodeUpdate
+    .select('text')
+    .style('cursor', () => 'pointer')
+    .on('mouseover', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', textHoverColor)
+        .style('font-weight', (d: any) => (d.data.dep ? 450 : 700))
+    })
+    .on('mouseout', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGTextElement)
+        .style('fill', '')
+        .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
+    })
+    .on('click', (event: any, d: any) => {
+      event.stopPropagation()
+      emit('label-clicked', d.data.id)
+    })
+
+  // node circle hover effect
+  nodeUpdate
+    .select('circle')
+    .on('mouseover', (event: MouseEvent) => {
+      d3.select(event.currentTarget as SVGCircleElement).style('fill', (d: any) => {
+        if (d.data.dep) {
+          return nodeDeprecatedColor
+        } else {
+          if (d.data.id === childrenHierarchyData.id) {
+            return nodeRootColor
+          }
+          return nodeHoverColor
+        }
+      })
+    })
+    .on('mouseout', (event: MouseEvent) =>
+      d3.select(event.currentTarget as SVGCircleElement).style('fill', (d: any) => {
+        if (d.data.dep) {
+          return nodeDeprecatedColor
+        } else {
+          if (d.data.id === childrenHierarchyData.id) {
+            return nodeRootColor
+          }
+          return d.data.has_children ? nodeNormalColor : nodeNoParentsColor
+        }
+      })
+    )
+
   // remove the nodes that are no longer needed
   nodeSelection.exit().remove()
 }
@@ -166,13 +219,15 @@ function renderChildrenNodes(
  * @param svg The SVG element to update the graph on
  * @param childrenHierarchyData The data of the children hierarchy
  * @param props The props of the component
+ * @param emit The emit function of the component
  */
 async function toggleChildrenCollapse(
   node: any,
   root: any,
   svg: any,
   childrenHierarchyData: any,
-  props: any
+  props: any,
+  emit: any
 ) {
   if (!node.data.has_children) {
     // console.log('Node has no children:', node.data.label)
@@ -192,7 +247,7 @@ async function toggleChildrenCollapse(
     node.data.expanded = !node.data.expanded
   }
   // Call the update function to re-render the graph
-  updateChildrenGraph(childrenHierarchyData, root, svg, props)
+  updateChildrenGraph(childrenHierarchyData, root, svg, props, emit)
 }
 
 /**
