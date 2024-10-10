@@ -7,6 +7,7 @@ from app.controllers import (
     check_uri_exists,
     str_to_bool,
     get_all_node_info,
+    get_node_info_with_relations,
 )
 
 
@@ -149,6 +150,41 @@ def test_get_children_with_extra_parents(sample_graph):
     assert (
         extra_parent_info["id"] == "http://data.15926.org/dm/ExtraParent"
     ), "Child2's extra parent should be 'Extra Parent'"
+
+
+def test_get_node_info_with_relations(sample_graph):
+    """
+    Test the get_node_info_with_relations function from controllers.py.
+    """
+    # Test with a node that has label and children
+    node_uri = "http://data.15926.org/dm/Thing"
+    node_info = get_node_info_with_relations(node_uri, sample_graph)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Thing"
+    assert node_info["dep"] is None  # No deprecation date for the root node
+    assert node_info["has_children"] is True
+    assert node_info["has_parents"] is False
+
+    # Test with a deprecated node that has children and parents
+    node_uri = "http://data.15926.org/dm/Child1"
+    node_info = get_node_info_with_relations(node_uri, sample_graph)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child One"
+    assert node_info["dep"] == "2021-03-21Z"
+    assert node_info["has_children"] is True
+    assert node_info["has_parents"] is True
+
+    # Test with a node that has multiple parents
+    node_uri = "http://data.15926.org/dm/Child2"
+    node_info = get_node_info_with_relations(node_uri, sample_graph)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child Two"
+    assert node_info["dep"] is None
+    assert node_info["has_children"] is False
+    assert node_info["has_parents"] is True
 
 
 def test_get_all_node_info(sample_graph):

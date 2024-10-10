@@ -280,6 +280,22 @@ def selected_info(node_uri):
     return jsonify(node_info)
 
 
+@main.route("/node/selected-info/", methods=["GET"])
+@main.route("/node/selected-info", methods=["GET"])
+def invalid_selected_info():
+    """
+    Handles requests to '/node/selected-info' where no node URI is provided.
+    Returns an error message with status code 400.
+
+    Returns:
+        JSON: Error message indicating the ID/URI was not provided.
+    """
+    return (
+        jsonify({"error": "ID/URI not provided. Must use '/node/selected-info/<id>'"}),
+        400,
+    )
+
+
 @main.route("/search/<string:field>/<path:search_key>", methods=["GET"])
 def search(field, search_key):
     """

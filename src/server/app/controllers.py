@@ -80,7 +80,16 @@ def get_node_info_with_relations(uri: str, graph) -> dict[str, any]:
 
     Returns:
         dict: A dictionary containing the node's 'id', 'label', 'dep', 'has_children', and 'has_parents'.
+
+    Raises:
+        ValueError: If the provided URI does not exist within the RDFLib graph.
     """
+    uri_ref = URIRef(uri)  # Ensure uri is a ref before querying
+
+    # Check if the URI exists in the graph
+    if not check_uri_exists(uri, graph):
+        raise ValueError(f"URI '{uri}' does not exist within the database")
+
     node_info = {
         "id": str(uri),
         "label": None,
@@ -88,8 +97,6 @@ def get_node_info_with_relations(uri: str, graph) -> dict[str, any]:
         "has_children": False,
         "has_parents": False,
     }
-
-    uri_ref = URIRef(uri)  # Ensure uri is a ref before querying
 
     # Query for the label of the node
     for _, _, label in graph.triples((uri_ref, RDFS.label, None)):
