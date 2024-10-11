@@ -68,11 +68,11 @@ export default {
     <transition name="sidepanel">
       <div
         v-if="isRightExpanded"
-        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
+        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] lg:w-[300px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
 
-        <div class="flex-1 m-4 text-white overflow-y-auto scrollbar-none">
+        <div class="flex-1 m-4 lg:pr-2 text-white overflow-y-auto scrollbar-none">
           <div v-for="(value, key) in rdfData" :key="key" class="mb-4">
             <strong class="block font-bold"
               >{{ key.charAt(0).toUpperCase() + key.slice(1) }}:</strong

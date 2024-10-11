@@ -97,7 +97,7 @@ function toggleIsRightExpanded() {
 </script>
 
 <template>
-  <div class="container">
+  <div>
     <GraphSearchSidepane
       @node-selected="handleNodeSelected"
       @toggle-deprecated="handleToggleDeprecated"
