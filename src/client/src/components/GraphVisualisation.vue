@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
 import { saveAs } from 'file-saver'
-import html2canvas from 'html2canvas'
+// import html2canvas from 'html2canvas'
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -64,25 +64,74 @@ const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
 const screenshotDataUrl = ref('') // Store the data URL of the screenshot
 const isLoading = ref(false)
 
+// // Function to capture the screen and show the preview modal
+// const captureScreen = () => {
+//   isLoading.value = true
+//   setTimeout(() => {
+//     const captureArea = document.getElementById('captureArea')
+
+//     if (captureArea) {
+//       html2canvas(captureArea, {
+//         scale: 2, // Increase scale for better quality
+//         logging: false, // Disable logging to reduce overhead
+//         useCORS: true // Enable cross-origin if required for resources
+//       }).then((canvas) => {
+//         screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
+//         isPreviewVisible.value = true // Show the preview modal
+//         isLoading.value = false
+//       })
+//     }
+//   }, 0)
+// }
+
 // Function to capture the screen and show the preview modal
 const captureScreen = () => {
-  isLoading.value = true
-  setTimeout(() => {
-    const captureArea = document.getElementById('captureArea')
+  const svgElement = svgRef.value;
+  // svgElement = d3.call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
+  if (svgElement) {
+    // Get the bounding box of the full graph
+    const bounds = svgElement.getBBox();
+    const width = svgElement.getAttribute('width')
+    const height = svgElement.getAttribute('height')
+    console.log("width is", width, "height is", height)
+    
+    // Create a new canvas element to render the SVG
+    const canvas = document.createElement('canvas');
+    canvas.width = bounds.width;
+    canvas.height = bounds.height;
+    console.log(canvas.width, canvas.height)
 
-    if (captureArea) {
-      html2canvas(captureArea, {
-        scale: 2, // Increase scale for better quality
-        logging: false, // Disable logging to reduce overhead
-        useCORS: true // Enable cross-origin if required for resources
-      }).then((canvas) => {
-        screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
-        isPreviewVisible.value = true // Show the preview modal
-        isLoading.value = false
-      })
-    }
-  }, 0)
-}
+    const ctx: any = canvas.getContext('2d');
+    
+    // Clear the canvas before each render to avoid issues
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Serialize the SVG element into a string
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+
+    // Create an Image object and set the src to the base64 SVG
+    const img = new Image();
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+
+    img.onload = () => {
+      // Draw the full SVG graph on the canvas
+      ctx?.drawImage(img, -bounds.x, -bounds.y);
+      console.log(canvas.width, canvas.height)
+      console.log(bounds.x, bounds.y)
+
+      // Create a preview and display in modal
+      screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`);
+      isPreviewVisible.value = true;
+      isLoading.value = false;
+    };
+
+    // Error handling: if the image fails to load
+    img.onerror = () => {
+      console.error('Image failed to load.');
+      isLoading.value = false;
+    };
+  }
+};
 
 // Function to inline all styles into the SVG
 //(Styles from our d3 graph have to be put inline to export as a SVG)
@@ -109,40 +158,74 @@ const inlineStyles = (element: SVGElement) => {
   })
 }
 
-// Function to save the screenshot based on the selected file type
+// // Function to save the screenshot based on the selected file type
+// const saveScreenshot = () => {
+//   if (selectedFileType.value === 'svg') {
+//     const svgElement = svgRef.value
+//     if (!svgElement) return
+
+//     inlineStyles(svgElement)
+
+//     const serializer = new XMLSerializer()
+//     const svgString = serializer.serializeToString(svgElement)
+
+//     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+//     saveAs(blob, 'graph.svg')
+//   } else {
+//     // (PNG, JPEG)
+//     const canvas = document.createElement('canvas')
+//     const img = new Image()
+//     img.src = screenshotDataUrl.value
+
+//     img.onload = () => {
+//       canvas.width = img.width
+//       canvas.height = img.height
+//       const ctx = canvas.getContext('2d')
+//       ctx?.drawImage(img, 0, 0)
+
+//       canvas.toBlob((blob) => {
+//         if (blob) {
+//           const fileName = `screenshot.${selectedFileType.value}`
+//           saveAs(blob, fileName)
+//         }
+//       }, `image/${selectedFileType.value}`)
+//     }
+//   }
+// }
+
 const saveScreenshot = () => {
   if (selectedFileType.value === 'svg') {
-    const svgElement = svgRef.value
-    if (!svgElement) return
+    const svgElement = svgRef.value;
+    if (!svgElement) return;
 
-    inlineStyles(svgElement)
+    inlineStyles(svgElement);
 
-    const serializer = new XMLSerializer()
-    const svgString = serializer.serializeToString(svgElement)
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgElement);
 
-    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-    saveAs(blob, 'graph.svg')
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    saveAs(blob, 'graph.svg');
   } else {
-    // (PNG, JPEG)
-    const canvas = document.createElement('canvas')
-    const img = new Image()
-    img.src = screenshotDataUrl.value
+    // Save PNG/JPEG from canvas data
+    const canvas = document.createElement('canvas');
+    const img = new Image();
+    img.src = screenshotDataUrl.value;
 
     img.onload = () => {
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx?.drawImage(img, 0, 0)
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
 
       canvas.toBlob((blob) => {
         if (blob) {
-          const fileName = `screenshot.${selectedFileType.value}`
-          saveAs(blob, fileName)
+          const fileName = `screenshot.${selectedFileType.value}`;
+          saveAs(blob, fileName);
         }
-      }, `image/${selectedFileType.value}`)
-    }
+      }, `image/${selectedFileType.value}`);
+    };
   }
-}
+};
 
 // Function to close the preview modal
 const closePreview = () => {
@@ -151,7 +234,6 @@ const closePreview = () => {
 
 // Reference to the SVG elemen
 const svgRef = ref<SVGSVGElement | null>(null)
-// const svgRef = ref(null)
 
 // Graph dimensions
 const width: number = window.innerWidth
@@ -346,6 +428,7 @@ async function toggleCollapse(node: any) {
   }
   // Trigger the update to re-render the graph with the changes
   update(node)
+
 }
 
 /**
@@ -529,6 +612,9 @@ export default {
 
 /* Modal Styles */
 .modal {
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
   position: fixed;
   z-index: 1000;
   left: 50%;
@@ -542,6 +628,9 @@ export default {
 }
 
 .modal-content {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
   text-align: center;
 }
 
