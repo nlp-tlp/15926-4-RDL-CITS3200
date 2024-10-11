@@ -2,33 +2,14 @@
 import IconGraph from '../components/icons/IconGraph.vue'
 </script>
 
-<script lang="ts">
-export default {
-  data() {
-    return {
-      lastUpdated: ''
-    }
-  },
-  created() {
-    const today = new Date()
-    this.lastUpdated = today.toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-  }
-}
-</script>
-
 <template>
-  <div class="text-justify text-nav-background mb-[70px] mx-8">
+  <div class="text-justify text-nav-background mb-[70px] lg:mx-40 mx-8">
     <section class="lg:mt-[120px] mt-[90px] mb-[70px]">
       <h1 class="text-center lg:text-4xl font-bold text-3xl">
         Interactive Visualization of the ISO 15926-4 Reference Data Library
       </h1>
-      <p class="mt-[50px] font-small">Last updated on {{ lastUpdated }}</p>
       <h2
-        class="lg:text-2xl text-xl font-semibold mt-[40px] mb-[10px] relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
+        class="lg:text-2xl text-xl font-semibold mt-[80px] mb-[10px] relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
       >
         Overview: ISO and RDL
       </h2>
@@ -60,7 +41,7 @@ export default {
     </section>
 
     <section
-      class="mb-[110px] text-center relative px-[50px] py-[50px] before:content-[''] before:absolute before:top-[-20px] before:left-0 before:w-full before:h-[2px] before:bg-nav-background after:content-[''] after:absolute after:bottom-[-20px] after:left-0 after:w-full after:h-[1px] after:bg-nav-background"
+      class="mb-[110px] text-center relative px-[50px] py-[50px] before:content-[''] before:absolute before:top-[-20px] before:left-0 before:w-full before:h-[2px] before:bg-nav-background after:content-[''] after:absolute after:bottom-[-20px] after:left-0 after:w-full after:h-[1.5px] after:bg-nav-background"
     >
       <p class="lg:text-lg mb-[60px]">
         Click the button below to explore the interactive visualization
@@ -74,11 +55,11 @@ export default {
         </button>
       </router-link>
       <p class="lg:text-lg font-bold mb-[8px]">Navigating the Graph:</p>
-      <p class="lg:text-lg">
-        Please note that clicking on a node will expand/collapse it, clicking on a node label will
-        select it and show it's details in the right side pane, the right side pane shows the rdf
-        information of a selected node, the left side pane allows you to search and filter the nodes
-        in a graph, and applying filters will reset the graph expansion.
+      <p class="lg:text-lg max-w-[900px] mx-auto">
+        The graph's left sidepane allows for search and filtering, and the right sidepane displays
+        the RDF data of a selected node. Clicking on a node toggles collapsibility, while clicking
+        on a node label shows it's details in the info sidepane. Please note that applying any
+        filters will reset the graph's expansion.
       </p>
     </section>
 
@@ -101,17 +82,15 @@ export default {
       </p>
     </section>
 
-    <section class="text-center mb-[80px]">
-      <h3
-        class="lg:text-3xl text-2xl font-bold relative before:content-[''] before:absolute before:bottom-[-20px] before:w-[75%] before:h-[2px] before:bg-nav-background before:left-1/2 before:transform before:-translate-x-1/2"
+    <section class="text-center mb-[120px]">
+      <p
+        class="relative before:content-[''] before:absolute before:bottom-[-20px] lg:before:w-[50%] before:w-full before:h-[2px] before:bg-nav-background before:left-1/2 before:transform before:-translate-x-1/2"
       >
-        Questions?
-      </h3>
-      <p class="mt-[50px] mb-[20px] lg:text-xl text-lg">Contact us at:</p>
-      <p>
+        <span class="lg:text-2xl text-xl font-bold">Questions?</span>
+        <span class="lg:text-xl text-lg lg:ml-3 ml-2">Contact us at:</span>
         <a
           href="mailto:systemhealthlab@gmail.com"
-          class="lg:text-lg text-blue-500 hover:underline hover:bg-transparent hover:text-nav-background cursor-pointer"
+          class="lg:ml-2 ml-1 lg:text-xl text-lg text-blue-500 hover:underline hover:bg-transparent hover:text-nav-background cursor-pointer"
           >systemhealthlab@gmail.com</a
         >
       </p>
@@ -137,10 +116,13 @@ export default {
         <img
           src="/images/nlp-tlp-logo.png"
           class="max-w-[90px]"
-          alt="University of Western Australia Natural & Technical Language Processing Group Logo"
+          alt="University of Western Australia Natural & Technical Language 
+        Processing Group Logo"
         />
       </a>
     </section>
+
+    <p class="mt-[60px] mb-[60px] font-small text-center">Last updated on 14 October 2024</p>
 
     <section class="text-center lg:text-base text-sm">
       <h4 class="font-medium">Disclaimer:</h4>
