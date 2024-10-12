@@ -128,7 +128,7 @@ function renderParentsNodes(
       i === 0 ? 'default' : d.data.has_parents ? 'pointer' : 'default'
     )
     .attr('stroke', '#444')
-    // for root node, set stroke width to 3, otherwise 2 if the node has parents
+    // set the stroke width based on the node being root or having parents
     .attr('stroke-width', (d: any) =>
       d.data.id === parentHierarchyData.id || d.data.has_parents ? 2 : 0
     )
@@ -383,7 +383,7 @@ function customDiagonal(d: any, offset = 13) {
   // Check if the link is vertical or near-vertical
   if (Math.abs(sourceX - targetX) < 1) {
     // For vertical links, adjust the end point slightly to make arrow visible
-    const arrowAdjustment = isForward ? -offset : offset
+    const arrowAdjustment = targetY > sourceY ? -offset : offset
     return `
       M ${sourceX},${sourceY}
       L ${targetX},${targetY + arrowAdjustment}
