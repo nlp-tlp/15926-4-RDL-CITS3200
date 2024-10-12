@@ -198,7 +198,12 @@ export default {
               <li
                 v-for="(result, index) in results"
                 :key="index"
-                class="p-1 px-1 text-white cursor-pointer hover:bg-nav-background-dark break-words"
+                :class="[
+                  'p-1 px-1 cursor-pointer break-words',
+                  result.dep
+                    ? 'bg-[#ce033c] text-white italic hover:bg-[#fd4277]'
+                    : 'text-white bg-nav-background-dark hover:bg-[#55789a]'
+                ]"
                 @click="clickResult(result)"
               >
                 <span v-if="searchOption === 'id'">{{ result.id }}</span>
@@ -216,35 +221,6 @@ export default {
               <input type="checkbox" class="mr-2" v-model="labelsToggle" />
               View Labels in Graph
             </label>
-            <!-- Removed due to change in rendering strategy, unsure if will need again -->
-            <!--
-            <div v-if="isLeftExpanded" class="mt-12 flex justify-between">
-              <div class="flex flex-col w-[45%]">
-                <label class="text-white mb-2 text-sm font-medium whitespace-nowrap"
-                  >Levels Above:</label
-                >
-                <input
-                  type="number"
-                  min="0"
-                  max="6"
-                  class="small-input p-2 bg-white text-nav-background border border-white rounded-lg text-sm shadow-sm transition-all duration-300 appearance-auto"
-                  value="0"
-                />
-              </div>
-              <div v-if="isLeftExpanded" class="flex flex-col w-[45%]">
-                <label class="text-white mb-2 text-sm font-medium whitespace-nowrap"
-                  >Levels Below:</label
-                >
-                <input
-                  type="number"
-                  min="0"
-                  max="6"
-                  class="small-input p-2 bg-white text-nav-background border border-white rounded-lg text-sm shadow-sm transition-all duration-300 appearance-auto"
-                  value="0"
-                />
-              </div>
-            </div>
-            -->
           </div>
           <button
             class="w-[80%] mx-auto p-3 bg-nav-background text-white ml-5 border-2 border-white rounded-lg text-sm font-extrabold cursor-pointer mt-5 text-center transition-all duration-300"

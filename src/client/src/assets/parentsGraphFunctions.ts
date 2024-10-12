@@ -9,10 +9,11 @@ const nodeDistanceY: number = 370
 
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
-const nodeNormalColor: string = 'lightsteelblue'
-const nodeHoverColor: string = '#AAA1F6'
+const nodeNormalColor: string = '#78bfe7'
+const nodeHoverColor: string = '#408cdb'
 const textHoverColor: string = '#6C63FF'
-const nodeRootColor: string = '#FFCF00'
+const nodeRootColor: string = '#d87d27'
+const nodeRootHoverColor: string = '#d5612a'
 const nodeNoParentsColor: string = '#999'
 
 /**
@@ -112,12 +113,12 @@ function renderParentsNodes(
     .append('circle')
     .attr('r', nodeRadius)
     .attr('fill', (d: any) => {
-      if (d.data.dep) {
-        return nodeDeprecatedColor
+      // if it is root node - root takes precedence over deprecated
+      if (d.data.id === parentHierarchyData.id) {
+        return nodeRootColor
       } else {
-        // if it is root node
-        if (d.data.id === parentHierarchyData.id) {
-          return nodeRootColor
+        if (d.data.dep) {
+          return nodeDeprecatedColor
         }
         return d.data.has_parents ? nodeNormalColor : nodeNoParentsColor
       }
@@ -167,7 +168,9 @@ function renderParentsNodes(
     .style('cursor', () => 'pointer')
     .on('mouseover', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGTextElement)
-        .style('fill', textHoverColor)
+        .style('fill', (d: any) =>
+          d.data.id === parentHierarchyData.id ? nodeRootHoverColor : textHoverColor
+        )
         .style('font-weight', (d: any) => (d.data.dep ? 450 : 700))
     })
     .on('mouseout', (event: MouseEvent) => {
@@ -185,11 +188,11 @@ function renderParentsNodes(
     .select('circle')
     .on('mouseover', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGCircleElement).style('fill', (d: any) => {
-        if (d.data.dep) {
-          return nodeDeprecatedColor
+        if (d.data.id === parentHierarchyData.id) {
+          return nodeRootColor
         } else {
-          if (d.data.id === parentHierarchyData.id) {
-            return nodeRootColor
+          if (d.data.dep) {
+            return nodeDeprecatedColor
           }
           return nodeHoverColor
         }
@@ -197,11 +200,11 @@ function renderParentsNodes(
     })
     .on('mouseout', (event: MouseEvent) =>
       d3.select(event.currentTarget as SVGCircleElement).style('fill', (d: any) => {
-        if (d.data.dep) {
-          return nodeDeprecatedColor
+        if (d.data.id === parentHierarchyData.id) {
+          return nodeRootColor
         } else {
-          if (d.data.id === parentHierarchyData.id) {
-            return nodeRootColor
+          if (d.data.dep) {
+            return nodeDeprecatedColor
           }
           return d.data.has_parents ? nodeNormalColor : nodeNoParentsColor
         }

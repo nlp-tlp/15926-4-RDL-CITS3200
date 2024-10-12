@@ -5,6 +5,7 @@ const parentsEndpoint: string = '/node/parents/'
 const selectedInfoEndpoint: string = '/node/selected-info/'
 const infoEndpoint: string = '/node/info/'
 const searchEndpoint: string = '/search/'
+const searchLimit: number = 25
 
 /**
  * Fetches the children of a node from the server
@@ -227,7 +228,7 @@ async function fetchNodeInfo(nodeId: string) {
  * @param query The search query
  * @param searchOption The search option ('id' or 'rdf')
  * @param includeDeprecated Whether to include deprecated nodes in the response
- * @returns The search results or an error message
+ * @returns An object with the search results and an error message (if any)
  */
 async function search(
   query: string,
@@ -240,7 +241,7 @@ async function search(
   try {
     const endpoint = searchOption === 'id' ? `${searchEndpoint}id/` : `${searchEndpoint}label/`
     const response = await fetch(
-      `${API_URL}${endpoint}${encodeURIComponent(query)}?limit=25&dep=${includeDeprecated}`
+      `${API_URL}${endpoint}${encodeURIComponent(query)}?limit=${searchLimit}&dep=${includeDeprecated}`
     )
     const data = await response.json()
 

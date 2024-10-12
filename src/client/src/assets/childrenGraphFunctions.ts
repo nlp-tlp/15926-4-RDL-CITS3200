@@ -9,8 +9,8 @@ const nodeDistanceY: number = 370
 
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
-const nodeNormalColor: string = '#69B3A2'
-const nodeHoverColor: string = '#16F1A2'
+const nodeNormalColor: string = '#76baaa'
+const nodeHoverColor: string = '#44df73'
 const textHoverColor: string = '#19C1A2'
 const nodeRootColor: string = '#FFCF00'
 const nodeNoParentsColor: string = '#999'
@@ -112,12 +112,12 @@ function renderChildrenNodes(
     .append('circle')
     .attr('r', nodeRadius)
     .attr('fill', (d: any) => {
-      if (d.data.dep) {
-        return nodeDeprecatedColor
+      // if is root node - root takes precedence over deprecated
+      if (d.data.id === childrenHierarchyData.id) {
+        return nodeRootColor
       } else {
-        // if is root node
-        if (d.data.id === childrenHierarchyData.id) {
-          return nodeRootColor
+        if (d.data.dep) {
+          return nodeDeprecatedColor
         }
         return d.data.has_children ? nodeNormalColor : nodeNoParentsColor
       }
@@ -188,11 +188,11 @@ function renderChildrenNodes(
     .select('circle')
     .on('mouseover', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGCircleElement).style('fill', (d: any) => {
-        if (d.data.dep) {
-          return nodeDeprecatedColor
+        if (d.data.id === childrenHierarchyData.id) {
+          return nodeRootColor
         } else {
-          if (d.data.id === childrenHierarchyData.id) {
-            return nodeRootColor
+          if (d.data.dep) {
+            return nodeDeprecatedColor
           }
           return nodeHoverColor
         }
@@ -200,11 +200,11 @@ function renderChildrenNodes(
     })
     .on('mouseout', (event: MouseEvent) =>
       d3.select(event.currentTarget as SVGCircleElement).style('fill', (d: any) => {
-        if (d.data.dep) {
-          return nodeDeprecatedColor
+        if (d.data.id === childrenHierarchyData.id) {
+          return nodeRootColor
         } else {
-          if (d.data.id === childrenHierarchyData.id) {
-            return nodeRootColor
+          if (d.data.dep) {
+            return nodeDeprecatedColor
           }
           return d.data.has_children ? nodeNormalColor : nodeNoParentsColor
         }
