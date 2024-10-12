@@ -160,7 +160,7 @@ function handleToggleLabels(value: boolean) {
 </script>
 
 <template>
-  <div class="container">
+  <div>
     <GraphSearchSidepane
       :is-left-expanded="isLeftExpanded"
       @toggle-is-left-expanded="toggleIsLeftExpanded"

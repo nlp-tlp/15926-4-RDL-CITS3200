@@ -85,77 +85,175 @@ const isLoading = ref(false)
 // }
 
 // Function to capture the screen and show the preview modal
+// const captureScreen = () => {
+//   const svgElement = svgRef.value
+//   // svgElement = d3.call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
+//   if (svgElement) {
+//     // Get the bounding box of the full graph
+//     const bounds = svgElement.getBBox()
+//     const width = svgElement.getAttribute('width')
+//     const height = svgElement.getAttribute('height')
+//     console.log('width is', width, 'height is', height)
+
+//     // Create a new canvas element to render the SVG
+//     const canvas = document.createElement('canvas')
+//     canvas.width = bounds.width
+//     canvas.height = bounds.height
+//     console.log(canvas.width, canvas.height)
+
+//     const ctx: any = canvas.getContext('2d')
+
+//     // Clear the canvas before each render to avoid issues
+//     ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+//     // Serialize the SVG element into a string
+//     const svgData = new XMLSerializer().serializeToString(svgElement)
+
+//     // Create an Image object and set the src to the base64 SVG
+//     const img = new Image()
+//     img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
+
+//     img.onload = () => {
+//       // Draw the full SVG graph on the canvas
+//       ctx?.drawImage(img, -bounds.x, -bounds.y)
+//       console.log(canvas.width, canvas.height)
+//       console.log(bounds.x, bounds.y)
+
+//       // Create a preview and display in modal
+//       screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
+//       isPreviewVisible.value = true
+//       isLoading.value = false
+//     }
+
+//     // Error handling: if the image fails to load
+//     img.onerror = () => {
+//       console.error('Image failed to load.')
+//       isLoading.value = false
+//     }
+//   }
+// }
+
+// Function to inline all styles into the SVG
+//(Styles from our d3 graph have to be put inline to export as a SVG)
+// Function to inline all styles into the SVG
+const inlineStyles = (element: SVGElement) => {
+  const cssStyleSheets = Array.from(document.styleSheets).filter(
+    (styleSheet) => !styleSheet.href || styleSheet.href.startsWith(window.location.origin)
+  );
+
+  const cssRules: CSSRule[] = []; // Explicitly typed as CSSRule[]
+
+  cssStyleSheets.forEach((styleSheet) => {
+    try {
+      const sheetRules = styleSheet.cssRules;
+      if (sheetRules) {
+        cssRules.push(...Array.from(sheetRules));
+      }
+    } catch (e) {
+      console.warn('Could not access CSS rules from stylesheet:', styleSheet.href);
+    }
+  });
+
+  cssRules.forEach((rule) => {
+    if (rule instanceof CSSStyleRule) {
+      const elements = element.querySelectorAll(rule.selectorText);
+      elements.forEach((el: any) => {
+        rule.style.cssText.split(';').forEach((style) => {
+          const [property, value] = style.split(':');
+          if (property && value) {
+            el.style.setProperty(property.trim(), value.trim());
+          }
+        });
+      });
+    }
+  });
+};
+
+
+
 const captureScreen = () => {
   const svgElement = svgRef.value
-  // svgElement = d3.call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
   if (svgElement) {
-    // Get the bounding box of the full graph
-    const bounds = svgElement.getBBox()
-    const width = svgElement.getAttribute('width')
-    const height = svgElement.getAttribute('height')
-    console.log('width is', width, 'height is', height)
+    // Inline all styles into the SVG element
+    inlineStyles(svgElement)
 
-    // Create a new canvas element to render the SVG
+    // Get the bounding box of the <g> element
+    const gElement = svgElement.querySelector('g');
+    if (!gElement) {
+      console.error('No <g> element found in the SVG.');
+      return;
+    }
+    const bbox = gElement.getBBox();
+
+
+    // Clone the SVG element
+    const clonedGElement = clonedSvgElement.querySelector('g');
+    if (!clonedGElement) {
+      console.error('No <g> element found in the cloned SVG.');
+      return;
+    }
+
+    const clonedGElement = clonedSvgElement.querySelector('g')
+
+    // Apply padding
+    const padding = 20
+    const minX = bbox.x - padding
+    const minY = bbox.y - padding
+    const width = bbox.width + 5 * padding
+    const height = bbox.height + 2 * padding
+
+    // Adjust the 'transform' to shift the graph into the view
+    clonedGElement.setAttribute('transform', `translate(${-minX},${-minY})`)
+
+    // Adjust the cloned SVG's width, height, and viewBox
+    clonedSvgElement.setAttribute('width', width.toString())
+    clonedSvgElement.setAttribute('height', height.toString())
+    clonedSvgElement.setAttribute('viewBox', `0 0 ${width} ${height}`)
+
+    // Serialize the cloned SVG into a string
+    const svgData = new XMLSerializer().serializeToString(clonedSvgElement)
+
+    // Create a new canvas element
     const canvas = document.createElement('canvas')
-    canvas.width = bounds.width
-    canvas.height = bounds.height
-    console.log(canvas.width, canvas.height)
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      console.error('Failed to get 2D context');
+      return;
+    }
 
-    const ctx: any = canvas.getContext('2d')
+    const MAX_CANVAS_SIZE = 8192 // Or the maximum size supported by the browser
+    let scaleFactor = 1
+    if (width > MAX_CANVAS_SIZE || height > MAX_CANVAS_SIZE) {
+      scaleFactor = Math.min(MAX_CANVAS_SIZE / width, MAX_CANVAS_SIZE / height)
+      canvas.width = width * scaleFactor
+      canvas.height = height * scaleFactor
+      ctx?.scale(scaleFactor, scaleFactor)
+    } else {
+      canvas.width = width
+      canvas.height = height
+    }
 
-    // Clear the canvas before each render to avoid issues
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-    // Serialize the SVG element into a string
-    const svgData = new XMLSerializer().serializeToString(svgElement)
-
-    // Create an Image object and set the src to the base64 SVG
+    // Create an Image object from the serialized SVG
     const img = new Image()
-    img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)))
 
     img.onload = () => {
-      // Draw the full SVG graph on the canvas
-      ctx?.drawImage(img, -bounds.x, -bounds.y)
-      console.log(canvas.width, canvas.height)
-      console.log(bounds.x, bounds.y)
+      // Draw the SVG image onto the canvas
+      ctx?.drawImage(img, 0, 0)
 
-      // Create a preview and display in modal
+      // Convert the canvas to a data URL for the screenshot preview
       screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
       isPreviewVisible.value = true
       isLoading.value = false
     }
 
-    // Error handling: if the image fails to load
     img.onerror = () => {
       console.error('Image failed to load.')
       isLoading.value = false
     }
   }
-}
-
-// Function to inline all styles into the SVG
-//(Styles from our d3 graph have to be put inline to export as a SVG)
-const inlineStyles = (element: SVGElement) => {
-  const styleSheets = Array.from(document.styleSheets)
-
-  styleSheets.forEach((styleSheet) => {
-    try {
-      const cssRules = Array.from(styleSheet.cssRules)
-
-      cssRules.forEach((rule) => {
-        if (rule instanceof CSSStyleRule) {
-          const matchingElements = element.querySelectorAll(rule.selectorText)
-          matchingElements.forEach((el: any) => {
-            for (let style of rule.style) {
-              el.style.setProperty(style, rule.style.getPropertyValue(style))
-            }
-          })
-        }
-      })
-    } catch (e) {
-      console.warn('Cannot access rules from stylesheet: ', styleSheet.href)
-    }
-  })
 }
 
 // // Function to save the screenshot based on the selected file type
@@ -206,7 +304,7 @@ const saveScreenshot = () => {
     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
     saveAs(blob, 'graph.svg')
   } else {
-    // Save PNG/JPEG from canvas data
+    // Save PNG/JPEG from canvas dat
     const canvas = document.createElement('canvas')
     const img = new Image()
     img.src = screenshotDataUrl.value
@@ -214,8 +312,18 @@ const saveScreenshot = () => {
     img.onload = () => {
       canvas.width = img.width
       canvas.height = img.height
-      const ctx = canvas.getContext('2d')
-      ctx?.drawImage(img, 0, 0)
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.error('Failed to get 2D context');
+        return;
+      }
+      
+      // Fill the canvas with white background
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      // Draw the image onto the canvas
+      ctx.drawImage(img, 0, 0)
 
       canvas.toBlob((blob) => {
         if (blob) {
@@ -354,6 +462,10 @@ function update(source: any) {
   // Get the nodes and links
   const nodes = treeData.descendants()
   const links = treeData.links()
+
+  // Store nodes and links data globally
+  nodesData = nodes
+  linksData = links
 
   // Render the nodes, links, and extra links
   renderNodes(nodes)
