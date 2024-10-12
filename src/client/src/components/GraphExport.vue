@@ -302,6 +302,7 @@ const closePreview = () => {
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
+  border-radius: 10px;
 }
 
 /* Close Button Styles */
