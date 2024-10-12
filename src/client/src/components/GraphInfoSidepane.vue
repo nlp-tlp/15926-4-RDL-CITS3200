@@ -79,14 +79,14 @@ export default {
     <button
       class="right-btn fixed top-[5rem] right-2 bg-transparent cursor-pointer border-none text-[22px] font-bold z-20 text-nav-background transition-colors duration-300 ease-in-out"
       @click="handleButtonClick"
-      :class="{ 'text-white': isRightExpanded }"
+      :class="{ 'text-white': props.isRightExpanded }"
     >
       &#9776;
     </button>
 
     <transition name="sidepanel">
       <div
-        v-if="isRightExpanded"
+        v-if="props.isRightExpanded"
         class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] lg:w-[300px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
@@ -96,10 +96,22 @@ export default {
             <p class="ml-4 text-white">Click on a node's label to display the information</p>
           </div>
           <div v-else v-for="([key, value], index) in filteredRdfData" :key="index" class="mb-4">
-            <strong class="block font-bold"
+            <strong class="block font-bold mb-1"
               >{{ key.charAt(0).toUpperCase() + key.slice(1) }}:</strong
             >
-            <span class="block ml-4 break-words whitespace-pre-line break-all">
+            <span
+              :class="[
+                'block',
+                'ml-4',
+                'break-words',
+                'whitespace-pre-line',
+                'break-all',
+                'text-sm',
+                'bg-cyan-950',
+                'p-2',
+                'rounded-md'
+              ]"
+            >
               <slot :name="key" :value="value">{{ value }}</slot>
             </span>
           </div>
@@ -127,7 +139,7 @@ export default {
   opacity: 0;
 }
 
-sidepanel-enter-to,
+.sidepanel-enter-to,
 .sidepanel-leave-from {
   transform: translateX(0);
   opacity: 1;
