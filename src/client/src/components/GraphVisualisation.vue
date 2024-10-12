@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <!-- Include the GraphExport component -->
     <GraphExport v-if="svgRef" :svg-ref="svgRef" />
 
