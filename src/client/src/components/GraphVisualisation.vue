@@ -15,8 +15,8 @@
         <!-- Warning Message -->
         <div v-if="isScaled" class="warning">
           <p>
-            <strong>Warning:</strong> The image has been scaled down due to size limitations.
-            The exported image may be lower resolution.
+            <strong>Warning:</strong> The image has been scaled down due to size limitations. The
+            exported image may be lower resolution.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ const selectedFileType = ref('png') // Selected file type for export
 const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
 const screenshotDataUrl = ref('') // Store the data URL of the screenshot
 const isLoading = ref(false)
-const isScaled = ref(false);
+const isScaled = ref(false)
 
 // Function to inline all styles into the SVG
 //(Styles from our d3 graph have to be put inline to export as a SVG)
@@ -167,11 +167,11 @@ const captureScreen = () => {
       canvas.width = width * scaleFactor
       canvas.height = height * scaleFactor
       ctx.scale(scaleFactor, scaleFactor)
-      isScaled.value = true; // Image was scaled
+      isScaled.value = true // Image was scaled
     } else {
       canvas.width = width
       canvas.height = height
-      isScaled.value = false; // Image was not scaled
+      isScaled.value = false // Image was not scaled
     }
 
     // Create an Image object from the serialized SVG
