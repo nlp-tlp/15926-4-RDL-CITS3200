@@ -8,7 +8,12 @@
       Capture Screen
     </button>
 
-    <div v-if="isLoading" class="spinner"></div>
+    <!-- <div v-if="isLoading" class="spinner"></div> -->
+    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center">
+      <div
+        class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"
+      ></div>
+    </div>
 
     <!-- Preview Modal -->
     <div
@@ -17,11 +22,10 @@
       @click.self="closePreview"
     >
       <div
-        class="bg-white w-3/5 max-w-[90vw] max-h-[90vh] overflow-auto p-4 relative border border-gray-300 shadow-md text-center rounded-lg"
+        class="bg-white w-3/5 max-w-[90vw] max-h-[90vh] overflow-auto p-4 relative border border-black shadow-md text-center rounded-lg"
       >
         <span class="absolute top-2 right-2 cursor-pointer" @click="closePreview">&times;</span>
         <h3>Screenshot Preview</h3>
-        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="w-full mb-4" />
 
         <!-- Warning Message -->
         <div
@@ -35,10 +39,12 @@
           </p>
         </div>
 
+        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="w-full mb-4" />
+
         <!-- Dropdown for file type -->
         <select
           v-model="selectedFileType"
-          class="w-full p-3 max-w-[220px] border border-white bg-nav-background mb-[30px] text-white rounded-lg text-base cursor-pointer transition-all duration-300 focus:outline-none focus:border-accent focus:bg-nav-background-dark appearance-none"
+          class="mb-4 p-1.5 w-full rounded-md border border-gray-200"
         >
           <option value="png">PNG</option>
           <option value="jpeg">JPEG</option>
@@ -304,29 +310,6 @@ const closePreview = () => {
 </script>
 
 <style scoped>
-/* Select Styles */
-select {
-  margin-bottom: 1rem;
-  padding: 0.3rem;
-  width: 100%;
-  border-radius: 5px;
-  border: 1px solid black;
-}
-
-/* Spinner Styles */
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -334,5 +317,9 @@ select {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>
