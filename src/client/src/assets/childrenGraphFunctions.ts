@@ -167,6 +167,8 @@ function renderChildrenNodes(
   // label hover effect
   nodeUpdate
     .select('text')
+    // skip the root node
+    .filter((d: any, i: number) => i !== 0)
     .style('cursor', () => 'pointer')
     .on('mouseover', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGTextElement)
