@@ -194,9 +194,9 @@ async function fetchNodeInfo(nodeId: string) {
       nodeInfoDisplay.label = responseData.label
       nodeInfoDisplay.definition = responseData.definition
       if (responseData.dep === null) {
-        nodeInfoDisplay.deprecation = 'N/A'
+        nodeInfoDisplay.deprecation = ''
       } else {
-        nodeInfoDisplay.deprecation = responseData.dep
+        nodeInfoDisplay.deprecation = responseData.dep.slice(0, -1)
       }
       nodeInfoDisplay.parents = ''
       for (let i = 0; i < responseData.parents.length; i++) {

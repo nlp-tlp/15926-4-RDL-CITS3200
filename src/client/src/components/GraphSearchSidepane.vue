@@ -1,47 +1,78 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 import { search } from '../assets/apiFunctions'
 
-const props = withDefaults(
-  defineProps<{
-    initialExpanded?: boolean
-    isLeftExpanded: boolean
-  }>(),
-  {
-    initialExpanded: false
+const props = defineProps({
+  /**
+   * Determines if the side panel is initially expanded.
+   */
+  initialExpanded: {
+    type: Boolean,
+    default: false
+  },
+  /**
+   * Flag to determine if the left side panel is expanded.
+   */
+  isLeftExpanded: {
+    type: Boolean,
+    required: true
   }
-)
+})
 
+/**
+ * Interface for search results.
+ * @property `id` - The ID of the search result.
+ * @property `label` - The label of the search result.
+ * @property `dep` - The deprecation status of the search result.
+ */
 interface SearchResult {
   id?: string
   label?: string
-  dep?: string | null // If you need the 'dep' property as well
+  dep?: string | null
 }
 
-const isLeftExpanded = computed(() => props.isLeftExpanded)
+// Side panel state
+const isLeftExpanded = ref(props.initialExpanded)
+const labelsToggle = ref(true) // Control whether labels are displayed in the graph
+const deprecatedToggle = ref(false) // Control whether deprecated nodes are displayed
+
+// Search functionality
 const searchTerm = ref('') // The search term entered by the user
-const searchOption = ref('id') // The dropdown option selected by the user
+const searchOption = ref('rdf') // The dropdown option selected by the user ('id' or 'rdf')
 const results = ref<SearchResult[]>([]) // Store search results
 const isSearching = ref(false) // Track API call state
 const showResults = ref(false) // Control whether search results are displayed
-const errorMessage = ref('')
-const labelsToggle = ref(true) // Control whether labels are displayed in the graph
-const deprecatedToggle = ref(false) // Control whether deprecated nodes are displayed
+const errorMessage = ref('') // Store error message from API
+let debounceTimeout: number // Timeout for debouncing search
+
 const emit = defineEmits([
   'toggleLabels',
   'toggleDeprecated',
   'nodeSelected',
   'toggleIsLeftExpanded'
-]) // Defining emit events
+])
 
-// Function to toggle the left nav
+watch(
+  () => props.isLeftExpanded,
+  (newVal) => {
+    console.log('isLeftExpanded', newVal)
+    isLeftExpanded.value = newVal
+  }
+)
+
+/**
+ * Toggles the left side panel.
+ */
 function toggleLeftNav(): void {
   emit('toggleIsLeftExpanded')
 }
 
-// Function to debounce the search query -- ONLY QUERY AFTER USER STOPS TYPING
-let debounceTimeout: number
+/**
+ * Debounce search function to prevent multiple API calls.
+ * @param fn - The search function to be debounced.
+ * @param delay - The delay in milliseconds.
+ */
 function debounceSearch(fn: () => void, delay: number = 450) {
   clearTimeout(debounceTimeout)
   debounceTimeout = setTimeout(fn, delay)
@@ -59,7 +90,10 @@ watch(searchTerm, (newSearchTerm) => {
   }
 })
 
-// Perform search using the search function from apiFunctions.ts
+/**
+ * Wrapper function to call the search API.
+ * @param query - The search query.
+ */
 async function performSearch(query: string): Promise<void> {
   isSearching.value = true
   errorMessage.value = ''
@@ -76,7 +110,10 @@ async function performSearch(query: string): Promise<void> {
   isSearching.value = false
 }
 
-// Handle result click
+/**
+ * Click event handler for search results.
+ * @param result - The search result object.
+ */
 function clickResult(result: SearchResult): void {
   emit('nodeSelected', result.id)
   if (
@@ -98,7 +135,11 @@ function clickResult(result: SearchResult): void {
   }
 }
 
-// Triggers "toggleLabels" event and "toggleDeprecated" event when "Submit" is clicked
+/**
+ * Submit event handler for the search form.
+ * @emits toggleLabels - Emits the toggleLabels event with the current labelsToggle value.
+ * @emits toggleDeprecated - Emits the toggleDeprecated event with the current deprecatedToggle value.
+ */
 function handleSubmit() {
   emit('toggleLabels', labelsToggle.value)
   emit('toggleDeprecated', deprecatedToggle.value)
@@ -107,9 +148,10 @@ function handleSubmit() {
 
 <script lang="ts">
 /**
- * GraphSearchSidepane component represents the expandable side panel containing search functionality.
+ * GraphSearchSidepane component represents the expandable side panel containing search functionality as well as options to toggle labels and deprecated nodes.
  *
  * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
+ * @param {boolean} isLeftExpanded - Flag to determine if the left side panel is expanded.
  *
  * @example
  * <GraphSearchSidepane :initialExpanded="true" />
@@ -165,8 +207,8 @@ export default {
                 v-model="searchOption"
                 class="w-full p-3 max-w-[220px] border border-white bg-nav-background mb-[30px] text-white rounded-lg text-base cursor-pointer transition-all duration-300 focus:outline-none focus:border-accent focus:bg-nav-background-dark appearance-none"
               >
-                <option value="id">ID/URI</option>
                 <option value="rdf">RDF Label</option>
+                <option value="id">ID/URI</option>
               </select>
               <div class="absolute top-4 right-[-2px] flex items-center px-2 pointer-events-none">
                 <svg

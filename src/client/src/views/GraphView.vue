@@ -66,7 +66,7 @@ async function handleLabelClicked(nodeUri: string) {
       parents: nodeInfo.parents,
       types: nodeInfo.types
     }
-    infoPaneRef.value.toggleRightNav()
+    infoPaneRef.value.toggleRightNav(nodeInfo.label)
   }
 }
 const infoPaneRef = ref()
@@ -76,7 +76,8 @@ const isRightExpanded = ref(false)
 
 watch(
   isSm,
-  () => {
+  (newVal) => {
+    console.log('isSm changed:', newVal)
     isLeftExpanded.value = false
     isRightExpanded.value = false
   },
@@ -86,12 +87,16 @@ watch(
 )
 
 function toggleIsLeftExpanded() {
-  if (isSm.value && isRightExpanded.value) return
+  if (isSm.value && isRightExpanded.value) {
+    isRightExpanded.value = false
+  }
   isLeftExpanded.value = !isLeftExpanded.value
 }
 
 function toggleIsRightExpanded() {
-  if (isSm.value && isLeftExpanded.value) return
+  if (isSm.value && isLeftExpanded.value) {
+    isLeftExpanded.value = false
+  }
   isRightExpanded.value = !isRightExpanded.value
 }
 </script>
