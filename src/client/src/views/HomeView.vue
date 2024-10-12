@@ -1,188 +1,142 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import IconGraph from '../components/icons/IconGraph.vue'
+</script>
 
 <template>
-  <div class="page">
-    <section class="overview">
-      <h1>Interactive Visualization of the ISO 15926-4 Reference Data Library</h1>
-      <h2 class="section1">Overview: ISO and RDL</h2>
-      <p>
+  <div class="text-justify text-nav-background mb-[70px] lg:mx-40 mx-8">
+    <section class="lg:mt-[120px] mt-[90px] mb-[70px]">
+      <h1 class="text-center lg:text-4xl font-bold text-3xl">
+        Interactive Visualization of the ISO 15926-4 Reference Data Library
+      </h1>
+      <h2
+        class="lg:text-2xl text-xl font-semibold mt-[80px] mb-[10px] relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
+      >
+        Overview: ISO and RDL
+      </h2>
+      <p class="text-block mt-[30px] lg:text-lg">
         The International Organization for Standardization (ISO) develops and publishes standards.
         ISO 15926-4 standard has the title Industrial automation systems and integration —
         Integration of life-cycle data for process plants including oil and gas production
         facilities Part 4: Core reference data. The Reference Data Library (RDL) described in ISO
-        15926-4 is made available as a set of spreadsheets and through an endpoint.
+        15926-4 is made available as a set of spreadsheets and through an endpoint at
+        <a
+          href="https://15926.org/"
+          target="_blank"
+          class="text-nav-background underline hover:no-underline hover:bg-transparent hover:text-blue-500 cursor-pointer"
+          >15926.org</a
+        >.
       </p>
     </section>
 
-    <section class="purpose">
-      <h2 class="section2">Purpose of this Visualization</h2>
-      <p>
+    <section class="mb-[110px]">
+      <h2
+        class="lg:text-2xl text-xl mb-[10px] font-semibold relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-[30%] before:w-[90%] before:h-[2px] before:bg-nav-background"
+      >
+        Purpose of this Visualization
+      </h2>
+      <p class="text-block mt-[30px] lg:text-lg">
         The goal of this webpage is to allow users of the RDL to explore and understand the
         hierarchy and relationships between classes and their superclasses in the RDL.
       </p>
     </section>
 
-    <section class="explore">
-      <p>Click the button below to explore the interactive visualization</p>
-      <router-link to="/graph">
-        <button>Graph</button>
+    <section
+      class="mb-[110px] text-center relative px-[50px] py-[50px] before:content-[''] before:absolute before:top-[-20px] before:left-0 before:w-full before:h-[2px] before:bg-nav-background after:content-[''] after:absolute after:bottom-[-20px] after:left-0 after:w-full after:h-[1.5px] after:bg-nav-background"
+    >
+      <p class="lg:text-lg mb-[60px]">
+        Click the button below to explore the interactive visualization
+      </p>
+      <router-link to="/graph" class="flex justify-center hover:bg-transparent">
+        <button
+          class="border-none bg-nav-background text-white lg:text-lg font-black lg:px-[120px] py-[16px] px-[70px] cursor-pointer hover:bg-gray-500 flex items-center justify-center mb-[70px] rounded-lg"
+        >
+          <IconGraph class="navbar-icon mr-2" />
+          Graph
+        </button>
       </router-link>
+      <p class="lg:text-lg font-bold mb-[8px]">Navigating the Graph:</p>
+      <p class="lg:text-lg max-w-[900px] mx-auto">
+        The graph's left sidepane allows for search and filtering, and the right sidepane displays
+        the RDF data of a selected node. Clicking on a node toggles collapsibility, while clicking
+        on a node label shows it's details in the info sidepane. Please note that applying any
+        filters will reset the graph's expansion.
+      </p>
     </section>
 
-    <section class="attribution">
-      <p>
-        The following UWA students developed and designed this visualization:<br />
-        <strong
+    <section class="mb-[100px] text-center">
+      <p class="lg:text-lg">
+        Released in October 2024, this visualization was developed and designed by the following UWA
+        students:<br />
+        <strong class="lg:font-medium"
           >Cameron O'Neill, Heidi Leow, Paul Maingi, Ryan Dorman, Shuai Shao, Vinita Rathore</strong
+        >
+      </p>
+      <p class="lg:text-medium">
+        The source code for this visualization is available on
+        <a
+          href="https://github.com/nlp-tlp/15926-4-RDL-CITS3200"
+          target="_blank"
+          class="text-nav-background underline hover:no-underline hover:bg-transparent hover:text-blue-500 cursor-pointer"
+          >GitHub</a
+        >.
+      </p>
+    </section>
+
+    <section class="text-center mb-[120px]">
+      <p
+        class="relative before:content-[''] before:absolute before:bottom-[-20px] lg:before:w-[50%] before:w-full before:h-[2px] before:bg-nav-background before:left-1/2 before:transform before:-translate-x-1/2"
+      >
+        <span class="lg:text-2xl text-xl font-bold">Questions?</span>
+        <span class="lg:text-xl text-lg lg:ml-3 ml-2">Contact us at:</span>
+        <a
+          href="mailto:systemhealthlab@gmail.com"
+          class="lg:ml-2 ml-1 lg:text-xl text-lg text-blue-500 hover:underline hover:bg-transparent hover:text-nav-background cursor-pointer"
+          >systemhealthlab@gmail.com</a
         >
       </p>
     </section>
 
-    <section class="logos">
-      <a href="https://www.uwa.edu.au/" class="logoURL" target="_blank">
-        <img src="/images/UWA Logo.png" class="logo1" alt="University of Western Australia Logo" />
+    <section class="flex lg:flex-row flex-col justify-center items-center text-center mb-[50px]">
+      <a
+        href="https://www.uwa.edu.au/"
+        class="inline-block hover:bg-transparent cursor-pointer"
+        target="_blank"
+      >
+        <img
+          src="/images/UWA Logo.png"
+          class="max-w-[188px] lg:mr-[45px] lg:mb-[0px] mb-[20px]"
+          alt="University of Western Australia Logo"
+        />
       </a>
-      <a href="https://nlp-tlp.org/" class="logoURL" target="_blank">
+      <a
+        href="https://nlp-tlp.org/"
+        class="inline-block hover:bg-transparent cursor-pointer"
+        target="_blank"
+      >
         <img
           src="/images/nlp-tlp-logo.png"
-          class="logo2"
-          alt="University of Western Australia Natural & Technical Language Processing Group Logo"
+          class="max-w-[90px]"
+          alt="University of Western Australia Natural & Technical Language 
+        Processing Group Logo"
         />
       </a>
     </section>
 
-    <section class="disclaimer">
-      <h4>Disclaimer:</h4>
+    <p class="mt-[60px] mb-[60px] font-small text-center">Last updated on 14 October 2024</p>
+
+    <section class="text-center lg:text-base text-sm">
+      <h4 class="font-medium">Disclaimer:</h4>
       <p>
         This project is not sponsored by the International Organization for Standardization (ISO).
-        It is an initiative of the University of Western Australia (UWA) and is intended to assist
-        the ISO/TC 184/SC 4 Committee.
+        It is an initiative of
+        <a
+          href="https://nlp-tlp.org/"
+          target="_blank"
+          class="text-nav-background underline hover:no-underline hover:bg-transparent hover:text-blue-500 cursor-pointer"
+          >The University of Western Australia's NLP-TLP Group</a
+        >
+        and is intended to assist the ISO/TC 184/SC 4 WG3.
       </p>
     </section>
   </div>
 </template>
-
-<style scoped>
-.page {
-  text-align: justify;
-  color: black;
-  margin-bottom: 70px;
-}
-.overview {
-  margin-top: 120px;
-  margin-bottom: 70px;
-}
-h1 {
-  text-align: center;
-  font-size: xx-large;
-  font-weight: bold;
-}
-.section1 {
-  margin-top: 70px;
-  margin-bottom: 10px;
-  font-weight: 600;
-  position: relative;
-}
-.section1::before {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  width: 25%;
-  height: 2px;
-  background-color: black;
-}
-.overview p {
-  text-align: block;
-  margin-top: 30px;
-}
-.purpose {
-  margin-bottom: 90px;
-}
-.section2 {
-  margin-bottom: 10px;
-  font-weight: 600;
-  position: relative;
-}
-.section2::before {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  width: 30%;
-  height: 2px;
-  background-color: black;
-}
-.purpose p {
-  margin-top: 30px;
-}
-.explore {
-  margin-bottom: 85px;
-  text-align: center;
-  position: relative;
-  padding: 50px 50px;
-}
-.explore::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: black;
-}
-.explore p {
-  font-size: large;
-  margin-bottom: 45px;
-}
-button {
-  border: none;
-  background-color: black;
-  color: white;
-  font-size: medium;
-  font-weight: 900;
-  padding: 16px 120px;
-  cursor: pointer;
-}
-button:hover {
-  background-color: gray;
-}
-.explore::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  width: 100%;
-  height: 0.5px;
-  background-color: black;
-}
-.attribution {
-  margin-bottom: 60px;
-  text-align: center;
-}
-.attribution strong {
-  font-weight: 500;
-}
-.logos {
-  text-align: center;
-  margin-bottom: 50px;
-}
-.logo1 {
-  max-width: 188px;
-  margin-right: 52px;
-  margin-bottom: 11.5px;
-}
-.logo2 {
-  max-width: 90px;
-}
-.logoURL {
-  display: inline-block;
-  background-color: transparent;
-  cursor: pointer;
-}
-.disclaimer {
-  text-align: center;
-  font-size: small;
-}
-h4 {
-  font-weight: 500;
-}
-</style>

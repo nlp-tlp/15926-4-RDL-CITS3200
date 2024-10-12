@@ -267,14 +267,6 @@ watch(
   }
 )
 
-// Watch for changes in "showLabels"
-watch(
-  () => props.showLabels,
-  () => {
-    renderGraph()
-  }
-)
-
 /**
  * Initialise the graph with the SVG element and reposition it to the center vertically.
  */
