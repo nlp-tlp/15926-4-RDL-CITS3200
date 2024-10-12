@@ -1,34 +1,57 @@
 <template>
   <div>
     <!-- Capture Screen Button -->
-    <button class="capture-button" @click="captureScreen">Capture Screen</button>
+    <button
+      class="w-24 px-4 py-2 bg-nav-background text-white border-none rounded-md cursor-pointer hover:color-nav-text-active fixed right-5 bottom-5"
+      @click="captureScreen"
+    >
+      Capture Screen
+    </button>
 
     <div v-if="isLoading" class="spinner"></div>
 
     <!-- Preview Modal -->
-    <div v-if="isPreviewVisible" class="modal-overlay" @click.self="closePreview">
-      <div class="modal-content">
-        <span class="close" @click="closePreview">&times;</span>
+    <div
+      v-if="isPreviewVisible"
+      class="fixed z-50 inset-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center"
+      @click.self="closePreview"
+    >
+      <div
+        class="bg-white w-3/5 max-w-[90vw] max-h-[90vh] overflow-auto p-4 relative border border-gray-300 shadow-md text-center rounded-lg"
+      >
+        <span class="absolute top-2 right-2 cursor-pointer" @click="closePreview">&times;</span>
         <h3>Screenshot Preview</h3>
-        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="screenshot-preview" />
+        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="w-full mb-4" />
 
         <!-- Warning Message -->
-        <div v-if="isScaled" class="warning">
+        <div
+          v-if="isScaled"
+          class="bg-amber-200 text-yellow-800 border-yellow-200 p-2.5 mb-3.5 rounded-md"
+        >
           <p>
             <strong>Warning:</strong> The image has been scaled down due to size limitations. The
-            exported image may be lower resolution for PNG/JPEG. Please export as SVG.
+            exported image may be lower resolution for PNG/JPEG. Please export as SVG to preserve
+            resolution.
           </p>
         </div>
 
         <!-- Dropdown for file type -->
-        <select v-model="selectedFileType">
+        <select
+          v-model="selectedFileType"
+          class="w-full p-3 max-w-[220px] border border-white bg-nav-background mb-[30px] text-white rounded-lg text-base cursor-pointer transition-all duration-300 focus:outline-none focus:border-accent focus:bg-nav-background-dark appearance-none"
+        >
           <option value="png">PNG</option>
           <option value="jpeg">JPEG</option>
           <option value="svg">SVG</option>
         </select>
 
         <!-- Save button on Modal -->
-        <button @click="saveScreenshot">Save</button>
+        <button
+          class="w-24 px-4 py-2 bg-nav-background text-white border-none rounded-md cursor-pointer hover:color-nav-text-active"
+          @click="saveScreenshot"
+        >
+          Save
+        </button>
       </div>
     </div>
   </div>
@@ -281,80 +304,6 @@ const closePreview = () => {
 </script>
 
 <style scoped>
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  z-index: 1000;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-/* Modal Content Styles */
-.modal-content {
-  background-color: white;
-  width: 60%;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow: auto;
-  padding: 1rem;
-  position: relative; /* For the close button positioning */
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  border-radius: 10px;
-}
-
-/* Close Button Styles */
-.close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  cursor: pointer;
-  font-size: 1.5rem;
-}
-
-/* Screenshot Preview Styles */
-.screenshot-preview {
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-/* Warning Message Styles */
-.warning {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-}
-
-/* Button Styles */
-button {
-  width: 100px;
-  padding: 0.5rem 1rem;
-  background-color: var(--color-nav-background);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.capture-button {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-}
-
-button:hover {
-  color: var(--color-nav-text-active);
-}
-
 /* Select Styles */
 select {
   margin-bottom: 1rem;
