@@ -127,7 +127,10 @@ function renderChildrenNodes(
       i === 0 ? 'default' : d.data.has_children ? 'pointer' : 'default'
     )
     .attr('stroke', '#444')
-    .attr('stroke-width', (d: any) => (d.data.has_children ? 2 : 0))
+    // for root node, set stroke width to 3, otherwise 2 if the node has children
+    .attr('stroke-width', (d: any) =>
+      d.data.id === childrenHierarchyData.id || d.data.has_children ? 2 : 0
+    )
 
   // append text to the node
   nodeEnter
@@ -196,7 +199,7 @@ function renderChildrenNodes(
           if (d.data.dep) {
             return nodeDeprecatedColor
           }
-          return nodeHoverColor
+          return d.data.has_children ? nodeHoverColor : nodeNoParentsColor
         }
       })
     })
@@ -235,7 +238,6 @@ async function toggleChildrenCollapse(
   emit: any
 ) {
   if (!node.data.has_children) {
-    // console.log('Node has no children:', node.data.label)
     return
   }
 

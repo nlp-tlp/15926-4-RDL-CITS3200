@@ -21,7 +21,6 @@ async function fetchChildren(node: any, includeDeprecated: boolean = false): Pro
     return null
   }
   if (!node.has_children) {
-    // console.log('Node has no children:', node)
     return null
   }
   try {
@@ -79,7 +78,6 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
   }
   // Only root node, i.e. 'Thing' has no parents
   if (!node.has_parents) {
-    // console.log('Node has no parents:', node)
     return null
   }
   try {
