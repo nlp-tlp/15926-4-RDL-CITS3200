@@ -77,7 +77,7 @@ const isRightExpanded = ref(false)
 watch(
   isSm,
   (newVal) => {
-    console.log('isSm changed:', newVal)
+    console.log('Screen now small:', newVal)
     isLeftExpanded.value = false
     isRightExpanded.value = false
   },

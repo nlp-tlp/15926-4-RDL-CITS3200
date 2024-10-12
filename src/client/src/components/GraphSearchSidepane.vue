@@ -33,7 +33,7 @@ interface SearchResult {
 }
 
 // Side panel state
-const isLeftExpanded = ref(props.initialExpanded)
+const isLeftExpanded = ref(props.isLeftExpanded)
 const labelsToggle = ref(true) // Control whether labels are displayed in the graph
 const deprecatedToggle = ref(false) // Control whether deprecated nodes are displayed
 

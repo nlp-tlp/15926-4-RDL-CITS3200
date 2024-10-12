@@ -26,14 +26,14 @@ const props = defineProps({
 })
 
 // State variables for side panel
-const isRightExpanded = ref(props.initialExpanded)
+const isRightExpanded = ref(props.isRightExpanded)
 const currentLabel = ref('')
 const rdfData = ref(props.nodeInfoDisplay)
 
 watch(
   () => props.isRightExpanded,
   (newVal) => {
-    console.log('isRightExpanded changed:', newVal)
+    console.log('isRightExpanded:', newVal)
     isRightExpanded.value = newVal
   }
 )
