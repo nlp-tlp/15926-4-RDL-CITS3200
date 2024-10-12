@@ -27,40 +27,16 @@ const props = defineProps({
 
 // State variables for side panel
 const isRightExpanded = ref(props.isRightExpanded)
-const currentLabel = ref('')
 const rdfData = ref(props.nodeInfoDisplay)
+const emit = defineEmits(['toggleIsRightExpanded'])
 
+// watch for changes in the isRightExpanded prop and update the isRightExpanded ref
 watch(
   () => props.isRightExpanded,
   (newVal) => {
-    console.log('isRightExpanded:', newVal)
     isRightExpanded.value = newVal
   }
 )
-
-/**
- * Toggles the right side panel.
- * If a label is provided, it toggles based on the label.
- * Otherwise, it toggles based on the button click.
- * @param {string} label - The label to toggle the side panel for.
- */
-function toggleRightNav(label?: string): void {
-  if (label) {
-    if (currentLabel.value === label) {
-      isRightExpanded.value = !isRightExpanded.value
-    } else {
-      currentLabel.value = label
-      isRightExpanded.value = true
-    }
-  } else {
-    isRightExpanded.value = !isRightExpanded.value
-  }
-}
-
-// Expose toggleRightNav function to parent component - GraphView.vue
-defineExpose({
-  toggleRightNav
-})
 
 // Watch for changes in the nodeInfoDisplay prop and update RDF data
 watch(
@@ -70,24 +46,9 @@ watch(
   }
 )
 
-/**
- * Handles label click to update RDF data or toggle side panel.
- * @param {string} label - The label of the RDF data.
- * @param {object} newData - The new RDF data to display.
- */
-function handleLabelClick(label: string, newData: object): void {
-  if (currentLabel.value === label) {
-    toggleRightNav(label)
-  } else {
-    currentLabel.value = label
-    rdfData.value = newData
-    isRightExpanded.value = true
-  }
-}
-
-// Wrapper function for button click to bypass event type error on parameter
+// Wrapper function for button click
 function handleButtonClick(event: MouseEvent): void {
-  toggleRightNav()
+  emit('toggleIsRightExpanded')
 }
 
 // Computed property to filter rdfData
@@ -135,7 +96,7 @@ export default {
             <p class="ml-4 text-white">Click on a node's label to display the information</p>
           </div>
           <div v-else v-for="([key, value], index) in filteredRdfData" :key="index" class="mb-4">
-            <strong class="block font-bold" @click="handleLabelClick(key, value)"
+            <strong class="block font-bold"
               >{{ key.charAt(0).toUpperCase() + key.slice(1) }}:</strong
             >
             <span class="block ml-4 break-words whitespace-pre-line break-all">

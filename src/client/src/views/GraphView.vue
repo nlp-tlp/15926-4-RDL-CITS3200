@@ -7,16 +7,19 @@ import GraphInfoSidepane from '../components/GraphInfoSidepane.vue'
 import GraphSearchSidepane from '../components/GraphSearchSidepane.vue'
 import GraphVisualisation from '../components/GraphVisualisation.vue'
 
+// Mobile compatibility
 const breakpoints = useBreakpoints(breakpointsTailwind)
-
 const isSm = computed(() => breakpoints.smaller('sm').value)
 
-// Boolean flag to include deprecated nodes in the graph - default is false
+// State variables
 const showDeprecated = ref(false)
-// Boolean flag to show labels on the graph nodes - default is true
 const showLabels = ref(true)
 // The ID of the selected node for which we are rendering the graph - default is `Thing`
 const selectedNodeId = ref('http://data.15926.org/dm/Thing')
+
+// Side panel state
+const isLeftExpanded = ref(false)
+const isRightExpanded = ref(false)
 
 /**
  * Handles the event when the user toggles the deprecated nodes visibility.
@@ -53,31 +56,38 @@ const nodeInfoDisplay = ref({
 
 /**
  * Handles the event when a label is clicked on the graph.
+ * Fetches the node information and updates the right side panel if the label is different.
+ * Closes the right side panel if the same label is clicked again.
  * @param {string} nodeUri - The URI of the node for which the label was clicked.
  */
 async function handleLabelClicked(nodeUri: string) {
   let nodeInfo = await fetchNodeInfo(nodeUri)
   if (nodeInfo) {
-    nodeInfoDisplay.value = {
-      id: nodeInfo.id,
-      label: nodeInfo.label,
-      definition: nodeInfo.definition,
-      deprecation: nodeInfo.deprecation,
-      parents: nodeInfo.parents,
-      types: nodeInfo.types
+    if (isRightExpanded.value && nodeInfoDisplay.value.label === nodeInfo.label) {
+      // Close the right side panel if the same label is clicked again
+      toggleIsRightExpanded()
+    } else {
+      // Update the node info display
+      nodeInfoDisplay.value = {
+        id: nodeInfo.id,
+        label: nodeInfo.label,
+        definition: nodeInfo.definition,
+        deprecation: nodeInfo.deprecation,
+        parents: nodeInfo.parents,
+        types: nodeInfo.types
+      }
+      // Open the right side panel if it isn't open
+      if (!isRightExpanded.value) {
+        toggleIsRightExpanded()
+      }
     }
-    infoPaneRef.value.toggleRightNav(nodeInfo.label)
   }
 }
-const infoPaneRef = ref()
 
-const isLeftExpanded = ref(false)
-const isRightExpanded = ref(false)
-
+// watch for changes in the isSm computed property and implement the logic to only allow one side panel to be expanded at a time
 watch(
   isSm,
-  (newVal) => {
-    console.log('Screen now small:', newVal)
+  () => {
     isLeftExpanded.value = false
     isRightExpanded.value = false
   },
@@ -111,7 +121,6 @@ function toggleIsRightExpanded() {
       @toggle-labels="handleToggleLabels"
     />
     <GraphInfoSidepane
-      ref="infoPaneRef"
       :node-info-display="nodeInfoDisplay"
       :is-right-expanded="isRightExpanded"
       @toggle-is-right-expanded="toggleIsRightExpanded"

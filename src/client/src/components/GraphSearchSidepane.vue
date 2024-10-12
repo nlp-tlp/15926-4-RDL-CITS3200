@@ -56,7 +56,6 @@ const emit = defineEmits([
 watch(
   () => props.isLeftExpanded,
   (newVal) => {
-    console.log('isLeftExpanded', newVal)
     isLeftExpanded.value = newVal
   }
 )
