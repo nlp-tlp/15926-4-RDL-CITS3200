@@ -27,14 +27,14 @@ export default {
     <p
       id="navbar-title"
       @click="$router.push('/')"
-      class="hidden md:inline text-[1.2rem] md:text-[1.1rem] font-bold mr-auto text-nav-title hover:cursor-pointer"
+      class="hidden md:inline mt-1 text-[1.2rem] md:text-[1.1rem] font-bold mr-auto text-gray-200 hover:cursor-pointer"
     >
       Iso15926Visualiser
     </p>
     <p
       id="navbar-title"
       @click="$router.push('/')"
-      class="text-[1.2rem] md:text-[1.1rem] font-bold mr-auto text-nav-title hover:cursor-pointer md:hidden"
+      class="text-[1.2rem mt-1 md:text-[1.1rem] font-bold mr-auto text-gray-200 hover:cursor-pointer md:hidden"
     >
       Iso15926Vis
     </p>
