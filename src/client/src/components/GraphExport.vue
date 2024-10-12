@@ -2,10 +2,29 @@
   <div>
     <!-- Capture Screen Button -->
     <button
-      class="w-24 px-4 py-2 bg-nav-background text-white border-none rounded-md cursor-pointer hover:color-nav-text-active fixed right-5 bottom-5"
+      class="w-3 p-2 bg-none text-w border-none rounded-md cursor-pointer hover:color-nav-text-active fixed right-6 bottom-6"
       @click="captureScreen"
     >
-      Capture Screen
+      <svg
+        class="svg-icon"
+        style="
+          width: 1.5em;
+          height: 1.5em;
+          vertical-align: middle;
+          fill: var(--color-nav-background);
+          overflow: hidden;
+        "
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M471 250.4c0-22.1 17.9-40.1 40.1-40.1 22.1 0 40.1 17.9 40.1 40.1V680c0 22.1-17.9 40.1-40.1 40.1-22.1 0-40.1-17.9-40.1-40.1V250.4z m0 429.5"
+        />
+        <path
+          d="M852.5 834V645.4c0-20.8 16.9-37.7 37.7-37.7 20.8 0 37.7 16.9 37.7 37.7v226.2c0 20.8-16.9 37.7-37.7 37.7H136.1c-20.8 0-37.7-16.9-37.7-37.7V645.4c0-20.8 16.9-37.7 37.7-37.7 20.8 0 37.7 16.9 37.7 37.7V834h678.7z m0 0M511.1 229.5L320.3 437.9c-15.1 16.4-40.5 17.4-56.9 2.4-16.4-15-17.5-40.5-2.4-56.9L481.4 143c7.6-8.4 18.4-13.1 29.7-13.1s22.1 4.8 29.6 13.1l220.4 240.4c15 16.4 14 41.9-2.4 56.9s-41.9 14-56.9-2.4L511.1 229.5z m190.7 208.4"
+        />
+      </svg>
     </button>
 
     <!-- Preview Modal -->
@@ -45,7 +64,7 @@
           <!-- Dropdown for file type -->
           <select
             v-model="selectedFileType"
-            class="p-1.5 w-24 mx-2 rounded-md border border-gray-200 bg-nav-background text-white"
+            class="p-1.5 w-24 mx-2 rounded-md border border-gray-200 bg-cyan-950 text-gray-200"
           >
             <option value="png">PNG</option>
             <option value="jpeg">JPEG</option>
@@ -54,7 +73,7 @@
 
           <!-- Save button on Modal -->
           <button
-            class="w-24 p-1.5 bg-nav-background text-white border border-white rounded-md cursor-pointer hover:color-nav-text-active"
+            class="w-24 p-1.5 bg-cyan-950 text-gray-200 border border-gray-200 rounded-md cursor-pointer hover:color-nav-text-active"
             @click="saveScreenshot"
           >
             Export
