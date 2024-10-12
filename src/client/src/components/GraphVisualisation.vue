@@ -3,9 +3,7 @@
     <!-- Include the GraphExport component -->
     <GraphExport v-if="svgRef" :svg-ref="svgRef" />
 
-    <div id="captureArea">
-      <svg ref="svgRef"></svg>
-    </div>
+    <svg ref="svgRef"></svg>
   </div>
 </template>
 
