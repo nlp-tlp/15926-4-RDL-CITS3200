@@ -6,13 +6,21 @@
     <div v-if="isLoading" class="spinner"></div>
 
     <!-- Preview Modal -->
-    <div v-if="isPreviewVisible" class="modal">
+    <div v-if="isPreviewVisible" class="modal-overlay" @click.self="closePreview">
       <div class="modal-content">
         <span class="close" @click="closePreview">&times;</span>
         <h3>Screenshot Preview</h3>
         <img :src="screenshotDataUrl" alt="Screenshot Preview" class="screenshot-preview" />
 
-        <!-- Dropdown for file type (maybe change to toggle switch?) -->
+        <!-- Warning Message -->
+        <div v-if="isScaled" class="warning">
+          <p>
+            <strong>Warning:</strong> The image has been scaled down due to size limitations.
+            The exported image may be lower resolution.
+          </p>
+        </div>
+
+        <!-- Dropdown for file type -->
         <select v-model="selectedFileType">
           <option value="png">PNG</option>
           <option value="jpeg">JPEG</option>
@@ -23,6 +31,7 @@
         <button @click="saveScreenshot">Save</button>
       </div>
     </div>
+
     <div id="captureArea">
       <svg ref="svgRef"></svg>
     </div>
@@ -63,6 +72,7 @@ const selectedFileType = ref('png') // Selected file type for export
 const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
 const screenshotDataUrl = ref('') // Store the data URL of the screenshot
 const isLoading = ref(false)
+const isScaled = ref(false);
 
 // Function to inline all styles into the SVG
 //(Styles from our d3 graph have to be put inline to export as a SVG)
@@ -157,9 +167,11 @@ const captureScreen = () => {
       canvas.width = width * scaleFactor
       canvas.height = height * scaleFactor
       ctx.scale(scaleFactor, scaleFactor)
+      isScaled.value = true; // Image was scaled
     } else {
       canvas.width = width
       canvas.height = height
+      isScaled.value = false; // Image was not scaled
     }
 
     // Create an Image object from the serialized SVG
@@ -610,29 +622,33 @@ export default {
 }
 
 /* Modal Styles */
-.modal {
+.modal-overlay {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Modal Content Styles */
+.modal-content {
+  background-color: white;
+  width: 60%;
   max-width: 90vw;
   max-height: 90vh;
   overflow: auto;
-  position: fixed;
-  z-index: 1000;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  background-color: white;
+  padding: 1rem;
+  position: relative; /* For the close button positioning */
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-}
-
-.modal-content {
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
   text-align: center;
 }
 
+/* Close Button Styles */
 .close {
   position: absolute;
   top: 0.5rem;
@@ -641,9 +657,20 @@ export default {
   font-size: 1.5rem;
 }
 
+/* Screenshot Preview Styles */
 .screenshot-preview {
   width: 100%;
   margin-bottom: 1rem;
+}
+
+/* Warning Message Styles */
+.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
 }
 
 /* Button Styles */
@@ -667,6 +694,7 @@ button:hover {
   color: var(--color-nav-text-active);
 }
 
+/* Select Styles */
 select {
   margin-bottom: 1rem;
   padding: 0.3rem;
@@ -675,6 +703,7 @@ select {
   border: 1px solid black;
 }
 
+/* Spinner Styles */
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-top: 4px solid #3498db;
