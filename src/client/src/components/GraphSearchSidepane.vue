@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
+import { search } from '../assets/apiFunctions'
+
 const props = withDefaults(
   defineProps<{
     initialExpanded?: boolean
@@ -33,8 +35,6 @@ const emit = defineEmits([
   'toggleIsLeftExpanded'
 ]) // Defining emit events
 
-const API_URL = import.meta.env.VITE_SERVER_URL ?? 'http://127.0.0.1:5000'
-
 // Function to toggle the left nav
 function toggleLeftNav(): void {
   emit('toggleIsLeftExpanded')
@@ -55,36 +55,25 @@ watch(searchTerm, (newSearchTerm) => {
     showResults.value = false // Hide search results
   } else {
     showResults.value = true // Show search results
-    debounceSearch(() => search(newSearchTerm)) // Perform search
+    debounceSearch(() => performSearch(newSearchTerm)) // Perform search
   }
 })
 
-// API search function
-async function search(query: string): Promise<void> {
+// Perform search using the search function from apiFunctions.ts
+async function performSearch(query: string): Promise<void> {
   isSearching.value = true
   errorMessage.value = ''
   results.value = [] // Clear previous results
 
-  try {
-    const endpoint = searchOption.value === 'id' ? '/search/id/' : '/search/label/'
-    const response = await fetch(`${API_URL}${endpoint}${encodeURIComponent(query)}?limit=25`)
-    const data = await response.json()
+  const { results: searchResults, errorMessage: searchError } = await search(
+    query,
+    searchOption.value,
+    deprecatedToggle.value
+  )
+  results.value = searchResults
+  errorMessage.value = searchError
 
-    if (data.results && data.results.length > 0) {
-      results.value = data.results.map((result: any) => ({
-        id: result.id,
-        label: result.label,
-        dep: result.dep
-      }))
-    } else {
-      errorMessage.value = 'No results found.'
-    }
-  } catch (error) {
-    console.error('Error fetching search results:', error)
-    errorMessage.value = 'Failed to fetch search results. Please try again later.'
-  } finally {
-    isSearching.value = false
-  }
+  isSearching.value = false
 }
 
 // Handle result click

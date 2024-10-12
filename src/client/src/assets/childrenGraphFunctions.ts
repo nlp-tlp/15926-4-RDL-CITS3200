@@ -149,6 +149,8 @@ function renderChildrenNodes(
   // Update the text position based on the expanded state
   nodeUpdate
     .select('text')
+    // display none for the root node since parent text is already displayed to prevent duplication
+    .style('display', (d: any, i: number) => (i === 0 ? 'none' : null))
     // display none if prop showLabels is false
     .style('display', props.showLabels ? 'block' : 'none')
     // x: root at 0 and children otherwise based on expanded state

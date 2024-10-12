@@ -4,6 +4,7 @@ const childrenEndpoint: string = '/node/children/'
 const parentsEndpoint: string = '/node/parents/'
 const selectedInfoEndpoint: string = '/node/selected-info/'
 const infoEndpoint: string = '/node/info/'
+const searchEndpoint: string = '/search/'
 
 /**
  * Fetches the children of a node from the server
@@ -221,4 +222,45 @@ async function fetchNodeInfo(nodeId: string) {
   }
 }
 
-export { fetchChildren, fetchNodeInfo, fetchParents, fetchSelectedInfo }
+/**
+ * Fetches search results from the server
+ * @param query The search query
+ * @param searchOption The search option ('id' or 'rdf')
+ * @param includeDeprecated Whether to include deprecated nodes in the response
+ * @returns The search results or an error message
+ */
+async function search(
+  query: string,
+  searchOption: string,
+  includeDeprecated: boolean = false
+): Promise<any> {
+  const results: any[] = []
+  let errorMessage = ''
+
+  try {
+    const endpoint = searchOption === 'id' ? `${searchEndpoint}id/` : `${searchEndpoint}label/`
+    const response = await fetch(
+      `${API_URL}${endpoint}${encodeURIComponent(query)}?limit=25&dep=${includeDeprecated}`
+    )
+    const data = await response.json()
+
+    if (data.results && data.results.length > 0) {
+      data.results.forEach((result: any) => {
+        results.push({
+          id: result.id,
+          label: result.label,
+          dep: result.dep
+        })
+      })
+    } else {
+      errorMessage = 'No results found.'
+    }
+  } catch (error: any) {
+    console.error('Error fetching search results:', error)
+    errorMessage = 'Failed to fetch search results. Please try again later.'
+  }
+
+  return { results, errorMessage }
+}
+
+export { fetchChildren, fetchNodeInfo, fetchParents, fetchSelectedInfo, search }
