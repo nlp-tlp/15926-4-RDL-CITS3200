@@ -8,13 +8,6 @@
       Capture Screen
     </button>
 
-    <!-- <div v-if="isLoading" class="spinner"></div> -->
-    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center">
-      <div
-        class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"
-      ></div>
-    </div>
-
     <!-- Preview Modal -->
     <div
       v-if="isPreviewVisible"
@@ -22,42 +15,51 @@
       @click.self="closePreview"
     >
       <div
-        class="bg-white w-3/5 max-w-[90vw] max-h-[90vh] overflow-auto p-4 relative border border-black shadow-md text-center rounded-lg"
+        class="bg-white w-3/5 max-w-[90vw] max-h-[90vh] flex flex-col relative border-none shadow-md text-center rounded-lg"
       >
-        <span class="absolute top-2 right-2 cursor-pointer" @click="closePreview">&times;</span>
-        <h3>Screenshot Preview</h3>
-
-        <!-- Warning Message -->
-        <div
-          v-if="isScaled"
-          class="bg-amber-200 text-yellow-800 border-yellow-200 p-2.5 mb-3.5 rounded-md"
-        >
-          <p>
-            <strong>Warning:</strong> The image has been scaled down due to size limitations. The
-            exported image may be lower resolution for PNG/JPEG. Please export as SVG to preserve
-            resolution.
-          </p>
+        <!-- Modal header -->
+        <div class="absolute top-0 left-0 w-full bg-nav-background text-white p-3 rounded-t-lg">
+          <span class="absolute top-3 right-3 cursor-pointer" @click="closePreview">&times;</span>
+          <h3>Export Preview</h3>
         </div>
 
-        <img :src="screenshotDataUrl" alt="Screenshot Preview" class="w-full mb-4" />
+        <!-- Modal content -->
+        <div class="flex-1 overflow-auto mt-12 p-4">
+          <!-- Warning Message -->
+          <div
+            v-if="isScaled"
+            class="bg-amber-200 text-yellow-800 border-yellow-200 p-2.5 mb-3.5 rounded-md"
+          >
+            <p>
+              <strong>Warning:</strong> The image has been scaled down due to size limitations. The
+              exported image may be lower resolution for PNG/JPEG. Please export as SVG to preserve
+              resolution.
+            </p>
+          </div>
 
-        <!-- Dropdown for file type -->
-        <select
-          v-model="selectedFileType"
-          class="mb-4 p-1.5 w-full rounded-md border border-gray-200"
-        >
-          <option value="png">PNG</option>
-          <option value="jpeg">JPEG</option>
-          <option value="svg">SVG</option>
-        </select>
+          <img :src="screenshotDataUrl" alt="Screenshot Preview" class="w-full mb-4" />
+        </div>
 
-        <!-- Save button on Modal -->
-        <button
-          class="w-24 px-4 py-2 bg-nav-background text-white border-none rounded-md cursor-pointer hover:color-nav-text-active"
-          @click="saveScreenshot"
-        >
-          Save
-        </button>
+        <!-- Modal footer -->
+        <div class="p-2 bg-nav-background rounded-b-lg">
+          <!-- Dropdown for file type -->
+          <select
+            v-model="selectedFileType"
+            class="p-1.5 w-24 mx-2 rounded-md border border-gray-200 bg-nav-background text-white"
+          >
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG</option>
+            <option value="svg">SVG</option>
+          </select>
+
+          <!-- Save button on Modal -->
+          <button
+            class="w-24 p-1.5 bg-nav-background text-white border border-white rounded-md cursor-pointer hover:color-nav-text-active"
+            @click="saveScreenshot"
+          >
+            Export
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -308,18 +310,3 @@ const closePreview = () => {
   isPreviewVisible.value = false
 }
 </script>
-
-<style scoped>
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-</style>

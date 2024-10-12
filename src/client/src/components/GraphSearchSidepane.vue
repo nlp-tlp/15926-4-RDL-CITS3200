@@ -267,7 +267,7 @@ export default {
             class="w-[80%] mx-auto p-3 bg-nav-background text-white ml-5 border-2 border-white rounded-lg text-sm font-extrabold cursor-pointer mt-5 text-center transition-all duration-300"
             @click="handleSubmit"
           >
-            Submit
+            Apply filters
           </button>
         </div>
       </div>
