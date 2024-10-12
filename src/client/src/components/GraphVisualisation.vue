@@ -64,78 +64,9 @@ const isPreviewVisible = ref(false) // Toggle to show/hide the preview modal
 const screenshotDataUrl = ref('') // Store the data URL of the screenshot
 const isLoading = ref(false)
 
-// // Function to capture the screen and show the preview modal
-// const captureScreen = () => {
-//   isLoading.value = true
-//   setTimeout(() => {
-//     const captureArea = document.getElementById('captureArea')
-
-//     if (captureArea) {
-//       html2canvas(captureArea, {
-//         scale: 2, // Increase scale for better quality
-//         logging: false, // Disable logging to reduce overhead
-//         useCORS: true // Enable cross-origin if required for resources
-//       }).then((canvas) => {
-//         screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
-//         isPreviewVisible.value = true // Show the preview modal
-//         isLoading.value = false
-//       })
-//     }
-//   }, 0)
-// }
-
-// Function to capture the screen and show the preview modal
-// const captureScreen = () => {
-//   const svgElement = svgRef.value
-//   // svgElement = d3.call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
-//   if (svgElement) {
-//     // Get the bounding box of the full graph
-//     const bounds = svgElement.getBBox()
-//     const width = svgElement.getAttribute('width')
-//     const height = svgElement.getAttribute('height')
-//     console.log('width is', width, 'height is', height)
-
-//     // Create a new canvas element to render the SVG
-//     const canvas = document.createElement('canvas')
-//     canvas.width = bounds.width
-//     canvas.height = bounds.height
-//     console.log(canvas.width, canvas.height)
-
-//     const ctx: any = canvas.getContext('2d')
-
-//     // Clear the canvas before each render to avoid issues
-//     ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-//     // Serialize the SVG element into a string
-//     const svgData = new XMLSerializer().serializeToString(svgElement)
-
-//     // Create an Image object and set the src to the base64 SVG
-//     const img = new Image()
-//     img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
-
-//     img.onload = () => {
-//       // Draw the full SVG graph on the canvas
-//       ctx?.drawImage(img, -bounds.x, -bounds.y)
-//       console.log(canvas.width, canvas.height)
-//       console.log(bounds.x, bounds.y)
-
-//       // Create a preview and display in modal
-//       screenshotDataUrl.value = canvas.toDataURL(`image/${selectedFileType.value}`)
-//       isPreviewVisible.value = true
-//       isLoading.value = false
-//     }
-
-//     // Error handling: if the image fails to load
-//     img.onerror = () => {
-//       console.error('Image failed to load.')
-//       isLoading.value = false
-//     }
-//   }
-// }
 
 // Function to inline all styles into the SVG
 //(Styles from our d3 graph have to be put inline to export as a SVG)
-// Function to inline all styles into the SVG
 const inlineStyles = (element: SVGElement) => {
   const cssStyleSheets = Array.from(document.styleSheets).filter(
     (styleSheet) => !styleSheet.href || styleSheet.href.startsWith(window.location.origin)
@@ -256,41 +187,6 @@ const captureScreen = () => {
   }
 }
 
-// // Function to save the screenshot based on the selected file type
-// const saveScreenshot = () => {
-//   if (selectedFileType.value === 'svg') {
-//     const svgElement = svgRef.value
-//     if (!svgElement) return
-
-//     inlineStyles(svgElement)
-
-//     const serializer = new XMLSerializer()
-//     const svgString = serializer.serializeToString(svgElement)
-
-//     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-//     saveAs(blob, 'graph.svg')
-//   } else {
-//     // (PNG, JPEG)
-//     const canvas = document.createElement('canvas')
-//     const img = new Image()
-//     img.src = screenshotDataUrl.value
-
-//     img.onload = () => {
-//       canvas.width = img.width
-//       canvas.height = img.height
-//       const ctx = canvas.getContext('2d')
-//       ctx?.drawImage(img, 0, 0)
-
-//       canvas.toBlob((blob) => {
-//         if (blob) {
-//           const fileName = `screenshot.${selectedFileType.value}`
-//           saveAs(blob, fileName)
-//         }
-//       }, `image/${selectedFileType.value}`)
-//     }
-//   }
-// }
-
 const saveScreenshot = () => {
   if (selectedFileType.value === 'svg') {
     const svgElement = svgRef.value
@@ -317,7 +213,7 @@ const saveScreenshot = () => {
         console.error('Failed to get 2D context');
         return;
       }
-      
+
       // Fill the canvas with white background
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
