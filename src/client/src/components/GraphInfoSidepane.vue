@@ -1,40 +1,68 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
+  /**
+   * Determines if the side panel is initially expanded.
+   */
   initialExpanded: {
     type: Boolean,
     default: false
   },
+  /**
+   * The RDF data to display in the side panel.
+   */
   nodeInfoDisplay: {
     type: Object,
     required: true
   },
+  /**
+   * Flag to determine if the right side panel is expanded.
+   */
   isRightExpanded: {
-    type: Boolean
+    type: Boolean,
+    required: true
   }
 })
 
-//parent is responsible for toggling
-interface Emit {
-  (e: 'toggleIsRightExpanded'): void
-}
+// State variables for side panel
+const isRightExpanded = ref(props.isRightExpanded)
+const rdfData = ref(props.nodeInfoDisplay)
+const emit = defineEmits(['toggleIsRightExpanded'])
 
-const emit = defineEmits<Emit>()
+// watch for changes in the isRightExpanded prop and update the isRightExpanded ref
+watch(
+  () => props.isRightExpanded,
+  (newVal) => {
+    isRightExpanded.value = newVal
+  }
+)
 
-function toggleRightNavButton(): void {
+// Watch for changes in the nodeInfoDisplay prop and update RDF data
+watch(
+  () => props.nodeInfoDisplay,
+  (newValue) => {
+    rdfData.value = newValue
+  }
+)
+
+// Wrapper function for button click
+function handleButtonClick(event: MouseEvent): void {
   emit('toggleIsRightExpanded')
 }
 
-// Create a reactive object to hold the RDF data
-const rdfData = ref(props.nodeInfoDisplay)
+// Computed property to filter rdfData
+const filteredRdfData = computed(() => {
+  return Object.entries(rdfData.value).filter(([key, value]) => value.trim() !== '')
+})
 </script>
 
 <script lang="ts">
 /**
- * GraphInfoSidepane component represents the expandable side panel containing RDF information functionality.
+ * GraphInfoSidepane component represents the expandable side panel containing RDF data for the selected node.
  *
  * @param {boolean} initialExpanded - Determines if the side panel is initially expanded (default: false).
+ * @param {object} nodeInfoDisplay - The RDF data to display in the side panel.
  *
  * @example
  * <GraphInfoSidepane :initialExpanded="true" />
@@ -50,23 +78,40 @@ export default {
   <div>
     <button
       class="right-btn fixed top-[5rem] right-2 bg-transparent cursor-pointer border-none text-[22px] font-bold z-20 text-nav-background transition-colors duration-300 ease-in-out"
-      @click="toggleRightNavButton"
-      :class="{ 'text-white': isRightExpanded }"
+      @click="handleButtonClick"
+      :class="{ 'text-white': props.isRightExpanded }"
     >
       &#9776;
     </button>
 
     <transition name="sidepanel">
       <div
-        v-if="isRightExpanded"
-        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
+        v-if="props.isRightExpanded"
+        class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] lg:w-[300px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
         <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
 
-        <div class="flex-1 m-4 text-white overflow-y-auto scrollbar-none">
-          <div v-for="(value, key) in rdfData" :key="key" class="mb-4">
-            <strong class="block font-bold">{{ key }}:</strong>
-            <span class="block ml-4 break-words whitespace-pre-line break-all">
+        <div class="flex-1 m-4 lg:pr-2 text-white overflow-y-auto scrollbar-none">
+          <div v-if="filteredRdfData.length === 0" class="mb-4">
+            <p class="ml-4 text-white">Click on a node's label to display the information</p>
+          </div>
+          <div v-else v-for="([key, value], index) in filteredRdfData" :key="index" class="mb-4">
+            <strong class="block font-bold mb-1"
+              >{{ key.charAt(0).toUpperCase() + key.slice(1) }}:</strong
+            >
+            <span
+              :class="[
+                'block',
+                'ml-4',
+                'break-words',
+                'whitespace-pre-line',
+                'break-all',
+                'text-sm',
+                'bg-cyan-950',
+                'p-2',
+                'rounded-md'
+              ]"
+            >
               <slot :name="key" :value="value">{{ value }}</slot>
             </span>
           </div>

@@ -7,6 +7,7 @@ from app.controllers import (
     check_uri_exists,
     str_to_bool,
     get_all_node_info,
+    get_node_info_with_relations,
 )
 
 
@@ -30,7 +31,7 @@ def test_get_root_node_info(sample_graph):
     # Validate the root node info
     assert root_info["id"] == "http://data.15926.org/dm/Thing"
     assert root_info["label"] == "Thing"
-    assert root_info["dep"] is None, "Root node should not have a deprecation date."
+    assert "dep" not in root_info, "Root node should not have a deprecation date."
 
 
 def test_has_children_without_deprecation(sample_graph):
@@ -87,10 +88,12 @@ def test_get_children_without_deprecation(sample_graph):
     assert (
         len(children) == 2
     ), "Root node should have 2 children when dep=False, Child2 and Child4."
+
     assert children[0]["id"] == "http://data.15926.org/dm/Child2"
-    assert children[0]["dep"] is None, "Child2 should not have a deprecation date."
+    assert "dep" not in children[0], "Child2 should not have a deprecation date."
+
     assert children[1]["id"] == "http://data.15926.org/dm/Child4"
-    assert children[1]["dep"] is None, "Child4 should not have a deprecation date."
+    assert "dep" not in children[1], "Child4 should not have a deprecation date."
 
 
 def test_get_children_with_deprecation_included(sample_graph):
@@ -100,12 +103,11 @@ def test_get_children_with_deprecation_included(sample_graph):
     # Get the children of the root node with dep=True
     children = get_children("http://data.15926.org/dm/Thing", sample_graph, dep=True)
 
-    # Validate that both children are returned
+    # Validate that all children are returned
     assert (
         len(children) == 3
     ), "Root node should have 3 children when dep=True, Child1, Child2, and Child4."
 
-    # Check child IDs and deprecation dates
     child_ids = {child["id"] for child in children}
     assert "http://data.15926.org/dm/Child1" in child_ids
     assert "http://data.15926.org/dm/Child2" in child_ids
@@ -118,7 +120,7 @@ def test_get_children_with_deprecation_included(sample_graph):
             ), "Child1 should have a deprecation date."
         else:
             assert (
-                child["dep"] is None
+                "dep" not in child
             ), "Child2 and Child4 should not have deprecation dates."
 
 
@@ -148,6 +150,66 @@ def test_get_children_with_extra_parents(sample_graph):
     assert (
         extra_parent_info["id"] == "http://data.15926.org/dm/ExtraParent"
     ), "Child2's extra parent should be 'Extra Parent'"
+
+
+def test_get_node_info_with_relations(sample_graph):
+    """
+    Test the get_node_info_with_relations function from controllers.py.
+    """
+    # Test with a node that has label and children
+    node_uri = "http://data.15926.org/dm/Thing"
+    node_info = get_node_info_with_relations(node_uri, sample_graph)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Thing"
+    assert node_info["dep"] is None  # No deprecation date for the root node
+    assert node_info["has_children"] is True
+    assert node_info["has_parents"] is False
+
+    # Test with a deprecated node that has children and parents
+    node_uri = "http://data.15926.org/dm/Child1"
+    node_info = get_node_info_with_relations(node_uri, sample_graph)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child One"
+    assert node_info["dep"] == "2021-03-21Z"
+    assert node_info["has_children"] is True
+    assert node_info["has_parents"] is True
+
+    # Test with a node that has multiple parents
+    node_uri = "http://data.15926.org/dm/Child2"
+    node_info = get_node_info_with_relations(node_uri, sample_graph)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child Two"
+    assert node_info["dep"] is None
+    assert node_info["has_children"] is False
+    assert node_info["has_parents"] is True
+
+
+def test_get_node_info_with_relations_deprecated(sample_graph):
+    """
+    Test the get_node_info_with_relations function from controllers.py with deprecated nodes.
+    """
+    # Test with a node that has deprecated parents
+    node_uri = "http://data.15926.org/dm/Child3"
+    node_info = get_node_info_with_relations(node_uri, sample_graph, dep=True)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child Three"
+    assert node_info["dep"] is None
+    assert node_info["has_children"] is False
+    assert node_info["has_parents"] is True
+
+    # Test with a node that has deprecated children
+    node_uri = "http://data.15926.org/dm/Child4"
+    node_info = get_node_info_with_relations(node_uri, sample_graph, dep=True)
+
+    assert node_info["id"] == node_uri
+    assert node_info["label"] == "Child Four"
+    assert node_info["dep"] is None
+    assert node_info["has_children"] is True
+    assert node_info["has_parents"] is True
 
 
 def test_get_all_node_info(sample_graph):
