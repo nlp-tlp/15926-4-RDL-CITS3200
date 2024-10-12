@@ -165,6 +165,10 @@ const captureScreen = () => {
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)))
 
     img.onload = () => {
+      // Fill the canvas with white background (fixes bug)
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
       // Draw the SVG image onto the canvas
       ctx.drawImage(img, 0, 0)
 

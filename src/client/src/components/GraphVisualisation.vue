@@ -271,6 +271,7 @@ function renderNodes(nodes: any) {
     .style('text-anchor', (d: any) => (d.data.expanded ? 'end' : 'start'))
     .style('cursor', () => 'pointer')
     .text((d: any) => d.data.label)
+    .style('font-family', 'Arial, sans-serif')
     .on('mouseover', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGTextElement)
         .style('fill', 'lightblue')
