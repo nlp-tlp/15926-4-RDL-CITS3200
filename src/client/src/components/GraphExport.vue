@@ -90,6 +90,9 @@ const inlineStyles = (element: SVGElement) => {
 }
 
 const captureScreen = () => {
+  // Start the spinner
+  isLoading.value = true
+
   const svgElement = props.svgRef
   if (svgElement) {
     // Inline all styles into the SVG element
@@ -99,6 +102,7 @@ const captureScreen = () => {
     const gElement = svgElement.querySelector('g')
     if (!gElement) {
       console.error('No <g> element found in the SVG.')
+      isLoading.value = false // Stop the spinner
       return
     }
     const bbox = gElement.getBBox()
@@ -108,6 +112,7 @@ const captureScreen = () => {
     const clonedGElement = clonedSvgElement.querySelector('g')
     if (!clonedGElement) {
       console.error('No <g> element found in the cloned SVG.')
+      isLoading.value = false // Stop the spinner
       return
     }
 
@@ -136,6 +141,7 @@ const captureScreen = () => {
     const ctx = canvas.getContext('2d')
     if (!ctx) {
       console.error('Failed to get 2D context')
+      isLoading.value = false // Stop the spinner
       return
     }
 
