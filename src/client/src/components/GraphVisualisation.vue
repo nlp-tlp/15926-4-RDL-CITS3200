@@ -16,7 +16,7 @@
         <div v-if="isScaled" class="warning">
           <p>
             <strong>Warning:</strong> The image has been scaled down due to size limitations. The
-            exported image may be lower resolution.
+            exported image may be lower resolution for PNG/JPEG. Please export as SVG.
           </p>
         </div>
 
@@ -79,35 +79,36 @@ const isScaled = ref(false)
 const inlineStyles = (element: SVGElement) => {
   const cssStyleSheets = Array.from(document.styleSheets).filter(
     (styleSheet) => !styleSheet.href || styleSheet.href.startsWith(window.location.origin)
-  )
+  );
 
-  const cssRules: CSSRule[] = [] // Explicitly typed as CSSRule[]
+  const cssRules: CSSRule[] = [];
 
   cssStyleSheets.forEach((styleSheet) => {
     try {
-      const sheetRules = styleSheet.cssRules
+      const sheetRules = styleSheet.cssRules;
       if (sheetRules) {
-        cssRules.push(...Array.from(sheetRules))
+        cssRules.push(...Array.from(sheetRules));
       }
     } catch (e) {
-      console.warn('Could not access CSS rules from stylesheet:', styleSheet.href)
+      console.warn('Could not access CSS rules from stylesheet:', styleSheet.href);
     }
-  })
+  });
 
   cssRules.forEach((rule) => {
     if (rule instanceof CSSStyleRule) {
-      const elements = element.querySelectorAll(rule.selectorText)
+      const elements = element.querySelectorAll(rule.selectorText);
       elements.forEach((el: any) => {
         rule.style.cssText.split(';').forEach((style) => {
-          const [property, value] = style.split(':')
+          const [property, value] = style.split(':');
           if (property && value) {
-            el.style.setProperty(property.trim(), value.trim())
+            el.style.setProperty(property.trim(), value.trim());
           }
-        })
-      })
+        });
+      });
     }
-  })
-}
+  });
+};
+
 
 const captureScreen = () => {
   const svgElement = svgRef.value
@@ -197,16 +198,53 @@ const captureScreen = () => {
 
 const saveScreenshot = () => {
   if (selectedFileType.value === 'svg') {
-    const svgElement = svgRef.value
-    if (!svgElement) return
+    const svgElement = svgRef.value;
+    if (!svgElement) return;
 
-    inlineStyles(svgElement)
+    // Inline all styles into the SVG element
+    inlineStyles(svgElement);
 
-    const serializer = new XMLSerializer()
-    const svgString = serializer.serializeToString(svgElement)
+    // Get the bounding box of the <g> element
+    const gElement = svgElement.querySelector('g');
+    if (!gElement) {
+      console.error('No <g> element found in the SVG.');
+      return;
+    }
+    const bbox = gElement.getBBox();
 
-    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-    saveAs(blob, 'graph.svg')
+    // Clone the SVG element
+    const clonedSvgElement = svgElement.cloneNode(true) as SVGSVGElement;
+    const clonedGElement = clonedSvgElement.querySelector('g');
+    if (!clonedGElement) {
+      console.error('No <g> element found in the cloned SVG.');
+      return;
+    }
+
+    // Apply padding
+    const padding = 20;
+    const minX = bbox.x - padding;
+    const minY = bbox.y - padding;
+    const width = bbox.width + 5 * padding;
+    const height = bbox.height + 2 * padding;
+
+    // Adjust the 'transform' to shift the graph into the view
+    clonedGElement.setAttribute('transform', `translate(${-minX},${-minY})`);
+
+    // Adjust the cloned SVG's width, height, and viewBox
+    clonedSvgElement.setAttribute('width', width.toString());
+    clonedSvgElement.setAttribute('height', height.toString());
+    clonedSvgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    // Inline all styles into the cloned SVG
+    inlineStyles(clonedSvgElement);
+
+    // Serialize the cloned SVG into a string
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(clonedSvgElement);
+
+    // Create a Blob and save the SVG
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    saveAs(blob, 'graph.svg');
   } else {
     // Save PNG/JPEG from canvas data
     const canvas = document.createElement('canvas')
