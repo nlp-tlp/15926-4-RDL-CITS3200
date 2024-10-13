@@ -18,7 +18,7 @@ ISO15926vis is an interactive graph visualisation for the equipment Reference Da
 
 This project assists in navigating the hierarchical relationships of classes defined by the RDL, accessible through the [current RDL browser](https://data.15926.org/rdl/) on which the hierarchy can be difficult to interpret.
 
-🚧 This project is currently in the early stages of development and many things are subject to change. 🚧
+The project is currently deployed at [https://iso15926vis.org/](https://iso15926vis.org/).
 
 ## Getting started
 
@@ -40,15 +40,17 @@ git clone https://github.com/nlp-tlp/15926-4-RDL-CITS3200.git
 
 If you intend to run the client, download [NVM](https://github.com/nvm-sh/nvm) from the official source or using a package manager for your OS. Then, use NVM to install [NPM](https://nodejs.org/en/download/package-manager).
 
-Install NPM dependencies in the main directory for [Husky Git hooks](https://typicode.github.io/husky/) and initialise Husky:
+Install NPM dependencies in the root directory for [Husky Git hooks](https://typicode.github.io/husky/) and initialise Husky:
 
 ```bash
 npm i
+
+# If developing:
 npx husky-init
 cp .husky/pre-commit.example .husky/pre-commit
 ```
 
-Install NPM dependencies for the client from the main directory with:
+Install NPM dependencies for the client from the root directory with:
 
 ```bash
 npm i --prefix src/client
@@ -84,6 +86,8 @@ cd src/server
 flask --app "server.py" run
 ```
 
+**NOTE: A database must exist before adequate usage. Please consult the CLI section to update the database.**
+
 #### CLI
 
 To run the CLI for the Flask server:
@@ -94,6 +98,8 @@ cd src/server
 ```
 
 Follow the directions given in the CLI menu to modify the database and view other parameters.
+The database should first be updated on initial clone. This is done by selecting option `U` on the main menu.
+This method should not be used for docker deployments. Please consult the later section for that.
 
 ## Development
 
@@ -141,7 +147,7 @@ For any dependencies that should be there in the production environment, run:
 npm i <package_name> --save
 ```
 
-For any dependencies needed for development but not prod (e.g. type checking with ESLint), run:
+For any dependencies needed for development but not the production environment (e.g. type checking with ESLint), run:
 
 ```bash
 npm i <package_name> --save-dev
@@ -168,6 +174,7 @@ From the root directory, run:
 
 ```bash
 cd src
+cp .env.example .env
 docker compose up --build
 ```
 
@@ -183,6 +190,6 @@ docker exec -it Server /app/cli.py
 
 ## Credits
 
-This project is being developed by students of the University of Western Australia (UWA) as part of the unit CITS3200 (Professional Computing), as Team 14 of the 2024 Semester 2 cohort.
+This project was developed by students of the University of Western Australia (UWA) as part of the unit CITS3200 (Professional Computing), as Team 14 of the 2024 Semester 2 cohort.
 
 Our team members include: Cameron O’Neill, Heidi Leow, Paul Maingi, Ryan Dorman, Shuai Shao, and Vinita Rathore.
