@@ -15,7 +15,7 @@ import IconGraph from '../components/icons/IconGraph.vue'
       </h2>
       <p class="text-block mt-[30px] lg:text-lg">
         The International Organization for Standardization (ISO) develops and publishes standards.
-        ISO 15926-4 standard has the title Industrial automation systems and integration —
+        The ISO 15926-4 standard has the title Industrial automation systems and integration —
         Integration of life-cycle data for process plants including oil and gas production
         facilities Part 4: Core reference data. The Reference Data Library (RDL) described in ISO
         15926-4 is made available as a set of spreadsheets and through an endpoint at
