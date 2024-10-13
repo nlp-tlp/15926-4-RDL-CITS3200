@@ -44,14 +44,14 @@ const props = defineProps({
    */
   nodeDistanceX: {
     type: Number,
-    default: 45
+    default: 30
   },
   /**
    * The distance between nodes on the Y-axis.
    */
   nodeDistanceY: {
     type: Number,
-    default: 450
+    default: 600
   }
 })
 

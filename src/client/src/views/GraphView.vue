@@ -22,8 +22,8 @@ const isLeftExpanded = ref(false)
 const isRightExpanded = ref(false)
 
 // node spacing
-const nodeDistanceX = ref(45)
-const nodeDistanceY = ref(450)
+const nodeDistanceX = ref(30)
+const nodeDistanceY = ref(600)
 
 /**
  * Handles the event when the user toggles the deprecated nodes visibility.
