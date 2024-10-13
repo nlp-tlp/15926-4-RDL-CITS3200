@@ -112,32 +112,24 @@ function toggleIsRightExpanded() {
 </script>
 
 <template>
-  <div>
-    <GraphSearchSidepane
-      @node-selected="handleNodeSelected"
-      @toggle-deprecated="handleToggleDeprecated"
-      :is-left-expanded="isLeftExpanded"
-      @toggle-is-left-expanded="toggleIsLeftExpanded"
-      @toggle-labels="handleToggleLabels"
-    />
-    <GraphInfoSidepane
-      :node-info-display="nodeInfoDisplay"
-      :is-right-expanded="isRightExpanded"
-      @toggle-is-right-expanded="toggleIsRightExpanded"
-    />
-    <GraphVisualisation
-      :include-deprecated="showDeprecated"
-      :selected-node-id="selectedNodeId"
-      @label-clicked="handleLabelClicked"
-      :show-labels="showLabels"
-    />
-  </div>
+  <GraphSearchSidepane
+    @node-selected="handleNodeSelected"
+    @toggle-deprecated="handleToggleDeprecated"
+    :is-left-expanded="isLeftExpanded"
+    @toggle-is-left-expanded="toggleIsLeftExpanded"
+    @toggle-labels="handleToggleLabels"
+  />
+  <GraphInfoSidepane
+    :node-info-display="nodeInfoDisplay"
+    :is-right-expanded="isRightExpanded"
+    @toggle-is-right-expanded="toggleIsRightExpanded"
+  />
+  <GraphVisualisation
+    :include-deprecated="showDeprecated"
+    :selected-node-id="selectedNodeId"
+    @label-clicked="handleLabelClicked"
+    :show-labels="showLabels"
+  />
 </template>
 
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-</style>
+<style scoped></style>

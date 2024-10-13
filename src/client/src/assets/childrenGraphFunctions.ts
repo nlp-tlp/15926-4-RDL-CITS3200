@@ -139,6 +139,13 @@ function renderChildrenNodes(
     .append('text')
     .attr('dy', '.35em')
     .text((d: any) => d.data.label)
+    .style('fill', 'black') // Label text colour
+    .style('font-family', 'Arial, sans-serif')
+    .style('font-size', '15px')
+    .style('stroke', 'white') // Halo color
+    .style('stroke-width', 2) // Halo thickness
+    .style('stroke-linejoin', 'round')
+    .style('paint-order', 'stroke') // Ensure halo is under label
 
   // merge the enter and update selections
   const nodeUpdate = nodeEnter.merge(nodeSelection)
@@ -166,6 +173,13 @@ function renderChildrenNodes(
     )
     .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
     .style('font-style', (d: any) => (d.data.dep ? 'italic' : 'normal'))
+    .style('font-family', 'Arial, sans-serif')
+    .style('font-size', '15px')
+    .style('fill', 'black')
+    .style('stroke', 'white')
+    .style('stroke-width', 2)
+    .style('stroke-linejoin', 'round')
+    .style('paint-order', 'stroke')
 
   // label hover effect
   nodeUpdate
@@ -180,7 +194,7 @@ function renderChildrenNodes(
     })
     .on('mouseout', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGTextElement)
-        .style('fill', '')
+        .style('fill', 'black')
         .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
     })
     .on('click', (event: any, d: any) => {

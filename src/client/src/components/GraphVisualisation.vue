@@ -1,3 +1,12 @@
+<template>
+  <div>
+    <!-- Include the GraphExport component -->
+    <GraphExport v-if="svgRef" :svg-ref="svgRef" />
+
+    <svg ref="svgRef"></svg>
+  </div>
+</template>
+
 <script setup lang="ts">
 import * as d3 from 'd3'
 import { onMounted, ref, watch } from 'vue'
@@ -5,6 +14,7 @@ import { onMounted, ref, watch } from 'vue'
 import { fetchSelectedInfo } from '../assets/apiFunctions'
 import { drawChildrenGraph } from '../assets/childrenGraphFunctions'
 import { drawParentsGraph } from '../assets/parentsGraphFunctions'
+import GraphExport from './GraphExport.vue'
 
 const props = defineProps({
   /**
@@ -30,7 +40,7 @@ const props = defineProps({
   }
 })
 
-// Reference to the SVG element
+// Reference to the SVG elemen
 const svgRef = ref<SVGSVGElement | null>(null)
 
 // Graph size
@@ -174,8 +184,11 @@ export default {
 }
 </script>
 
-<template>
-  <svg ref="svgRef"></svg>
-</template>
-
-<style scoped></style>
+<style>
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-width: 1.5px;
+  stroke-opacity: 0.4;
+}
+</style>
