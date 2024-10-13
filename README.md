@@ -50,7 +50,7 @@ npx husky-init
 cp .husky/pre-commit.example .husky/pre-commit
 ```
 
-Install NPM dependencies for the client from the main directory with:
+Install NPM dependencies for the client from the root directory with:
 
 ```bash
 npm i --prefix src/client

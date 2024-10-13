@@ -40,7 +40,7 @@ export default {
     </p>
     <div id="navbar-items" class="flex">
       <NavBarItem to="/" label="Home" id="home-link" class="hidden md:flex" />
-      <NavBarItem to="/graph" label="Graph" id="graph-link" class="flex !border-l-0 md:!border-l-2">
+      <NavBarItem to="/graph" label="Graph" id="graph-link" class="flex">
         <template #icon>
           <IconGraph class="navbar-icon mr-2 mt-1 align-middle" />
         </template>

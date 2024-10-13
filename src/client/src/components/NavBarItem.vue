@@ -58,7 +58,7 @@ export default {
     :class="[
       'navbar-item',
       props.class,
-      'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border'
+      'flex items-center no-underline text-center text-nav-text px-4 rounded-md hover:bg-cyan-950'
     ]"
     target="_blank"
     rel="noopener noreferrer"
@@ -75,7 +75,7 @@ export default {
     :class="[
       'navbar-item',
       props.class,
-      'flex items-center no-underline text-center text-nav-text px-4 border-l-2 border-solid border-border'
+      'flex items-center no-underline text-center text-nav-text px-4 rounded-md hover:bg-cyan-950'
     ]"
   >
     <slot name="icon"></slot>
