@@ -21,6 +21,10 @@ const selectedNodeId = ref('http://data.15926.org/dm/Thing')
 const isLeftExpanded = ref(false)
 const isRightExpanded = ref(false)
 
+// node spacing
+const nodeDistanceX = ref(30)
+const nodeDistanceY = ref(600)
+
 /**
  * Handles the event when the user toggles the deprecated nodes visibility.
  * @param {boolean} val - The new value of the flag to include deprecated nodes.
@@ -96,6 +100,9 @@ watch(
   }
 )
 
+/**
+ * Toggles the left side panel expanded state.
+ */
 function toggleIsLeftExpanded() {
   if (isSm.value && isRightExpanded.value) {
     isRightExpanded.value = false
@@ -103,6 +110,9 @@ function toggleIsLeftExpanded() {
   isLeftExpanded.value = !isLeftExpanded.value
 }
 
+/**
+ * Toggles the right side panel expanded state.
+ */
 function toggleIsRightExpanded() {
   if (isSm.value && isLeftExpanded.value) {
     isLeftExpanded.value = false
@@ -112,24 +122,28 @@ function toggleIsRightExpanded() {
 </script>
 
 <template>
-  <GraphSearchSidepane
-    @node-selected="handleNodeSelected"
-    @toggle-deprecated="handleToggleDeprecated"
-    :is-left-expanded="isLeftExpanded"
-    @toggle-is-left-expanded="toggleIsLeftExpanded"
-    @toggle-labels="handleToggleLabels"
-  />
-  <GraphInfoSidepane
-    :node-info-display="nodeInfoDisplay"
-    :is-right-expanded="isRightExpanded"
-    @toggle-is-right-expanded="toggleIsRightExpanded"
-  />
-  <GraphVisualisation
-    :include-deprecated="showDeprecated"
-    :selected-node-id="selectedNodeId"
-    @label-clicked="handleLabelClicked"
-    :show-labels="showLabels"
-  />
+  <div>
+    <GraphSearchSidepane
+      @node-selected="handleNodeSelected"
+      @toggle-deprecated="handleToggleDeprecated"
+      :is-left-expanded="isLeftExpanded"
+      @toggle-is-left-expanded="toggleIsLeftExpanded"
+      @toggle-labels="handleToggleLabels"
+    />
+    <GraphInfoSidepane
+      :node-info-display="nodeInfoDisplay"
+      :is-right-expanded="isRightExpanded"
+      @toggle-is-right-expanded="toggleIsRightExpanded"
+    />
+    <GraphVisualisation
+      :include-deprecated="showDeprecated"
+      :selected-node-id="selectedNodeId"
+      @label-clicked="handleLabelClicked"
+      :show-labels="showLabels"
+      :node-distance-x="nodeDistanceX"
+      :node-distance-y="nodeDistanceY"
+    />
+  </div>
 </template>
 
 <style scoped></style>

@@ -334,3 +334,18 @@ const closePreview = () => {
   isPreviewVisible.value = false
 }
 </script>
+
+<script lang="ts">
+/**
+ * GraphExport component to export the graph as an image.
+ * This component provides a button to capture the screen and export the graph as an image.
+ * The user can select the file type (PNG, JPEG, or SVG) for the export.
+ * The component also displays a preview of the exported image before saving.
+ *
+ * @example
+ * <GraphExport :svgRef="svgRef" />
+ */
+export default {
+  name: 'GraphExport'
+}
+</script>

@@ -2,10 +2,8 @@ import * as d3 from 'd3'
 
 import { fetchChildren } from '@/assets/apiFunctions'
 
-// node dimensions + spacing
+// node dimensions, spacing moved to props
 const nodeRadius: number = 7
-const nodeDistanceX: number = 30
-const nodeDistanceY: number = 370
 
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
@@ -31,7 +29,7 @@ function drawChildrenGraph(data: any, root: any, svg: any, props: any, emit: any
   root = d3.hierarchy(data)
 
   // Create a tree layout
-  const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+  const tree = d3.tree().nodeSize([props.nodeDistanceX, props.nodeDistanceY])
   // Compute the layout - assigns x and y positions to the nodes
   tree(root)
 
@@ -61,7 +59,7 @@ function updateChildrenGraph(data: any, root: any, svg: any, props: any, emit: a
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
 
   // Create a tree layout
-  const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+  const tree = d3.tree().nodeSize([props.nodeDistanceX, props.nodeDistanceY])
   // Compute the layout - assigns x and y positions to the nodes
   tree(root)
 
@@ -127,7 +125,7 @@ function renderChildrenNodes(
       i === 0 ? 'default' : d.data.has_children ? 'pointer' : 'default'
     )
     .attr('stroke', '#444')
-    // for root node, set stroke width to 3, otherwise 2 if the node has children
+    // set the stroke width based on the node being the root or having children
     .attr('stroke-width', (d: any) =>
       d.data.id === childrenHierarchyData.id || d.data.has_children ? 2 : 0
     )
@@ -399,7 +397,7 @@ function customDiagonal(d: any, offset = 13) {
   // Check if the link is vertical or near-vertical
   if (Math.abs(sourceX - targetX) < 1) {
     // For vertical links, adjust the end point slightly to make arrow visible
-    const arrowAdjustment = isForward ? -offset : offset
+    const arrowAdjustment = targetY > sourceY ? -offset : offset
     return `
       M ${sourceX},${sourceY}
       L ${targetX},${targetY + arrowAdjustment}

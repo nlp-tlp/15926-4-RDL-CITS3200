@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
 import * as d3 from 'd3'
 import { onMounted, ref, watch } from 'vue'
 
@@ -37,19 +38,32 @@ const props = defineProps({
   showLabels: {
     type: Boolean,
     default: true
+  },
+  /**
+   * The distance between nodes on the X-axis.
+   */
+  nodeDistanceX: {
+    type: Number,
+    default: 30
+  },
+  /**
+   * The distance between nodes on the Y-axis.
+   */
+  nodeDistanceY: {
+    type: Number,
+    default: 600
   }
 })
 
 // Reference to the SVG elemen
 const svgRef = ref<SVGSVGElement | null>(null)
 
-// Graph size
-const width: number = window.innerWidth
-const height: number = window.innerHeight
+// Get reactive window size from VueUse
+const { width, height } = useWindowSize()
 
 // Graph layout
-const initialGraphX: number = (width / 7) * 3 // Center the graph horizontally
-const initialGraphY: number = (height / 7) * 3
+let initialGraphX: number = (width.value / 7) * 2.5 // Center the graph horizontally
+let initialGraphY: number = (height.value / 7) * 3
 const zoomScale: [number, number] = [0.25, 5]
 
 // D3 variables
@@ -59,6 +73,21 @@ let parentsRoot: any
 
 // Define the emit function to emit the label-clicked event
 const emit = defineEmits(['label-clicked'])
+
+/**
+ * Watch for changes in window size and update the graph dimensions and transform.
+ */
+watch([width, height], () => {
+  // Update the initial graph layout values
+  initialGraphX = (width.value / 7) * 2.5
+  initialGraphY = (height.value / 7) * 3
+
+  // Update the SVG dimensions
+  d3.select(svgRef.value).attr('width', width.value).attr('height', height.value)
+
+  // Reapply the zoom transform
+  svg.attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())
+})
 
 // onMounted hook to initialise the graph and render with the initial data - prop `Thing` as initial node before search
 onMounted(() => {
@@ -109,8 +138,8 @@ function initialiseGraph() {
   // Create the SVG element
   svg = d3
     .select(svgRef.value as SVGSVGElement)
-    .attr('width', width)
-    .attr('height', height)
+    .attr('width', width.value)
+    .attr('height', height.value)
     .call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
     .append('g')
     .attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())
