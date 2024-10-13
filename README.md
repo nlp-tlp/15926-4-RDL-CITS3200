@@ -99,6 +99,7 @@ cd src/server
 
 Follow the directions given in the CLI menu to modify the database and view other parameters.
 The database should first be updated on initial clone. This is done by selecting option `U` on the main menu.
+This method should not be used for docker deployments. Please consult the later section for that.
 
 ## Development
 
@@ -186,8 +187,6 @@ To access the CLI inside of the docker container, run :
 ```bash
 docker exec -it Server /app/cli.py
 ```
-
-**NOTE: When running the project locally with docker, the containers must be rebuilt with `--build` to register database modifications.** As such, the CLI tool cannot automatically update the database in use for docker instances.
 
 ## Credits
 
