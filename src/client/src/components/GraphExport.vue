@@ -215,9 +215,18 @@ const captureScreen = () => {
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)))
 
     img.onload = () => {
-      // Fill the canvas with white background (fixes bug)
+      // Save the current context state
+      ctx.save()
+
+      // Reset the transform to the identity matrix to fill the entire canvas
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+      // Fill the canvas with a white background
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      // Restore the context state (including the scaling)
+      ctx.restore()
 
       // Draw the SVG image onto the canvas
       ctx.drawImage(img, 0, 0)
@@ -299,9 +308,18 @@ const saveScreenshot = () => {
         return
       }
 
-      // Fill the canvas with white background
+      // Save the current context state
+      ctx.save()
+
+      // Reset the transform to the identity matrix
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+      // Fill the canvas with a white background
       ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      // Restore the context state
+      ctx.restore()
 
       // Draw the image onto the canvas
       ctx.drawImage(img, 0, 0)
