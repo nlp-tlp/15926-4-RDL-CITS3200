@@ -21,15 +21,3 @@ a {
   transition: 0.4s;
   padding: 3px;
 }
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    padding: 0 2rem;
-  }
-}
