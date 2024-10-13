@@ -84,7 +84,7 @@ cd src/server
 flask --app "server.py" run
 ```
 
-**NOTE: A database must exist before adequate usage. Please consuder CLI section to update the database.**
+**NOTE: A database must exist before adequate usage. Please consult the CLI section to update the database.**
 
 #### CLI
 
@@ -96,6 +96,7 @@ cd src/server
 ```
 
 Follow the directions given in the CLI menu to modify the database and view other parameters.
+The database should first be updated on initiall clone. This is done by selecting option `U` on the main menu.
 
 ## Development
 
