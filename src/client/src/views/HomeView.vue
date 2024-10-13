@@ -4,12 +4,12 @@ import IconGraph from '../components/icons/IconGraph.vue'
 
 <template>
   <div class="text-justify text-nav-background mb-[70px] lg:mx-40 mx-8">
-    <section class="lg:mt-[120px] mt-[90px] mb-[70px]">
+    <section class="lg:mt-[120px] mt-[80px] mb-[50px]">
       <h1 class="text-center lg:text-4xl font-bold text-3xl">
         Interactive Visualization of the ISO 15926-4 Reference Data Library
       </h1>
       <h2
-        class="lg:text-2xl text-xl font-semibold mt-[80px] mb-[10px] relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
+        class="lg:text-2xl text-xl font-semibold lg:mt-[60px] mt-[50px] mb-[10px] relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
       >
         Overview: ISO and RDL
       </h2>
@@ -28,7 +28,7 @@ import IconGraph from '../components/icons/IconGraph.vue'
       </p>
     </section>
 
-    <section class="mb-[110px]">
+    <section class="mb-[70px]">
       <h2
         class="lg:text-2xl text-xl mb-[10px] font-semibold relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-[30%] before:w-[90%] before:h-[2px] before:bg-nav-background"
       >
@@ -41,14 +41,14 @@ import IconGraph from '../components/icons/IconGraph.vue'
     </section>
 
     <section
-      class="mb-[110px] text-center relative px-[50px] py-[50px] before:content-[''] before:absolute before:top-[-20px] before:left-0 before:w-full before:h-[2px] before:bg-nav-background after:content-[''] after:absolute after:bottom-[-20px] after:left-0 after:w-full after:h-[1.5px] after:bg-nav-background"
+      class="mb-[60px] text-center relative px-[50px] py-[50px] before:content-[''] before:absolute lg:before:top-[-5px] before:top-[-2.5px] before:left-0 before:w-full before:h-[1.5px] before:bg-nav-background after:content-[''] after:absolute lg:after:bottom-[-5px] after:bottom-[-2.5px] after:left-0 after:w-full after:h-[1.5px] after:bg-nav-background"
     >
-      <p class="lg:text-lg mb-[60px]">
+      <p class="lg:text-lg lg:mb-[40px] mb-[35px]">
         Click the button below to explore the interactive visualization
       </p>
       <router-link to="/graph" class="flex justify-center hover:bg-transparent">
         <button
-          class="border-none bg-nav-background text-white lg:text-lg font-black lg:px-[120px] py-[16px] px-[70px] cursor-pointer hover:bg-gray-500 flex items-center justify-center mb-[70px] rounded-lg"
+          class="border-none bg-nav-background text-white lg:text-lg font-black lg:px-[120px] py-[16px] px-[70px] cursor-pointer hover:bg-gray-500 flex items-center justify-center lg:mb-[50px] mb-[40px] rounded-lg"
         >
           <IconGraph class="navbar-icon mr-2" />
           Graph
@@ -63,7 +63,7 @@ import IconGraph from '../components/icons/IconGraph.vue'
       </p>
     </section>
 
-    <section class="mb-[100px] text-center">
+    <section class="mb-[40px] text-center">
       <p class="lg:text-lg">
         Released in October 2024, this visualization was developed and designed by the following UWA
         students:<br />
@@ -82,15 +82,13 @@ import IconGraph from '../components/icons/IconGraph.vue'
       </p>
     </section>
 
-    <section class="text-center mb-[120px]">
-      <p
-        class="relative before:content-[''] before:absolute before:bottom-[-20px] lg:before:w-[50%] before:w-full before:h-[2px] before:bg-nav-background before:left-1/2 before:transform before:-translate-x-1/2"
-      >
-        <span class="lg:text-2xl text-xl font-bold">Questions?</span>
-        <span class="lg:text-xl text-lg lg:ml-3 ml-2">Contact us at:</span>
+    <section class="text-center mb-[50px]">
+      <p>
+        <span class="lg:text-xl text-lg font-bold">Questions?</span>
+        <span class="lg:text-lg lg:ml-2 ml-1">Contact us at:</span>
         <a
           href="mailto:systemhealthlab@gmail.com"
-          class="lg:ml-2 ml-1 lg:text-xl text-lg text-blue-500 hover:underline hover:bg-transparent hover:text-nav-background cursor-pointer"
+          class="lg:ml-1 lg:text-lg text-blue-500 hover:underline hover:bg-transparent hover:text-nav-background cursor-pointer"
           >systemhealthlab@gmail.com</a
         >
       </p>
@@ -122,7 +120,7 @@ import IconGraph from '../components/icons/IconGraph.vue'
       </a>
     </section>
 
-    <p class="mt-[60px] mb-[60px] font-small text-center">Last updated on 14 October 2024</p>
+    <p class="mt-[50px] mb-[40px] font-small text-center">Last updated on 14 October 2024</p>
 
     <section class="text-center lg:text-base text-sm">
       <h4 class="font-medium">Disclaimer:</h4>
