@@ -138,6 +138,8 @@ function renderParentsNodes(
     .append('text')
     .attr('dy', '.35em')
     .text((d: any) => d.data.label)
+    .style('font-family', 'Arial, sans-serif')
+    .style('font-size', '15px')
 
   // merge the enter and update selections
   const nodeUpdate = nodeEnter.merge(nodeSelection)
@@ -169,6 +171,8 @@ function renderParentsNodes(
   nodeUpdate
     .select('text')
     .style('cursor', () => 'pointer')
+    .style('font-family', 'Arial, sans-serif')
+    .style('font-size', '15px')
     .on('mouseover', (event: MouseEvent) => {
       d3.select(event.currentTarget as SVGTextElement)
         .style('fill', (d: any) =>
