@@ -94,8 +94,6 @@ watch(
   () => {
     isLeftExpanded.value = false
     isRightExpanded.value = false
-    nodeDistanceX.value = isSm.value ? 30 : 45
-    nodeDistanceY.value = isSm.value ? 300 : 450
   },
   {
     immediate: true

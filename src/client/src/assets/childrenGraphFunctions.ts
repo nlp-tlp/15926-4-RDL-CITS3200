@@ -253,31 +253,6 @@ async function toggleChildrenCollapse(
   }
   // Call the update function to re-render the graph
   updateChildrenGraph(childrenHierarchyData, root, svg, props, emit)
-
-  // const zoom = d3.zoom().on('zoom', (event) => {
-  //   const transform = event.transform
-  //   const combinedTransform = d3.zoomIdentity.translate((3/7)*(window.innerWidth) + transform.x, (3/7)*(window.innerHeight) +transform.y).scale(transform.k)
-
-  //   svg.attr('transform', combinedTransform)
-
-  // })
-  // // Use D3's transition end event to ensure the graph is fully updated before centering the node
-  // svg.transition().duration(750).on('end', () => {
-  //   // Get the dimensions of the SVG element
-  //   const svgElement = svg.node() as SVGSVGElement
-  //   const svgWidth = svgElement.clientWidth
-  //   const svgHeight = svgElement.clientHeight
-
-  //   // Calculate the center of the SVG element
-  //   const centerX = svgWidth / 2
-  //   const centerY = svgHeight / 2
-
-  //   // Calculate the translation to center the node
-  //   const transform = d3.zoomIdentity.translate(-node.y, -node.x).scale(1)
-
-  //   // Apply the transformation to center the node
-  //   svg.transition().duration(750).call(zoom.transform, transform)
-  // })
 }
 
 /**
