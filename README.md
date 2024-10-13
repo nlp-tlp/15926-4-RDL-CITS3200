@@ -18,7 +18,7 @@ ISO15926vis is an interactive graph visualisation for the equipment Reference Da
 
 This project assists in navigating the hierarchical relationships of classes defined by the RDL, accessible through the [current RDL browser](https://data.15926.org/rdl/) on which the hierarchy can be difficult to interpret.
 
-🚧 This project is currently in the early stages of development and many things are subject to change. 🚧
+The project is currently deployed at [https://iso15926vis.org/](https://iso15926vis.org/).
 
 ## Getting started
 
@@ -83,6 +83,8 @@ To run the Flask server, activate your virtual environment and run from the root
 cd src/server
 flask --app "server.py" run
 ```
+
+**NOTE: A database must exist before adequate usage. Please consuder CLI section to update the database.**
 
 #### CLI
 
