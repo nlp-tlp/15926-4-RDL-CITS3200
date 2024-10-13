@@ -2,10 +2,8 @@ import * as d3 from 'd3'
 
 import { fetchChildren } from '@/assets/apiFunctions'
 
-// node dimensions + spacing
+// node dimensions, spacing moved to props
 const nodeRadius: number = 7
-const nodeDistanceX: number = 30
-const nodeDistanceY: number = 370
 
 // node visuals
 const nodeDeprecatedColor: string = '#FC1455'
@@ -31,7 +29,7 @@ function drawChildrenGraph(data: any, root: any, svg: any, props: any, emit: any
   root = d3.hierarchy(data)
 
   // Create a tree layout
-  const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+  const tree = d3.tree().nodeSize([props.nodeDistanceX, props.nodeDistanceY])
   // Compute the layout - assigns x and y positions to the nodes
   tree(root)
 
@@ -61,7 +59,7 @@ function updateChildrenGraph(data: any, root: any, svg: any, props: any, emit: a
   root = d3.hierarchy(data, (d: any) => (d.expanded ? d.children : null))
 
   // Create a tree layout
-  const tree = d3.tree().nodeSize([nodeDistanceX, nodeDistanceY])
+  const tree = d3.tree().nodeSize([props.nodeDistanceX, props.nodeDistanceY])
   // Compute the layout - assigns x and y positions to the nodes
   tree(root)
 
@@ -255,6 +253,31 @@ async function toggleChildrenCollapse(
   }
   // Call the update function to re-render the graph
   updateChildrenGraph(childrenHierarchyData, root, svg, props, emit)
+
+  // const zoom = d3.zoom().on('zoom', (event) => {
+  //   const transform = event.transform
+  //   const combinedTransform = d3.zoomIdentity.translate((3/7)*(window.innerWidth) + transform.x, (3/7)*(window.innerHeight) +transform.y).scale(transform.k)
+
+  //   svg.attr('transform', combinedTransform)
+
+  // })
+  // // Use D3's transition end event to ensure the graph is fully updated before centering the node
+  // svg.transition().duration(750).on('end', () => {
+  //   // Get the dimensions of the SVG element
+  //   const svgElement = svg.node() as SVGSVGElement
+  //   const svgWidth = svgElement.clientWidth
+  //   const svgHeight = svgElement.clientHeight
+
+  //   // Calculate the center of the SVG element
+  //   const centerX = svgWidth / 2
+  //   const centerY = svgHeight / 2
+
+  //   // Calculate the translation to center the node
+  //   const transform = d3.zoomIdentity.translate(-node.y, -node.x).scale(1)
+
+  //   // Apply the transformation to center the node
+  //   svg.transition().duration(750).call(zoom.transform, transform)
+  // })
 }
 
 /**

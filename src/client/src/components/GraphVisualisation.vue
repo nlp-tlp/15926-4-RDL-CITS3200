@@ -27,6 +27,20 @@ const props = defineProps({
   showLabels: {
     type: Boolean,
     default: true
+  },
+  /**
+   * The distance between nodes on the X-axis.
+   */
+  nodeDistanceX: {
+    type: Number,
+    default: 45
+  },
+  /**
+   * The distance between nodes on the Y-axis.
+   */
+  nodeDistanceY: {
+    type: Number,
+    default: 450
   }
 })
 

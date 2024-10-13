@@ -21,6 +21,10 @@ const selectedNodeId = ref('http://data.15926.org/dm/Thing')
 const isLeftExpanded = ref(false)
 const isRightExpanded = ref(false)
 
+// node spacing
+const nodeDistanceX = ref(45)
+const nodeDistanceY = ref(450)
+
 /**
  * Handles the event when the user toggles the deprecated nodes visibility.
  * @param {boolean} val - The new value of the flag to include deprecated nodes.
@@ -90,12 +94,17 @@ watch(
   () => {
     isLeftExpanded.value = false
     isRightExpanded.value = false
+    nodeDistanceX.value = isSm.value ? 30 : 45
+    nodeDistanceY.value = isSm.value ? 300 : 450
   },
   {
     immediate: true
   }
 )
 
+/**
+ * Toggles the left side panel expanded state.
+ */
 function toggleIsLeftExpanded() {
   if (isSm.value && isRightExpanded.value) {
     isRightExpanded.value = false
@@ -103,6 +112,9 @@ function toggleIsLeftExpanded() {
   isLeftExpanded.value = !isLeftExpanded.value
 }
 
+/**
+ * Toggles the right side panel expanded state.
+ */
 function toggleIsRightExpanded() {
   if (isSm.value && isLeftExpanded.value) {
     isLeftExpanded.value = false
@@ -130,6 +142,8 @@ function toggleIsRightExpanded() {
       :selected-node-id="selectedNodeId"
       @label-clicked="handleLabelClicked"
       :show-labels="showLabels"
+      :node-distance-x="nodeDistanceX"
+      :node-distance-y="nodeDistanceY"
     />
   </div>
 </template>
