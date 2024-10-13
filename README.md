@@ -44,6 +44,8 @@ Install NPM dependencies in the main directory for [Husky Git hooks](https://typ
 
 ```bash
 npm i
+
+# If developing:
 npx husky-init
 cp .husky/pre-commit.example .husky/pre-commit
 ```
@@ -183,6 +185,8 @@ To access the CLI inside of the docker container, run :
 ```bash
 docker exec -it Server /app/cli.py
 ```
+
+**NOTE: When running the project locally with docker, the containers must be rebuilt with `--build` to register database modifications.** As such, the CLI tool cannot automatically update the database in use for docker instances.
 
 ## Credits
 
