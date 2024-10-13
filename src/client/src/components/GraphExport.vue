@@ -2,29 +2,10 @@
   <div>
     <!-- Capture Screen Button -->
     <button
-      class="w-3 p-2 bg-none text-w border-none rounded-md cursor-pointer hover:color-nav-text-active fixed right-6 bottom-6"
+      class="w-12 h-12 bg-none text-w border-none rounded-full cursor-pointer hover:color-nav-text-active fixed right-6 bottom-6 flex items-center justify-center"
       @click="captureScreen"
     >
-      <svg
-        class="svg-icon"
-        style="
-          width: 1.5em;
-          height: 1.5em;
-          vertical-align: middle;
-          fill: var(--color-nav-background);
-          overflow: hidden;
-        "
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M471 250.4c0-22.1 17.9-40.1 40.1-40.1 22.1 0 40.1 17.9 40.1 40.1V680c0 22.1-17.9 40.1-40.1 40.1-22.1 0-40.1-17.9-40.1-40.1V250.4z m0 429.5"
-        />
-        <path
-          d="M852.5 834V645.4c0-20.8 16.9-37.7 37.7-37.7 20.8 0 37.7 16.9 37.7 37.7v226.2c0 20.8-16.9 37.7-37.7 37.7H136.1c-20.8 0-37.7-16.9-37.7-37.7V645.4c0-20.8 16.9-37.7 37.7-37.7 20.8 0 37.7 16.9 37.7 37.7V834h678.7z m0 0M511.1 229.5L320.3 437.9c-15.1 16.4-40.5 17.4-56.9 2.4-16.4-15-17.5-40.5-2.4-56.9L481.4 143c7.6-8.4 18.4-13.1 29.7-13.1s22.1 4.8 29.6 13.1l220.4 240.4c15 16.4 14 41.9-2.4 56.9s-41.9 14-56.9-2.4L511.1 229.5z m190.7 208.4"
-        />
-      </svg>
+      <IconExport class="h-6 w-6 md:h-8 md:w-8 align-middle overflow-hidden" />
     </button>
 
     <!-- Preview Modal -->
@@ -37,9 +18,13 @@
         class="bg-white w-3/5 max-w-[90vw] max-h-[90vh] flex flex-col relative border-none shadow-md text-center rounded-lg"
       >
         <!-- Modal header -->
-        <div class="absolute top-0 left-0 w-full bg-nav-background text-white p-3 rounded-t-lg">
-          <span class="absolute top-3 right-3 cursor-pointer" @click="closePreview">&times;</span>
-          <h3>Export Preview</h3>
+        <div
+          class="absolute top-0 left-0 w-full bg-nav-background text-white p-3 rounded-t-lg text-center"
+        >
+          <span class="absolute top-1 right-4 cursor-pointer text-3xl" @click="closePreview"
+            >&times;</span
+          >
+          <h3 class="font-bold">Export Preview</h3>
         </div>
 
         <!-- Modal content -->
@@ -50,9 +35,9 @@
             class="bg-amber-200 text-yellow-800 border-yellow-200 p-2.5 mb-3.5 rounded-md"
           >
             <p>
-              <strong>Warning:</strong> The image has been scaled down due to size limitations. The
-              exported image may be lower resolution for PNG/JPEG. Please export as SVG to preserve
-              resolution.
+              <strong class="font-semibold">Warning:</strong> The image has been scaled down due to
+              size limitations. The exported image may be lower resolution for PNG/JPEG. Please
+              export as SVG to preserve resolution.
             </p>
           </div>
 
@@ -87,6 +72,8 @@
 <script setup lang="ts">
 import { saveAs } from 'file-saver'
 import { ref } from 'vue'
+
+import IconExport from './icons/IconExport.vue'
 
 // **Props**
 const props = defineProps({
