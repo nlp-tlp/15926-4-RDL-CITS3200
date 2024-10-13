@@ -40,7 +40,7 @@ git clone https://github.com/nlp-tlp/15926-4-RDL-CITS3200.git
 
 If you intend to run the client, download [NVM](https://github.com/nvm-sh/nvm) from the official source or using a package manager for your OS. Then, use NVM to install [NPM](https://nodejs.org/en/download/package-manager).
 
-Install NPM dependencies in the main directory for [Husky Git hooks](https://typicode.github.io/husky/) and initialise Husky:
+Install NPM dependencies in the root directory for [Husky Git hooks](https://typicode.github.io/husky/) and initialise Husky:
 
 ```bash
 npm i
@@ -98,7 +98,7 @@ cd src/server
 ```
 
 Follow the directions given in the CLI menu to modify the database and view other parameters.
-The database should first be updated on initiall clone. This is done by selecting option `U` on the main menu.
+The database should first be updated on initial clone. This is done by selecting option `U` on the main menu.
 
 ## Development
 
@@ -146,7 +146,7 @@ For any dependencies that should be there in the production environment, run:
 npm i <package_name> --save
 ```
 
-For any dependencies needed for development but not prod (e.g. type checking with ESLint), run:
+For any dependencies needed for development but not the production environment (e.g. type checking with ESLint), run:
 
 ```bash
 npm i <package_name> --save-dev
@@ -173,6 +173,7 @@ From the root directory, run:
 
 ```bash
 cd src
+cp .env.example .env
 docker compose up --build
 ```
 
@@ -190,6 +191,6 @@ docker exec -it Server /app/cli.py
 
 ## Credits
 
-This project is being developed by students of the University of Western Australia (UWA) as part of the unit CITS3200 (Professional Computing), as Team 14 of the 2024 Semester 2 cohort.
+This project was developed by students of the University of Western Australia (UWA) as part of the unit CITS3200 (Professional Computing), as Team 14 of the 2024 Semester 2 cohort.
 
 Our team members include: Cameron O’Neill, Heidi Leow, Paul Maingi, Ryan Dorman, Shuai Shao, and Vinita Rathore.
