@@ -177,7 +177,7 @@ export default {
         v-if="isLeftExpanded"
         class="left-sidebar fixed top-[var(--navbar-height,4.145rem)] left-0 sm:w-[250px] flex flex-col items-start pt-1 h-full bg-nav-background pb-10 transition-transform duration-500 ease overflow-hidden"
       >
-        <p class="ml-auto text-white mt-3 mr-4 whitespace-nowrap">Graph Search</p>
+        <p class="ml-auto text-white mt-5 mr-4 whitespace-nowrap">Graph Search</p>
 
         <div v-if="isLeftExpanded" class="overflow-hidden">
           <div class="flex flex-col m-4 mt-12">
@@ -195,7 +195,7 @@ export default {
               </svg>
               <input
                 v-model="searchTerm"
-                class="w-full p-4 pl-12 mb-2 max-w-[220px] border border-white bg-nav-background text-white rounded-lg text-base transition-all duration-300 placeholder-white"
+                class="w-full p-4 pl-12 mb-2 max-w-[220px] border border-white bg-cyan-950 text-white rounded-lg text-base transition-all duration-300 placeholder-white"
                 type="text"
                 placeholder="Search..."
               />
@@ -204,7 +204,7 @@ export default {
             <div class="relative">
               <select
                 v-model="searchOption"
-                class="w-full p-3 max-w-[220px] border border-white bg-nav-background mb-[30px] text-white rounded-lg text-base cursor-pointer transition-all duration-300 focus:outline-none focus:border-accent focus:bg-nav-background-dark appearance-none"
+                class="w-full p-3 max-w-[220px] border border-white bg-cyan-950 mb-[30px] text-white rounded-lg text-base cursor-pointer transition-all duration-300 focus:outline-none focus:border-accent focus:bg-nav-background-dark appearance-none"
               >
                 <option value="rdf">RDF Label</option>
                 <option value="id">ID/URI</option>
@@ -229,7 +229,7 @@ export default {
 
           <div
             v-if="showResults"
-            class="max-h-[300px] overflow-y-auto bg-nav-background m-4 p-4 border border-white rounded-lg absolute top-[8.5rem] left-[-1rem] w-[calc(95%)] shadow-lg z-10 ml-[22px] scrollbar-none"
+            class="max-h-[300px] overflow-y-auto bg-cyan-950 m-4 p-4 border border-white rounded-lg absolute top-[9rem] left-[-1rem] w-[calc(95%)] shadow-lg z-10 ml-[22px] scrollbar-none"
           >
             <div v-if="isSearching" class="text-center text-white">Searching...</div>
             <div v-if="errorMessage" class="text-center text-white">
@@ -254,20 +254,20 @@ export default {
           </div>
 
           <div v-if="isLeftExpanded" class="m-4 mb-5">
-            <label class="flex items-center text-white mb-[30px] mt-7 whitespace-nowrap">
+            <label class="flex items-center text-white mb-4 mt-7 whitespace-nowrap">
               <input type="checkbox" class="mr-2" v-model="deprecatedToggle" />
               Show Deprecated
             </label>
-            <label class="flex items-center text-white mb-2 whitespace-nowrap">
+            <label class="flex items-center text-white mb-6 whitespace-nowrap">
               <input type="checkbox" class="mr-2" v-model="labelsToggle" />
               View Labels in Graph
             </label>
           </div>
           <button
-            class="w-[80%] mx-auto p-3 bg-nav-background text-white ml-5 border-2 border-white rounded-lg text-sm font-extrabold cursor-pointer mt-5 text-center transition-all duration-300"
+            class="w-[80%] mx-auto p-3 bg-cyan-950 text-white ml-5 border border-white rounded-lg text-sm cursor-pointer text-center transition-all duration-300"
             @click="handleSubmit"
           >
-            Submit
+            Apply filters
           </button>
         </div>
       </div>

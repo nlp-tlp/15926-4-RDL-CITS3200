@@ -89,7 +89,7 @@ export default {
         v-if="props.isRightExpanded"
         class="right-sidebar fixed top-[var(--navbar-height,4.145rem)] right-0 w-[250px] lg:w-[300px] h-full bg-nav-background z-10 flex flex-col pt-1 pb-10 transform transition-transform duration-500 ease-in-out"
       >
-        <p class="ml-4 mt-3 text-white whitespace-normal">Node Information</p>
+        <p class="ml-4 mt-5 text-white whitespace-normal">Node Information</p>
 
         <div class="flex-1 m-4 lg:pr-2 text-white overflow-y-auto scrollbar-none">
           <div v-if="filteredRdfData.length === 0" class="mb-4">

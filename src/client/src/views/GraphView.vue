@@ -146,10 +146,4 @@ function toggleIsRightExpanded() {
   </div>
 </template>
 
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-</style>
+<style scoped></style>
