@@ -15,9 +15,3 @@ body {
   margin: 0;
   font-weight: normal;
 }
-
-a {
-  text-decoration: none;
-  transition: 0.4s;
-  padding: 3px;
-}
