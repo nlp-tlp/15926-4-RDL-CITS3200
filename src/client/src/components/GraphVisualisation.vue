@@ -83,7 +83,9 @@ watch([width, height], () => {
   initialGraphY = (height.value / 7) * 3
 
   // Update the SVG dimensions
-  d3.select(svgRef.value).attr('width', width.value).attr('height', height.value)
+  d3.select(svgRef.value)
+    .attr('width', width.value)
+    .attr('height', height.value - 32)
 
   // Reapply the zoom transform
   svg.attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())
@@ -138,8 +140,8 @@ function initialiseGraph() {
   // Create the SVG element
   svg = d3
     .select(svgRef.value as SVGSVGElement)
-    .attr('width', width.value)
-    .attr('height', height.value)
+    .attr('width', width.value - 0)
+    .attr('height', height.value - 32)
     .call(d3.zoom().scaleExtent(zoomScale).on('zoom', zoomed) as any)
     .append('g')
     .attr('transform', d3.zoomIdentity.translate(initialGraphX, initialGraphY).toString())

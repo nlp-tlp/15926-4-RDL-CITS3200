@@ -123,7 +123,7 @@ function clickResult(result: SearchResult): void {
     showResults.value = false
   } else {
     // Update the search term to the clicked result
-    searchTerm.value = searchOption.value === 'id' ? result.id || '' : result.label || ''
+    searchTerm.value = searchOption.value === 'id' ? '' : ''
 
     showResults.value = false // Hide search results after setting the search term
 
