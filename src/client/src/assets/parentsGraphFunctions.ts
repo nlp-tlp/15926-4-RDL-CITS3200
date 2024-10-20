@@ -160,12 +160,12 @@ function renderParentsNodes(
     // display none if prop showLabels is false
     .style('display', props.showLabels ? 'block' : 'none')
     // x: root at 0 and parents otherwise based on expanded state
-    .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? -10 : 15))
+    .attr('x', (d: any, i: number) => (i === 0 ? 0 : d.data.expanded ? 10 : -15))
     // y: root at -20 and parents not changed
     .attr('y', (d: any, i: number) => (i === 0 ? -20 : 0))
     // text-anchor: root at middle and parents based on expanded state
     .style('text-anchor', (d: any, i: number) =>
-      i === 0 ? 'middle' : d.data.expanded ? 'end' : 'start'
+      i === 0 ? 'middle' : d.data.expanded ? 'start' : 'end'
     )
     .style('font-weight', (d: any) => (d.data.dep ? 325 : 450))
     .style('font-style', (d: any) => (d.data.dep ? 'italic' : 'normal'))

@@ -3,13 +3,13 @@ import IconGraph from '../components/icons/IconGraph.vue'
 </script>
 
 <template>
-  <div class="text-justify text-nav-background mb-[70px] lg:mx-40 mx-8">
-    <section class="lg:mt-[120px] mt-[80px] mb-[50px]">
+  <div class="text-justify text-nav-background mb-16 lg:mx-40 mx-8">
+    <section class="lg:mt-[120px] mt-20 mb-12">
       <h1 class="text-center lg:text-4xl font-bold text-3xl">
         Interactive Visualization of the ISO 15926-4 Reference Data Library
       </h1>
       <h2
-        class="lg:text-2xl text-xl font-semibold lg:mt-[60px] mt-[50px] mb-[10px] relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
+        class="lg:text-2xl text-xl font-semibold lg:mt-[60px] mt-12 mb-2.5 relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-1/4 before:w-3/4 before:h-[2px] before:bg-nav-background"
       >
         Overview: ISO and RDL
       </h2>
@@ -28,7 +28,7 @@ import IconGraph from '../components/icons/IconGraph.vue'
       </p>
     </section>
 
-    <section class="mb-[70px]">
+    <section class="mb-16">
       <h2
         class="lg:text-2xl text-xl mb-[10px] font-semibold relative before:content-[''] before:absolute before:bottom-[-10px] lg:before:w-[30%] before:w-[90%] before:h-[2px] before:bg-nav-background"
       >
@@ -41,14 +41,14 @@ import IconGraph from '../components/icons/IconGraph.vue'
     </section>
 
     <section
-      class="mb-[60px] text-center relative px-[50px] py-[50px] before:content-[''] before:absolute lg:before:top-[-5px] before:top-[-2.5px] before:left-0 before:w-full before:h-[1.5px] before:bg-nav-background after:content-[''] after:absolute lg:after:bottom-[-5px] after:bottom-[-2.5px] after:left-0 after:w-full after:h-[1.5px] after:bg-nav-background"
+      class="mb-[60px] text-center relative p-12 before:content-[''] before:absolute lg:before:top-[-5px] before:top-[-2.5px] before:left-0 before:w-full before:h-[1.5px] before:bg-nav-background after:content-[''] after:absolute lg:after:bottom-[-5px] after:bottom-[-2.5px] after:left-0 after:w-full after:h-[1.5px] after:bg-nav-background"
     >
       <p class="lg:text-lg lg:mb-[40px] mb-[35px]">
         Click the button below to explore the interactive visualization
       </p>
       <router-link to="/graph" class="flex justify-center hover:bg-transparent">
         <button
-          class="border-none bg-nav-background text-white lg:text-lg font-black lg:px-[120px] py-[16px] px-[70px] cursor-pointer hover:bg-gray-500 flex items-center justify-center lg:mb-[50px] mb-[40px] rounded-lg"
+          class="border-none bg-nav-background text-white lg:text-lg font-black lg:px-[120px] py-4 px-16 cursor-pointer hover:bg-gray-500 flex items-center justify-center lg:mb-12 mb-10 rounded-lg"
         >
           <IconGraph class="navbar-icon mr-2" />
           Graph
@@ -71,18 +71,9 @@ import IconGraph from '../components/icons/IconGraph.vue'
           >Cameron O'Neill, Heidi Leow, Paul Maingi, Ryan Dorman, Shuai Shao, Vinita Rathore</strong
         >
       </p>
-      <p class="lg:text-medium">
-        The source code for this visualization is available on
-        <a
-          href="https://github.com/nlp-tlp/15926-4-RDL-CITS3200"
-          target="_blank"
-          class="text-nav-background underline hover:no-underline hover:bg-transparent hover:text-blue-500 cursor-pointer"
-          >GitHub</a
-        >.
-      </p>
     </section>
 
-    <section class="text-center mb-[50px]">
+    <section class="text-center mb-12">
       <p>
         <span class="lg:text-xl text-lg font-bold">Questions?</span>
         <span class="lg:text-lg lg:ml-2 ml-1">Contact us at:</span>
@@ -92,9 +83,18 @@ import IconGraph from '../components/icons/IconGraph.vue'
           >systemhealthlab@gmail.com</a
         >
       </p>
+      <p class="lg:text-medium">
+        The source code for this visualization is available at
+        <a
+          href="https://github.com/nlp-tlp/15926-4-RDL-CITS3200"
+          target="_blank"
+          class="text-blue-500 hover:underline hover:bg-transparent hover:text-nav-background cursor-pointer"
+          >GitHub</a
+        >.
+      </p>
     </section>
 
-    <section class="flex lg:flex-row flex-col justify-center items-center text-center mb-[50px]">
+    <section class="flex lg:flex-row flex-col justify-center items-center text-center mb-12">
       <a
         href="https://www.uwa.edu.au/"
         class="inline-block hover:bg-transparent cursor-pointer"
@@ -114,19 +114,18 @@ import IconGraph from '../components/icons/IconGraph.vue'
         <img
           src="/images/nlp-tlp-logo.png"
           class="max-w-[90px]"
-          alt="University of Western Australia Natural & Technical Language 
+          alt="University of Western Australia Natural & Technical Language
         Processing Group Logo"
         />
       </a>
     </section>
 
-    <p class="mt-[50px] mb-[40px] font-small text-center">Last updated on 14 October 2024</p>
+    <p class="mt-12 mb-10 font-small text-center">Last updated on 14 October 2024</p>
 
-    <section class="text-center lg:text-base text-sm">
-      <h4 class="font-medium">Disclaimer:</h4>
+    <section class="text-center lg:text-base text-sm m-5">
       <p>
-        This project is not sponsored by the International Organization for Standardization (ISO).
-        It is an initiative of
+        <strong>Disclaimer:</strong> This project is not sponsored by the International Organization
+        for Standardization (ISO). It is an initiative of
         <a
           href="https://nlp-tlp.org/"
           target="_blank"

@@ -53,7 +53,14 @@ function handleButtonClick(event: MouseEvent): void {
 
 // Computed property to filter rdfData
 const filteredRdfData = computed(() => {
-  return Object.entries(rdfData.value).filter(([key, value]) => value.trim() !== '')
+  return Object.entries(rdfData.value).filter(([key, value]) => {
+    if (typeof value === 'string') {
+      return value.trim() !== ''
+    } else if (Array.isArray(value)) {
+      return value.some((item) => item.trim() !== '')
+    }
+    return false
+  })
 })
 </script>
 
@@ -99,20 +106,22 @@ export default {
             <strong class="block font-bold mb-1"
               >{{ key.charAt(0).toUpperCase() + key.slice(1) }}:</strong
             >
-            <span
-              :class="[
-                'block',
-                'ml-4',
-                'break-words',
-                'whitespace-pre-line',
-                'break-all',
-                'text-sm',
-                'bg-cyan-950',
-                'p-2',
-                'rounded-md'
-              ]"
-            >
-              <slot :name="key" :value="value">{{ value }}</slot>
+            <span class="block ml-4 whitespace-pre-line text-sm bg-cyan-950 p-2 rounded-md">
+              <slot :name="key" :value="value">
+                <span v-if="Array.isArray(value)">
+                  <ul class="list-none">
+                    <li
+                      class="flex items-start overflow-x-hidden"
+                      v-for="item in value"
+                      :key="item"
+                    >
+                      <span class="mr-1">•</span>
+                      <span class="break-words w-full pr-4">{{ item }}</span>
+                    </li>
+                  </ul>
+                </span>
+                <span v-else class="break-words">{{ value }}</span>
+              </slot>
             </span>
           </div>
         </div>
