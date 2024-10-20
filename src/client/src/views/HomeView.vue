@@ -20,10 +20,10 @@ import IconGraph from '../components/icons/IconGraph.vue'
         facilities Part 4: Core reference data. The Reference Data Library (RDL) described in ISO
         15926-4 is made available as a set of spreadsheets and through an endpoint at
         <a
-          href="https://15926.org/"
+          href="https://standards.iso.org/"
           target="_blank"
           class="text-nav-background underline hover:no-underline hover:bg-transparent hover:text-blue-500 cursor-pointer"
-          >15926.org</a
+          >standards.iso.org</a
         >.
       </p>
     </section>
