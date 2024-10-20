@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- Include the GraphExport component -->
     <GraphExport v-if="svgRef" :svg-ref="svgRef" />
-
     <svg ref="svgRef"></svg>
   </div>
 </template>
@@ -103,7 +101,7 @@ onMounted(() => {
 // Watch the selected node ID prop and if it changes, re-render the graph with the new data
 watch(
   () => props.selectedNodeId,
-  (newVal, oldVal) => {
+  (newVal) => {
     fetchSelectedInfo(newVal, props.includeDeprecated).then((data) => {
       drawChildrenGraph(data, childrenRoot, svg, props, emit)
       drawParentsGraph(data, parentsRoot, svg, props, emit)
@@ -114,7 +112,7 @@ watch(
 // Watch the includeDeprecated prop and re-render the graph when it changes
 watch(
   () => props.includeDeprecated,
-  (newVal, oldVal) => {
+  () => {
     fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
       drawChildrenGraph(data, childrenRoot, svg, props, emit)
       drawParentsGraph(data, parentsRoot, svg, props, emit)
@@ -125,7 +123,7 @@ watch(
 // Watch the showLabels prop and re-render the graph when it changes
 watch(
   () => props.showLabels,
-  (newVal, oldVal) => {
+  () => {
     fetchSelectedInfo(props.selectedNodeId, props.includeDeprecated).then((data) => {
       drawChildrenGraph(data, childrenRoot, svg, props, emit)
       drawParentsGraph(data, parentsRoot, svg, props, emit)

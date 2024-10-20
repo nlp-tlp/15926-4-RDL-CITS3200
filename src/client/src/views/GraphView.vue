@@ -54,8 +54,8 @@ const nodeInfoDisplay = ref({
   label: '',
   definition: '',
   deprecation: '',
-  parents: '',
-  types: ''
+  parents: [''],
+  types: ['']
 })
 
 /**

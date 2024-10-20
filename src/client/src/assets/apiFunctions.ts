@@ -27,38 +27,29 @@ async function fetchChildren(node: any, includeDeprecated: boolean = false): Pro
     const response = await fetch(
       `${API_URL}${childrenEndpoint}${encodeURIComponent(node.id)}?dep=${includeDeprecated}`
     )
-
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return null
     }
-    const responseData = await response.json()
 
-    if (responseData && Array.isArray(responseData.children)) {
-      // create a new node object to return
-      const newNode = {
-        ...node,
-        // fetchchildren is only called when the node is expanded so set expanded to true here
-        expanded: true,
-        children: responseData.children
-      }
-      // set the expanded flag to false for each child
-      newNode.children.forEach((child: any) => {
-        child.expanded = false
-      })
-      return newNode
-    } else {
+    const responseData = await response.json()
+    if (!responseData || !Array.isArray(responseData.children)) {
       console.error('Invalid response:', responseData)
       return null
     }
-  } catch (error: any) {
-    if (error instanceof TypeError) {
-      // Network error or other fetch-related error
-      console.error('Network error:', error.message)
-    } else {
-      // Something else happened
-      console.error('Error:', error.message)
+
+    const newNode = {
+      ...node,
+      expanded: true,
+      children: responseData.children
     }
+
+    newNode.children.forEach((child: any) => {
+      child.expanded = false
+    })
+    return newNode
+  } catch (error: any) {
+    console.error('Error:', error.message)
     return null
   }
 }
@@ -84,38 +75,29 @@ async function fetchParents(node: any, includeDeprecated: boolean = false): Prom
     const response = await fetch(
       `${API_URL}${parentsEndpoint}${encodeURIComponent(node.id)}?dep=${includeDeprecated}`
     )
-
     if (!response.ok) {
       console.error('Server error:', response.status, await response.text())
       return null
     }
-    const responseData = await response.json()
 
-    if (responseData && Array.isArray(responseData.parents)) {
-      // create a new node object to return
-      const newNode = {
-        ...node,
-        // fetchParents is only called when the node is expanded so set expanded to true here
-        expanded: true,
-        parents: responseData.parents
-      }
-      // set the expanded flag to false for each parent
-      newNode.parents.forEach((parent: any) => {
-        parent.expanded = false
-      })
-      return newNode
-    } else {
+    const responseData = await response.json()
+    if (!responseData || !Array.isArray(responseData.parents)) {
       console.error('Invalid response:', responseData)
       return null
     }
-  } catch (error: any) {
-    if (error instanceof TypeError) {
-      // Network error or other fetch-related error
-      console.error('Network error:', error.message)
-    } else {
-      // Something else happened
-      console.error('Error:', error.message)
+
+    const newNode = {
+      ...node,
+      expanded: true,
+      parents: responseData.parents
     }
+
+    newNode.parents.forEach((parent: any) => {
+      parent.expanded = false
+    })
+    return newNode
+  } catch (error: any) {
+    console.error('Error:', error.message)
     return null
   }
 }
@@ -140,21 +122,16 @@ async function fetchSelectedInfo(nodeId: string, includeDeprecated: boolean = fa
       console.error('Server error:', response.status, await response.text())
       return null
     }
+
     const responseData = await response.json()
-    if (responseData) {
-      return responseData
-    } else {
+    if (!responseData) {
       console.error('Invalid response:', responseData)
       return null
     }
+
+    return responseData
   } catch (error: any) {
-    if (error instanceof TypeError) {
-      // Network error or other fetch-related error
-      console.error('Network error:', error.message)
-    } else {
-      // Something else happened
-      console.error('Error:', error.message)
-    }
+    console.error('Error:', error.message)
     return null
   }
 }
@@ -178,45 +155,30 @@ async function fetchNodeInfo(nodeId: string) {
       return null
     }
     const responseData = await response.json()
-    if (responseData) {
-      // create structure to return
-      const nodeInfoDisplay = {
-        id: '',
-        label: '',
-        definition: '',
-        deprecation: '',
-        parents: '',
-        types: ''
-      }
-      nodeInfoDisplay.id = responseData.id
-      nodeInfoDisplay.label = responseData.label
-      nodeInfoDisplay.definition = responseData.definition
-      if (responseData.dep === null) {
-        nodeInfoDisplay.deprecation = ''
-      } else {
-        nodeInfoDisplay.deprecation = responseData.dep.slice(0, -1)
-      }
-      nodeInfoDisplay.parents = ''
-      for (let i = 0; i < responseData.parents.length; i++) {
-        nodeInfoDisplay.parents += '• ' + responseData.parents[i] + '\n'
-      }
-      nodeInfoDisplay.types = ''
-      for (let i = 0; i < responseData.types.length; i++) {
-        nodeInfoDisplay.types += '• ' + responseData.types[i] + '\n'
-      }
-      return nodeInfoDisplay
-    } else {
+    if (!responseData) {
       console.error('Invalid response:', responseData)
       return null
     }
-  } catch (error: any) {
-    if (error instanceof TypeError) {
-      // Network error or other fetch-related error
-      console.error('Network error:', error.message)
-    } else {
-      // Something else happened
-      console.error('Error:', error.message)
+
+    const nodeInfoDisplay = {
+      id: '',
+      label: '',
+      definition: '',
+      deprecation: '',
+      parents: [] as string[],
+      types: [] as string[]
     }
+    nodeInfoDisplay.id = responseData.id
+    nodeInfoDisplay.label = responseData.label
+    nodeInfoDisplay.definition = responseData.definition
+    nodeInfoDisplay.deprecation = responseData.dep ? responseData.dep.slice(0, -1) : ''
+
+    nodeInfoDisplay.parents = responseData.parents
+    nodeInfoDisplay.types = responseData.types
+
+    return nodeInfoDisplay
+  } catch (error: any) {
+    console.error('Error:', error.message)
     return null
   }
 }

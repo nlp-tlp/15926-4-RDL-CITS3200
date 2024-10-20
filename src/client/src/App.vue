@@ -12,7 +12,7 @@ import NavBar from './components/NavBar.vue'
       </div>
     </header>
 
-    <main id="main-content" class="bg-background pt-8">
+    <main id="main-content" class="bg-background py-8">
       <RouterView />
     </main>
   </div>
